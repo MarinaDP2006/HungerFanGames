@@ -3,10 +3,12 @@
 Este ZIP contiene la base del juego, los datos, recursos y el flujo de compilación Android.
 
 ## Generar APK con GitHub Actions
-1. Sube TODO el contenido de esta carpeta a la raíz de un repositorio GitHub nuevo.
+1. El workflow está en `.github/workflows/android-apk.yml`, en la raíz del repositorio `HungerFanGames`, y trabaja dentro de `La_Cosecha_Juego_Android/`.
 2. En GitHub abre **Actions** y habilita los workflows si lo solicita.
-3. Ejecuta `Build Android APK` (o haz push a `main`).
+3. Ejecuta `Build Android APK` manualmente, o haz push a `main` con cambios en esta carpeta.
 4. Descarga el artefacto `La-Cosecha-Android-debug` cuando termine correctamente.
+
+`www/` y `android/` se generan en la compilación y no se guardan en el repositorio (ver `.gitignore`).
 
 ## Compilación local
 Requisitos: Node.js 22, JDK 21 y Android SDK configurado.
