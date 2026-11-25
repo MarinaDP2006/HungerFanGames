@@ -1,0 +1,7 @@
+{
+  "appId": "com.lacosecha.panem",
+  "appName": "La Cosecha",
+  "webDir": "www",
+  "server": {"androidScheme": "https"},
+  "android": {"allowMixedContent": false}
+}
