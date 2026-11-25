@@ -15,3 +15,10 @@
 @keyframes fadeRise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .btn.primary{box-shadow:0 0 0 rgba(193,124,94,0);animation:ember 4s ease-in-out infinite}
 @keyframes ember{50%{box-shadow:0 0 18px #9b443433}}
+
+/* Arena táctica por sectores */
+.sector-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}.sector-choice{display:flex;flex-direction:column;gap:5px;text-align:left;padding:10px;border:1px solid rgba(220,194,145,.24);background:rgba(10,16,13,.78);color:#eadfc8;border-radius:7px;cursor:pointer;min-width:0}.sector-choice small{color:#b7aa91;font-size:.72rem}.sector-choice.active{border-color:#d6b56f;background:rgba(150,112,51,.2)}.sector-choice:disabled{opacity:.65;cursor:default}.map-token{cursor:pointer}.map-token:hover circle{stroke:#f0c66d;stroke-width:5}@media(max-width:700px){.sector-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* Estado Mayor y frentes de guerra */
+.war-room{border-color:#8b5947;background:linear-gradient(145deg,#251815,#120f0d)}.war-room .stat{min-width:0}.war-room .stat strong{font-size:clamp(18px,2.2vw,25px)}.war-room .stat small{display:block;color:#b7aa9b;margin-top:8px;font-size:10px}.war-room .progress i{background:linear-gradient(90deg,#8d3b31,#d2a15d)}

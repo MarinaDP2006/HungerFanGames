@@ -1,4 +1,4 @@
-# La Cosecha 4.1 — estado de implementación
+# La Cosecha 4.2 — estado de implementación
 
 ## Cambios de esta revisión
 - En modo historia, el personaje jugable queda fijado al Distrito 12 para las campañas de Haymitch y Katniss.
@@ -22,3 +22,15 @@
 - Sintaxis JavaScript con `node --check`.
 - Integridad de ambos ZIP con `unzip -t`.
 - Los recursos locales y rutas se conservan en sus respectivas carpetas de proyecto.
+
+
+## Implementado en 4.2
+La Arena incorpora una capa táctica de doce sectores conectados, desplazamiento entre sectores adyacentes, recursos locales agotables, descubrimiento progresivo, amenazas de Vigilantes, movimiento de tributos rivales, encuentros por proximidad y combate restringido al mismo sector. Sigue siendo una simulación 2D abstracta: no equivale a navegación 3D, pathfinding físico ni a una recreación exacta de las Arenas de las películas.
+
+
+## Implementado en 4.2
+La Arena incorpora una capa táctica de doce sectores conectados, desplazamiento entre sectores adyacentes, recursos locales agotables, descubrimiento progresivo, amenazas de Vigilantes, movimiento de tributos rivales, encuentros por proximidad y combate restringido al mismo sector. Sigue siendo una simulación 2D abstracta: no equivale a navegación 3D, pathfinding físico ni a una recreación exacta de las Arenas de las películas.
+
+
+## Implementado en 4.2
+La Arena incorpora una capa táctica de doce sectores conectados, desplazamiento entre sectores adyacentes, recursos locales agotables, descubrimiento progresivo, amenazas de Vigilantes, movimiento de tributos rivales, encuentros por proximidad y combate restringido al mismo sector. Sigue siendo una simulación 2D abstracta: no equivale a navegación 3D, pathfinding físico ni a una recreación exacta de las Arenas de las películas.

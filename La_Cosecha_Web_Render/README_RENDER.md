@@ -1,12 +1,20 @@
-# La Cosecha · Web para Render
+# La Cosecha · Despliegue en Render
 
-## Publicación
-1. Crea un repositorio para este paquete y sube el contenido de esta carpeta a su raíz.
-2. En Render crea un **Static Site** conectado al repositorio.
-3. Render detectará `render.yaml`; la carpeta publicada es la raíz (`.`).
-4. Tras el despliegue, abre la URL HTTPS. La PWA y el service worker requieren HTTPS (o localhost).
+## Recomendado: usar el Blueprint incluido
+1. Sube el repositorio `HungerFanGames` a tu cuenta de GitHub.
+2. En Render, abre **New + → Blueprint** y conecta ese repositorio.
+3. Render leerá el `render.yaml` de la raíz del repositorio.
+4. Comprueba que el servicio `la-cosecha-web` usa `La_Cosecha_Web_Render` como directorio raíz y `.` como directorio publicado.
+5. Confirma la creación del Static Site. Render publicará la web y podrá desplegar automáticamente los siguientes commits de `main`.
 
-No necesita servidor Node ni variables de entorno. Para desarrollo local, sirve esta carpeta mediante cualquier servidor HTTP estático; no abras `index.html` como `file://`.
+## Alternativa: crear el Static Site manualmente
+- Repository: `MarinaDP2006/HungerFanGames`
+- Branch: `main`
+- Root Directory: `La_Cosecha_Web_Render`
+- Build Command: dejar vacío
+- Publish Directory: `.`
+
+No necesita servidor Node ni variables de entorno. La PWA y el service worker requieren HTTPS (o localhost). No abras `index.html` como `file://`; usa un servidor HTTP local.
 
 ## Contenido
 - `index.html`, `css/`, `js/`: interfaz y lógica cliente.

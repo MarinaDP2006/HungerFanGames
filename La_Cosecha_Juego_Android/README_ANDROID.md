@@ -26,3 +26,6 @@ El APK no está incluido: debe compilarse en GitHub Actions o en un equipo con A
 La base incluye tres accesos de juego (Historia, Libre y Presidencia), simulación inicial, gestión de distritos, fichas, guardado local, efectos de sonido sintetizados y recursos gráficos originales. No es todavía un juego completo ni una adaptación exhaustiva: faltan capítulos narrativos completos y ramificados, mapas tácticos por sectores con pathfinding, IA avanzada, combate/heridas con profundidad, balance, pruebas de dispositivo y más arte/animación.
 
 Las imágenes son ilustraciones generadas, no fotogramas ni fotografías de actores. No se incluyen bandas sonoras ni audios extraídos de las películas.
+
+## Revisión 4.4
+Consulta `docs/ESTADO_IMPLEMENTACION_4_4.md` para las novedades de campañas, guerra civil, validación y límites conocidos. El APK se genera mediante GitHub Actions; no se distribuye como archivo precompilado en este paquete.
