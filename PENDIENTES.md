@@ -1,8 +1,4 @@
-# La Cosecha · Auditoría y tareas pendientes
-
-Última revisión: 26/11/2026 (versión 4.5). Regla: nada se marca como hecho solo porque exista su pantalla o su código; se marca cuando se ha probado.
-
-## Estado real (probado)
+# Estado real (probado)
 | Área | Estado |
 |---|---|
 | Web publicada en Render (`la-cosecha-web.onrender.com`) | ✅ Carga sin errores de JavaScript ni recursos rotos (Chrome, escritorio y móvil 390 px) |
@@ -49,6 +45,3 @@ El código del juego ocupa ~77 KB (`js/app.js`) y `js/data.js` ~8,5 KB: la estru
 | 4.4→repo | `render.yaml` dentro de la subcarpeta (Render no lo leía) | ✅ Movido a la raíz |
 | 4.4→repo | Workflow del APK en la subcarpeta, con caché npm sin lockfile y `cap add` bloqueado | ✅ Corregido |
 | 4.4→repo | CHANGELOG desordenados y con cabeceras duplicadas | ✅ Corregido |
-
-## Nota sobre imágenes
-`menu-panem.png` (original, sin uso) contiene una figura muy parecida a la protagonista de las películas y el emblema oficial de la saga. Se conserva porque no se borra nada, pero no se usa y no conviene volver a usarla: el proyecto declara que sus retratos no representan a los actores.
