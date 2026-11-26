@@ -6,6 +6,7 @@ import * as data from '../js/data.js';
 import * as campaigns from '../js/campaigns.js';
 import * as WI from '../js/whatif.js';
 import * as PR from '../js/presidency.js';
+import * as PRE from '../js/campaign-50th-prearena.js';
 
 function engine(){
   const store={},alerts=[],downloads=[];
@@ -14,7 +15,7 @@ function engine(){
   const document={querySelector:s=>nodes[s]||null,createElement:()=>({click(){downloads.push(this.href)},set href(v){this._h=v},get href(){return this._h}})};
   let lastBlob=null;
   class Blob{constructor(parts){this.text=parts.join('');lastBlob=this.text;}}
-  const ctx={...data,...campaigns,WI,PR,document,console,Math,Date,JSON,Number,String,Array,Object,Map,Set,Blob,
+  const ctx={...data,...campaigns,...PRE,WI,PR,Proxy,document,console,Math,Date,JSON,Number,String,Array,Object,Map,Set,Blob,
     URL:{createObjectURL:()=>'blob:prueba',revokeObjectURL(){}},
     localStorage:{setItem:(k,v)=>{store[k]=String(v)},getItem:k=>store[k]??null},
     alert:m=>alerts.push(m),navigator:{},window:{},setTimeout,clearTimeout};
