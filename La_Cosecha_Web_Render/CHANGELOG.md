@@ -1,5 +1,18 @@
 # Changelog
 
+## 4.5 — imágenes y pulido de la web
+- Imágenes optimizadas en `assets/optimized/` (WebP + JPG de respaldo): la portada pasa de ~5,4 MB en PNG a ~170 KB.
+- Nueva portada del Capitolio sin los botones dibujados dentro de la imagen, sin la figura del menú y sin el emblema de la saga en el estandarte; versión 2× más nítida.
+- Retratos de tributos en WebP con carga diferida, texto alternativo y tamaños fijos (sin saltos de diseño).
+- Tarjetas del inicio con imágenes distintas por modo (Arena, tributo, Capitolio) y ligero zoom al pasar el ratón.
+- Nuevo icono original (gavilla de trigo) con variante *maskable* para Android e icono para iOS.
+- Animación suave de la portada, foco visible para teclado y respeto a «reducir movimiento».
+- Service worker v4-5: precarga las imágenes nuevas y ya no devuelve el HTML cuando falla una imagen.
+- Corregido: el modo libre mostraba el texto y las decisiones del 75.º Vasallaje (Haymitch, vencedores).
+- Corregido: errata «CORNucopia» en el mapa.
+- Pruebas: regresión del modo libre y comprobación de que existen todos los recursos referenciados.
+- No se ha borrado ninguna imagen original; `menu-panem.png` y los iconos antiguos se conservan aunque ya no se usan.
+
 ## 4.4
 - Ampliación de eventos y relaciones de las campañas 50, 74 y 75.
 - Sistema estratégico de guerra civil con frentes, mando, suministros, evacuación, negociación y ayuda humanitaria.

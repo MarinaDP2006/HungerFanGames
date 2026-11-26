@@ -9,7 +9,7 @@ const context={districts,characters,canonEditions,arenaTypes,mentors,document,co
 let src=fs.readFileSync(new URL('../js/app.js',import.meta.url),'utf8');
 src=src.replace(/^import .*\n/,'');
 src=src.slice(0,src.indexOf("document.addEventListener('click'"));
-src += `\nrenderGame=()=>{};president=()=>{};globalThis.testApi={setGame(v){game=v},getGame(){return game},triggerCampaignEvent,resolveStoryChoice,initWarCampaign,warAction,warRound,updateRebellionArc};`;
+src += `\nrenderGame=()=>{};president=()=>{};globalThis.testApi={campaignText,setGame(v){game=v},getGame(){return game},triggerCampaignEvent,resolveStoryChoice,initWarCampaign,warAction,warRound,updateRebellionArc};`;
 vm.runInNewContext(src,context,{filename:'app.js'});
 const api=context.testApi;
 const districtsState=districts.slice(0,13).map(d=>({id:d.id,name:d.name,stability:55,production:60,food:55,peacekeepers:35,population:1000000,morale:50,hidden:false}));
@@ -37,4 +37,18 @@ api.resolveStoryChoice('defy');g=api.getGame();assert.ok(g.flags.openDefiance);a
 api.setGame({mode:'story',edition:75,arenaTurn:6,flags:{},relationships:{},log:[],support:10,rebellion:0,fatigue:0,inventory:[]});
 api.triggerCampaignEvent();g=api.getGame();assert.equal(g.pendingStoryEvent.thread,'clock');
 api.resolveStoryChoice('prepare');g=api.getGame();assert.ok(g.flags.clockPlan);assert.ok(g.inventory.includes('cable conductor'));
-console.log('La Cosecha 4.4 smoke tests: OK');
+// Modo libre: no debe heredar el texto del 75.º Vasallaje
+api.setGame({mode:'free',edition:76,arena:'Bosque templado',tributes:new Array(24)});
+const freeText=api.campaignText();
+assert.ok(freeText.startsWith('Edición original'),'free mode has its own intro');
+assert.ok(!/vencedores vivos/.test(freeText),'free mode does not reuse the 75th Quell text');
+// Todos los recursos referenciados existen
+const root=new URL('../',import.meta.url);
+const refs=new Set();
+for(const f of ['index.html','css/style.css','js/app.js','sw.js','manifest.webmanifest']){
+  const txt=fs.readFileSync(new URL(f,root),'utf8');
+  for(const m of txt.matchAll(/assets\/[\w\/.-]+\.(?:png|jpe?g|webp|svg)/g))refs.add(m[0]);
+}
+for(const r of refs)assert.ok(fs.existsSync(new URL(r,root)),`missing asset ${r}`);
+for(let i=1;i<=12;i++){const n=String(i).padStart(2,'0');assert.ok(fs.existsSync(new URL(`assets/optimized/tribute-${n}.webp`,root)),`missing webp portrait ${n}`);}
+console.log(`La Cosecha 4.5 smoke tests: OK (${refs.size} recursos comprobados)`);
