@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'La_Cosecha_Juego_Android/**'
+      - 'La_Cosecha_Web_Render/**'
+      - 'scripts/**'
       - '.github/workflows/android-apk.yml'
 jobs:
   build:
@@ -18,14 +20,37 @@ jobs:
         with: {node-version: 22}
       - uses: actions/setup-java@v4
         with: {distribution: temurin, java-version: '21'}
+      # El paquete «tools» del SDK está retirado: setup-android@v3 falla si intenta instalarlo
+      # («Failed to find package 'tools'»). Se indican solo los paquetes que necesita Capacitor 7.
       - uses: android-actions/setup-android@v3
-      - run: npm install
-      - run: node tests/smoke.mjs
-      - run: node tests/campaigns.mjs
+        with:
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+          log-accepted-android-sdk-licenses: false
+      - name: Pruebas del juego
+        run: |
+          node tests/smoke.mjs
+          node tests/campaigns.mjs
+          node tests/presidency.mjs
+          node tests/saves.mjs
+      - name: Paridad Web / Android
+        working-directory: .
+        run: node scripts/paridad.mjs
+      - run: npm install --no-audit --no-fund
       - run: npm run build:web
       - run: '[ -f android/gradlew ] || (rm -rf android && npx cap add android)'
       - run: npx cap sync android
-      - run: cd android && chmod +x gradlew && ./gradlew assembleDebug
+      - run: cd android && chmod +x gradlew && ./gradlew assembleDebug --no-daemon
+      - name: Comprobar el APK
+        run: |
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          ls -lh "$APK"
+          unzip -l "$APK" > apk-contents.txt
+          tail -n 1 apk-contents.txt
+          for f in assets/public/index.html assets/public/js/app.js assets/public/js/campaigns.js assets/public/js/whatif.js assets/public/js/presidency.js assets/public/js/data.js assets/public/css/style.css assets/capacitor.config.json classes.dex AndroidManifest.xml; do
+            grep -q " $f$" apk-contents.txt || { echo "Falta $f en el APK"; exit 1; }
+          done
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | head -n 3
       - uses: actions/upload-artifact@v4
         with:
           name: La-Cosecha-Android-debug

@@ -4,9 +4,10 @@ import assert from 'node:assert/strict';
 import {districts,characters,canonEditions,arenaTypes,mentors} from '../js/data.js';
 import * as campaigns from '../js/campaigns.js';
 import * as WI from '../js/whatif.js';
+import * as PR from '../js/presidency.js';
 let screen={innerHTML:''},indicator={textContent:''};
 const document={querySelector:(s)=>s==='#screen'?screen:s==='#save-indicator'?indicator:null};
-const context={...campaigns,WI,districts,characters,canonEditions,arenaTypes,mentors,document,console,Math,Date,JSON,Number,String,Array,Object,Map,Set,Blob:class{},URL:{},localStorage:{setItem(){},getItem(){return null}},alert(){},navigator:{},window:{},
+const context={...campaigns,WI,PR,districts,characters,canonEditions,arenaTypes,mentors,document,console,Math,Date,JSON,Number,String,Array,Object,Map,Set,Blob:class{},URL:{},localStorage:{setItem(){},getItem(){return null}},alert(){},navigator:{},window:{},
   setTimeout,clearTimeout};
 let src=fs.readFileSync(new URL('../js/app.js',import.meta.url),'utf8');
 src=src.replace(/^import .*\n/gm,'');
@@ -53,4 +54,4 @@ for(const f of ['index.html','css/style.css','js/app.js','sw.js','manifest.webma
 }
 for(const r of refs)assert.ok(fs.existsSync(new URL(r,root)),`missing asset ${r}`);
 for(let i=1;i<=12;i++){const n=String(i).padStart(2,'0');assert.ok(fs.existsSync(new URL(`assets/optimized/tribute-${n}.webp`,root)),`missing webp portrait ${n}`);}
-console.log(`La Cosecha 4.5 smoke tests: OK (${refs.size} recursos comprobados)`);
+console.log(`La Cosecha smoke tests: OK (${refs.size} recursos comprobados)`);

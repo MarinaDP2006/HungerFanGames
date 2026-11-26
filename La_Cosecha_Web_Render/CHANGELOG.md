@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.8 — Presidencia, APK y pruebas
+- Presidencia (`js/presidency.js`): cada orden muestra su efecto real (antes todas decían lo mismo), en verde, rojo o ámbar según convenga.
+- Presidencia: 9 crisis con decisión obligatoria cada 3 días (sinsajo en los muros, huelga en el 8, hambre en el 11, Vigilante Jefe, señales del 13, vencedor incómodo, abusos en el 12, malestar en el Capitolio, refugiados). Ninguna se repite en un mandato.
+- Presidencia: mandato de 40 días con barra de progreso y seis finales (el reformista, el puño de hierro, la prosperidad del Capitolio, el equilibrio, la paz negociada y la caída del régimen).
+- Presidencia: equilibrio revisado con 1000 mandatos simulados. Antes se perdía en 8-16 días hiciera lo que hiciera el jugador, y el régimen «caía» con la rebelión a 0 solo porque el orden llegaba a 0.
+- Presidencia: el indicador superior decía «SIN PARTIDA» durante el mandato; ahora dice «MANDATO ACTIVO».
+- «¿Y si…?»: si modificas un escenario, la introducción ya no pierde su nombre («Con cambios en la alineación»).
+- Android: corregido el fallo de GitHub Actions «Failed to find package 'tools'» de `android-actions/setup-android@v3` (se indican los paquetes del SDK 35). El workflow ejecuta todas las pruebas, comprueba la paridad y verifica que el APK contiene el juego.
+- Nuevas pruebas: `tests/presidency.mjs`, `tests/saves.mjs` (guardar, cargar, exportar, importar, archivos dañados, presidencia y «¿Y si…?») y `scripts/paridad.mjs` (Web y Android idénticos).
+
 ## 4.7 — modo «¿Y si…?»
 - Nuevo panel «¿Y si…?» en el modo libre (`js/whatif.js`): parte de tributos originales o de la alineación del 74.º o del 75.º.
 - Escenarios listos: Prim es cosechada, Katniss y Prim juntas, Gale en lugar de Peeta, Haymitch en lugar de Peeta en el 75.º, Annie en lugar de Mags y Peeta sin Katniss.

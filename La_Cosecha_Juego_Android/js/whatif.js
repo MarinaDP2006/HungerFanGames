@@ -51,7 +51,7 @@ export function newWhatIf(originalNames){
   return {base:'original',preset:null,roster:baseRoster('original',originalNames),playerId:null};
 }
 export function applyBase(state,base,originalNames){
-  state.base=base;state.preset=null;state.roster=baseRoster(base,originalNames);state.playerId=null;
+  state.base=base;state.preset=null;state.modified=false;state.roster=baseRoster(base,originalNames);state.playerId=null;
 }
 export function applyPreset(state,presetId,originalNames){
   const p=whatIfPresets.find(x=>x.id===presetId);if(!p)return;
@@ -63,17 +63,17 @@ export function replaceTribute(state,id,name,district){
   name=String(name||'').trim().slice(0,30);if(!name)return false;
   const canon=canonPool.find(c=>c[0]===name);
   state.roster=state.roster.map(t=>t.id===id?{...t,name,district:canon?canon[1]:Number(district)||t.district,canon:!!canon,portrait:canon?null:1+Math.floor(Math.random()*12)}:t);
-  state.preset=null;return true;
+  state.modified=true;return true;
 }
 export function addTribute(state,name,district){
   name=String(name||'').trim().slice(0,30);if(!name)return false;
   const canon=canonPool.find(c=>c[0]===name);
   state.roster.push(tribute(name,canon?canon[1]:Math.min(12,Math.max(1,Number(district)||12)),!!canon,canon?null:1+Math.floor(Math.random()*12)));
-  return true;
+  state.modified=true;return true;
 }
 export function removeTribute(state,id){
   if(state.roster.length<=2)return false;
-  state.roster=state.roster.filter(t=>t.id!==id);if(state.playerId===id)state.playerId=null;return true;
+  state.roster=state.roster.filter(t=>t.id!==id);if(state.playerId===id)state.playerId=null;state.modified=true;return true;
 }
 
 // Convierte la alineación en tributos de partida.
@@ -82,7 +82,7 @@ export function buildTributes(state){
 }
 export function describe(state){
   const p=whatIfPresets.find(x=>x.id===state.preset);
-  if(p)return `¿Y si…? ${p.title}. ${p.desc}`;
+  if(p)return `¿Y si…? ${p.title}. ${p.desc}${state.modified?' Con cambios en la alineación.':''}`;
   if(state.base==='original')return null;
   return `¿Y si…? Una versión alterada de los ${state.base}.º Juegos del Hambre, con ${state.roster.length} tributos.`;
 }
