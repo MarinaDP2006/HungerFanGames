@@ -7,7 +7,7 @@
 - Presidencia: equilibrio revisado con 1000 mandatos simulados. Antes se perdía en 8-16 días hiciera lo que hiciera el jugador, y el régimen «caía» con la rebelión a 0 solo porque el orden llegaba a 0.
 - Presidencia: el indicador superior decía «SIN PARTIDA» durante el mandato; ahora dice «MANDATO ACTIVO».
 - «¿Y si…?»: si modificas un escenario, la introducción ya no pierde su nombre («Con cambios en la alineación»).
-- Android: corregido el fallo de GitHub Actions «Failed to find package 'tools'» de `android-actions/setup-android@v3` (se indican los paquetes del SDK 35). El workflow ejecuta todas las pruebas, comprueba la paridad y verifica que el APK contiene el juego.
+- Android: corregido el fallo de GitHub Actions «Failed to find package 'tools'» de `android-actions/setup-android@v3` (se indican los paquetes del SDK 35). El APK vuelve a compilar (13 MB, Android 6.0+). El workflow ejecuta todas las pruebas, comprueba la paridad y verifica que el APK contiene el juego. Aún no se ha probado instalado en un móvil.
 - Nuevas pruebas: `tests/presidency.mjs`, `tests/saves.mjs` (guardar, cargar, exportar, importar, archivos dañados, presidencia y «¿Y si…?») y `scripts/paridad.mjs` (Web y Android idénticos).
 
 ## 4.7 — modo «¿Y si…?»

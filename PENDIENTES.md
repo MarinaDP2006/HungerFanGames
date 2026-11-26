@@ -11,7 +11,8 @@
 | Presidencia: órdenes, crisis y finales | ✅ `tests/presidency.mjs` y 1000 mandatos simulados con el motor real |
 | Web y Android con el mismo juego | ✅ `scripts/paridad.mjs` (53 archivos idénticos), también en GitHub Actions |
 | Despliegue automático en Render | ⚠️ No se lanza solo al subir a GitHub; se publica a mano desde la API. Hay que reconectar el repositorio en Render |
-| APK Android | ⏳ Corregido el fallo «Failed to find package 'tools'»; pendiente de una ejecución verde y de probar el APK en un móvil |
+| APK Android | ✅ Compila en GitHub Actions (ejecución 45729499528): 13 MB, `com.lacosecha.panem`, Android 6.0+ (SDK 23), compilado con SDK 35; contiene el mismo `app.js` que la web. ⏳ Falta probarlo instalado en un móvil |
+| Web publicada (versión 4.8) | ✅ Comprobada en Chrome contra `la-cosecha-web.onrender.com`: sin errores de JavaScript ni recursos rotos, service worker con caché `la-cosecha-v4-8`, presidencia y «¿Y si…?» funcionando (escritorio y móvil) |
 
 ## Qué es prototipo todavía
 El código del juego ocupa ~77 KB (`js/app.js`) y `js/data.js` ~8,5 KB: la estructura de todos los modos existe, pero varios sistemas son simplificados. Según `docs/ESTADO_IMPLEMENTACION_4_4.md`:
@@ -33,7 +34,10 @@ El código del juego ocupa ~77 KB (`js/app.js`) y `js/data.js` ~8,5 KB: la estru
 - [ ] Heridas, hambre, sed y consecuencias persistentes: probar partidas largas.
 - [x] Guardado, carga, importación y exportación: prueba de ida y vuelta automatizada (4.8).
 - [ ] Música original (ahora solo hay efectos sintetizados).
-- [ ] Ver el APK compilado en Actions y probarlo en un móvil Android.
+- [x] APK compilado en GitHub Actions y contenido verificado (4.8).
+- [ ] Instalar el APK en un móvil Android y probar los tres modos.
+- [ ] El APK dice «versión 1.0»: pasar la versión del juego (4.8) a `versionName` en la compilación.
+- [ ] Actualizar las acciones de GitHub a versiones con Node 24 (aviso de GitHub; ahora funcionan).
 
 ### Web
 - [ ] Recorrer en navegador el modo Presidente con el equilibrio nuevo hasta el día 40.
@@ -42,7 +46,7 @@ El código del juego ocupa ~77 KB (`js/app.js`) y `js/data.js` ~8,5 KB: la estru
 - [ ] Retratos propios para personajes canónicos (ahora se muestra el número de distrito).
 
 ### GitHub
-- [ ] Crear un Release cuando la versión esté probada de principio a fin.
+- [ ] Crear un Release cuando el APK se haya probado en un móvil. **No se publica todavía.**
 
 ## Errores encontrados y corregidos
 | Versión | Error | Estado |
@@ -52,7 +56,7 @@ El código del juego ocupa ~77 KB (`js/app.js`) y `js/data.js` ~8,5 KB: la estru
 | 4.8 | Presidencia: el indicador decía «SIN PARTIDA» durante el mandato | ✅ Corregido |
 | 4.8 | Las crisis mostraban «d.stability +8» en vez de texto legible | ✅ Corregido y con prueba |
 | 4.8 | «¿Y si…?»: al editar un escenario se perdía su nombre en la partida | ✅ Corregido y con prueba |
-| 4.8 | GitHub Actions: «Failed to find package 'tools'» en setup-android@v3 | ⏳ Corregido en el workflow; pendiente de ver la ejecución |
+| 4.8 | GitHub Actions: «Failed to find package 'tools'» en setup-android@v3 | ✅ Corregido: la compilación termina en verde |
 | 4.7 | La lista de tributos vivos cortaba en 16 y escondía a parte de la alineación | ✅ Corregido |
 | 4.7 | Retratos rotos para personajes canónicos en el modo libre | ✅ Corregido |
 | 4.6 | El azar podía matar a Rue, Peeta o Maysilee antes de su escena | ✅ Corregido y con prueba |
