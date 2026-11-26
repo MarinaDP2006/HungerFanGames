@@ -21,6 +21,7 @@ jobs:
       - uses: android-actions/setup-android@v3
       - run: npm install
       - run: node tests/smoke.mjs
+      - run: node tests/campaigns.mjs
       - run: npm run build:web
       - run: '[ -f android/gradlew ] || (rm -rf android && npx cap add android)'
       - run: npx cap sync android

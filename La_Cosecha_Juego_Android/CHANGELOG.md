@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.6 — campañas completas y finales alternativos
+- Nuevo `js/campaigns.js`: las tres campañas tienen ahora un capítulo en cada uno de los 8 días de Arena.
+- 50.º: la Cornucopia del Vasallaje, el agua envenenada, el mensaje a cámara y los pájaros rosas.
+- 74.º: el baño de sangre, el nido de rastrevíspulas, el cambio de reglas y el banquete (Thresh salda su deuda si ayudaste a Rue).
+- 75.º: las plataformas de agua, la niebla y Mags, y los charlajos.
+- El canon se cumple por defecto, pero se puede romper: Maysilee, Rue y Mags pueden sobrevivir si tus decisiones anteriores lo hacen posible.
+- Finales compuestos a partir de todo lo que has decidido: título propio, epílogo con consecuencias y lista de tus decisiones.
+- Corregido: el azar de la Arena podía matar a Rue, Peeta o Maysilee antes de su escena; ahora están protegidos hasta su momento.
+- Pruebas: `tests/campaigns.mjs` juega las tres campañas completas por 9 caminos distintos, incluida la muerte del jugador.
+
 ## 4.5 — imágenes y pulido de la web
 - Imágenes optimizadas en `assets/optimized/` (WebP + JPG de respaldo): la portada pasa de ~5,4 MB en PNG a ~170 KB.
 - Nueva portada del Capitolio sin los botones dibujados dentro de la imagen, sin la figura del menú y sin el emblema de la saga en el estandarte; versión 2× más nítida.

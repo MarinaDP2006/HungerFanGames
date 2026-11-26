@@ -2,12 +2,13 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import assert from 'node:assert/strict';
 import {districts,characters,canonEditions,arenaTypes,mentors} from '../js/data.js';
+import * as campaigns from '../js/campaigns.js';
 let screen={innerHTML:''},indicator={textContent:''};
 const document={querySelector:(s)=>s==='#screen'?screen:s==='#save-indicator'?indicator:null};
-const context={districts,characters,canonEditions,arenaTypes,mentors,document,console,Math,Date,JSON,Number,String,Array,Object,Map,Set,Blob:class{},URL:{},localStorage:{setItem(){},getItem(){return null}},alert(){},navigator:{},window:{},
+const context={...campaigns,districts,characters,canonEditions,arenaTypes,mentors,document,console,Math,Date,JSON,Number,String,Array,Object,Map,Set,Blob:class{},URL:{},localStorage:{setItem(){},getItem(){return null}},alert(){},navigator:{},window:{},
   setTimeout,clearTimeout};
 let src=fs.readFileSync(new URL('../js/app.js',import.meta.url),'utf8');
-src=src.replace(/^import .*\n/,'');
+src=src.replace(/^import .*\n/gm,'');
 src=src.slice(0,src.indexOf("document.addEventListener('click'"));
 src += `\nrenderGame=()=>{};president=()=>{};globalThis.testApi={campaignText,setGame(v){game=v},getGame(){return game},triggerCampaignEvent,resolveStoryChoice,initWarCampaign,warAction,warRound,updateRebellionArc};`;
 vm.runInNewContext(src,context,{filename:'app.js'});

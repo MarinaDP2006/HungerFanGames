@@ -4,6 +4,7 @@
 | Web publicada en Render (`la-cosecha-web.onrender.com`) | ✅ Carga sin errores de JavaScript ni recursos rotos (Chrome, escritorio y móvil 390 px) |
 | Inicio, modo historia y modo libre hasta la cosecha | ✅ Navegación probada en navegador |
 | Guerra civil, eventos de campañas 50/74/75, modo libre | ✅ Cubiertos por `tests/smoke.mjs` |
+| Campañas 50/74/75 completas (8 capítulos y finales alternativos) | ✅ `tests/campaigns.mjs` (9 recorridos) y jugadas de principio a fin en Chrome |
 | Imágenes y recursos referenciados | ✅ Comprobados por las pruebas |
 | APK Android | ⏳ Workflow corregido; pendiente de ver una ejecución verde en GitHub Actions |
 
@@ -15,7 +16,9 @@ El código del juego ocupa ~77 KB (`js/app.js`) y `js/data.js` ~8,5 KB: la estru
 
 ## Pendiente
 ### Juego
-- [ ] Completar capítulos, escenas y finales alternativos de las campañas 50, 74 y 75.
+- [x] Un capítulo por día de Arena y finales alternativos en las campañas 50, 74 y 75 (4.6).
+- [ ] Ampliar las campañas fuera de la Arena: desfile, entrenamiento y entrevistas propias de cada edición.
+- [ ] Más ramas en el 75.º (Johanna, Beetee) y consecuencias que continúen en el modo Presidente.
 - [ ] Revisar fidelidad al canon de personajes, distritos y acontecimientos.
 - [ ] Modo libre: creación completa de tributos, arenas y reglas.
 - [ ] Modo Presidente: Pacificadores, Capitolio y política con más profundidad.
@@ -37,6 +40,7 @@ El código del juego ocupa ~77 KB (`js/app.js`) y `js/data.js` ~8,5 KB: la estru
 ## Errores encontrados y corregidos
 | Versión | Error | Estado |
 |---|---|---|
+| 4.6 | El azar podía matar a Rue, Peeta o Maysilee antes de su escena | ✅ Corregido y con prueba |
 | 4.5 | El modo libre mostraba el texto y las decisiones del 75.º Vasallaje | ✅ Corregido y con prueba |
 | 4.5 | Errata «CORNucopia» en el mapa | ✅ Corregido |
 | 4.5 | El service worker devolvía el HTML cuando fallaba una imagen | ✅ Corregido |
