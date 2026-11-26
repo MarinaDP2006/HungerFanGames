@@ -32,8 +32,12 @@ assert.equal(state.complete, true);
 assert.equal(getPreArena50Scene(state), null);
 assert.ok(state.flags.lookedForLenore);
 assert.ok(state.flags.protectedFamilyAtReaping);
-assert.ok(state.flags.louellaDiedBeforeArena);
-assert.equal(state.flags.louellaReplacement, 'Lou Lou');
+// Requisito del proyecto (finalización técnica): el desfile no introduce la muerte de Louella
+// ni consecuencias de muertes de tributos secundarios. Antes se comprobaba lo contrario.
+assert.equal(state.flags.louellaDiedBeforeArena, undefined);
+assert.ok(state.flags.watchedParade50, 'la opción del desfile registra su indicador');
+assert.ok(!/muere|muerte|pérdida/i.test(PRE_ARENA_50.find(s => s.id === 'parade').title + PRE_ARENA_50.find(s => s.id === 'parade').body));
+assert.ok(roster.some(t => t.name === 'Lou Lou') && !roster.some(t => t.name === 'Louella McCoy'), 'el reparto de 48 se mantiene');
 assert.ok(state.flags.maysileeAlliance);
 assert.ok(state.relationships.maysilee > 0);
 assert.equal(state.history.length, 9);
@@ -47,10 +51,16 @@ const haymitch = roster.find(t => t.name === 'Haymitch Abernathy');
 haymitch.player = true;
 applyPreArena50ToGame(state, game);
 assert.equal(game.preArena50, state);
-assert.ok(game.flags['50th-louellaDiedBeforeArena']);
+assert.equal(game.flags['50th-louellaDiedBeforeArena'], undefined);
+assert.ok(game.flags['50th-watchedParade50']);
 assert.equal(roster.find(t => t.name === 'Maysilee Donner').alliance, 'player');
 assert.ok(game.relationships.maysilee > 0);
 assert.ok(game.skill >= 6);
+// Las bonificaciones se aplican una sola vez (p. ej. al cargar una partida).
+const once = { skill: game.skill, support: game.support, stealth: game.stealth, rebellion: game.rebellion, health: game.health };
+applyPreArena50ToGame(state, game);
+applyPreArena50ToGame(JSON.parse(JSON.stringify(state)), game);
+assert.deepEqual({ skill: game.skill, support: game.support, stealth: game.stealth, rebellion: game.rebellion, health: game.health }, once);
 assert.ok(renderPreArena50Panel(createPreArena50State(), 'harvest').includes('La cosecha del Segundo Vasallaje'));
 
 console.log('Campaña 50.º Vasallaje pre-Arena: OK (48 tributos, 9 escenas, continuidad y efectos).');

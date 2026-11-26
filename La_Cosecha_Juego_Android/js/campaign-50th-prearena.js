@@ -117,14 +117,16 @@ export const PRE_ARENA_50 = [
   {
     id: 'parade',
     phase: 'training',
-    title: 'El desfile y la pérdida de Louella',
-    body: 'La preparación del desfile se convierte en una tragedia. Louella queda gravemente herida en un accidente y muere antes de que comiencen los Juegos. El Capitolio decide sustituirla por Lou Lou para mantener intacta la alineación televisada.',
+    // TEXTO PROVISIONAL TÉCNICO (5.x): la escena original introducía la muerte de Louella.
+    // Por instrucción del proyecto, el desfile no presenta muertes de tributos secundarios.
+    // ChatGPT debe sustituir este texto por la versión narrativa definitiva.
+    title: 'El desfile de los tributos',
+    body: 'Los carros avanzan por la avenida del Capitolio entre aplausos y cámaras. El Distrito 12 desfila con el carbón convertido en disfraz. Cada gesto que hagáis será repetido en todas las pantallas de Panem.',
     choices: [
-      { id: 'challenge', label: 'Exigir explicaciones delante del equipo', effects: { rebellion: 3, suspicion: 3, resolve: 1 }, flags: ['challengedLouellaCoverup'] },
-      { id: 'comfort', label: 'Permanecer junto a los tributos del Distrito 12', effects: { maysilee: 1, wyatt: 1, resolve: 2 }, flags: ['mournedLouella'] },
-      { id: 'record', label: 'Memorizar detalles del accidente y quién los oculta', effects: { observation: 3, rebellion: 1 }, flags: ['recordedParadeIncident'] }
-    ],
-    canonOutcome: { flag: 'louellaDiedBeforeArena', replacement: 'Lou Lou' }
+      { id: 'challenge', label: 'Mostrar en el carro que no estás agradecido', effects: { rebellion: 3, suspicion: 3, resolve: 1 }, flags: ['defiedParade50'] },
+      { id: 'comfort', label: 'Mantener unido al Distrito 12 ante las cámaras', effects: { maysilee: 1, wyatt: 1, resolve: 2 }, flags: ['district12UnitedParade50'] },
+      { id: 'record', label: 'Observar a los Vigilantes durante el desfile', effects: { observation: 3, rebellion: 1 }, flags: ['watchedParade50'] }
+    ]
   },
   {
     id: 'interview',
@@ -204,20 +206,37 @@ export function applyPreArena50ToGame(state, game) {
   if (!state || !game) return game;
   game.flags ??= {};
   game.relationships ??= {};
+  // Se aplica una sola vez: cargar una partida o volver a renderizar no repite las bonificaciones.
+  // El indicador persistente viaja en game.flags y, por tanto, en el guardado y en la exportación JSON.
+  if (state.appliedToGame || game.preArena50Applied || game.flags['50th-prearena-applied']) {
+    game.preArena50 = state;
+    return game;
+  }
+  state.appliedToGame = true;
+  game.preArena50Applied = true;
+  game.flags['50th-prearena-applied'] = true;
   game.preArena50 = state;
-  game.relationships.maysilee = Math.max(game.relationships.maysilee || 0, state.relationships.maysilee);
+  // `??` y no `||`: un valor 0 (salud, habilidad…) es un valor real, no un hueco.
+  const num = (v, fallback) => (typeof v === 'number' && Number.isFinite(v) ? v : fallback);
+  game.relationships.maysilee = Math.max(num(game.relationships.maysilee, 0), state.relationships.maysilee);
   game.relationships.lenore = state.relationships.lenore;
   game.relationships.louella = state.relationships.louella;
   game.relationships.wyatt = state.relationships.wyatt;
-  game.skill = clamp((game.skill || 6) + Math.max(0, Math.floor(state.stats.observation / 3)) + Math.max(0, Math.floor(state.stats.survival / 3)) + Math.max(0, Math.floor(state.stats.combat / 4)) + Math.max(0, Math.floor(state.stats.resolve / 4)), 0, 20);
-  game.health = clamp((game.health || 100) + state.stats.health, 0, 100);
-  game.stealth = clamp((game.stealth || 0) + Math.max(0, state.stats.stealth), 0, 100);
-  game.support = clamp((game.support || 0) + state.stats.support + state.stats.sponsor, 0, 100);
-  game.rebellion = clamp((game.rebellion || 0) + state.stats.rebellion, 0, 100);
-  for (const [key, value] of Object.entries(state.flags)) if (value) game.flags[`50th-${key}`] = true;
-  if (state.flags.maysileeAlliance || state.flags.maysileeSignals) {
-    const maysilee = game.tributes?.find(t => t.name === 'Maysilee Donner');
-    if (maysilee) {
+  game.skill = clamp(num(game.skill, 6) + Math.max(0, Math.floor(state.stats.observation / 3)) + Math.max(0, Math.floor(state.stats.survival / 3)) + Math.max(0, Math.floor(state.stats.combat / 4)) + Math.max(0, Math.floor(state.stats.resolve / 4)), 0, 20);
+  game.health = clamp(num(game.health, 100) + state.stats.health, 0, 100);
+  game.stealth = clamp(num(game.stealth, 0) + Math.max(0, state.stats.stealth), 0, 100);
+  game.support = clamp(num(game.support, 0) + state.stats.support + state.stats.sponsor, 0, 100);
+  game.rebellion = clamp(num(game.rebellion, 0) + state.stats.rebellion, 0, 100);
+  // Indicadores: clave con prefijo «50th-» y alias sin prefijo para el adaptador 5.5.
+  for (const [key, value] of Object.entries(state.flags)) {
+    if (!value) continue;
+    game.flags[`50th-${key}`] = true;
+    if (game.flags[key] === undefined) game.flags[key] = true;
+  }
+  const maysilee = game.tributes?.find(t => t.name === 'Maysilee Donner');
+  if (maysilee) {
+    maysilee.relationship = game.relationships.maysilee;
+    if (state.flags.maysileeAlliance || state.flags.maysileeSignals) {
       maysilee.alliance = 'player';
       maysilee.sector = game.playerSector;
     }
@@ -254,7 +273,7 @@ export function renderPreArena50Panel(state, phase = 'harvest') {
     <div class="eyebrow">SEGUNDO VASALLAJE · DISTRITO 12 · ${state.index + 1}/${PRE_ARENA_50.length}</div>
     <div class="progress"><i style="width:${progress}%"></i></div>
     <div class="story-box">
-      <div class="eyebrow">${escapeHtml(scene.phase.toUpperCase())}</div>
+      <div class="eyebrow">${escapeHtml(({ harvest: 'COSECHA', training: 'CAPITOLIO', interview: 'VÍSPERA DE LA ARENA' })[scene.phase] || scene.phase.toUpperCase())}</div>
       <h2 class="section-title">${escapeHtml(scene.title)}</h2>
       <p>${escapeHtml(scene.body)}</p>
       <div class="cards">${choices}</div>
