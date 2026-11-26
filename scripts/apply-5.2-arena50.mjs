@@ -1,0 +1,18 @@
+import fs from 'node:fs';
+import path from 'node:path';
+const file=path.join(process.cwd(),'La_Cosecha_Juego_Android/js/app.js');
+let app=fs.readFileSync(file,'utf8');
+const preImport="import {buildRoster50,createPreArena50State,getPreArena50Scene,applyPreArena50Choice,applyPreArena50ToGame,renderPreArena50Panel} from './campaign-50th-prearena.js';";
+const arenaImport="import {getArena50Event,applyArena50Choice} from './campaign-50th-arena.js';";
+if(!app.includes(preImport)) throw new Error('Primero debe aplicarse la integración 5.1 de la precampaña.');
+if(!app.includes("from './campaign-50th-arena.js'")) app=app.replace(preImport,preImport+'\n'+arenaImport);
+const triggerOld="else{event=chapterEvent(game,turn);if(event)runChapterPre(game,turn,capi);}";
+const triggerNew="else{event=chapterEvent(game,turn);if(!event&&game.edition===50)event=getArena50Event(game,turn);if(event&&event.custom!=='arena50')runChapterPre(game,turn,capi);} ";
+if(app.includes(triggerOld)) app=app.replace(triggerOld,triggerNew);
+else if(!app.includes('getArena50Event(game,turn)')) throw new Error('No se encuentra el punto de ampliación de triggerCampaignEvent().');
+const choiceOld="if(event.chapter){applyChapterChoice(game,event,choice,makeApi(game,log));if(game.health<=0)";
+const choiceNew="if(event.chapter){if(event.custom==='arena50')applyArena50Choice(game,event,choice,makeApi(game,log));else applyChapterChoice(game,event,choice,makeApi(game,log));if(game.health<=0)";
+if(app.includes(choiceOld)) app=app.replace(choiceOld,choiceNew);
+else if(!app.includes("event.custom==='arena50'")) throw new Error('No se encuentra el punto de resolución de decisiones narrativas.');
+fs.writeFileSync(file,app,'utf8');
+console.log('Integración 5.2 de la Arena del Segundo Vasallaje aplicada.');
