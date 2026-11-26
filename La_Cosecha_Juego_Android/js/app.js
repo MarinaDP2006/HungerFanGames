@@ -3,6 +3,7 @@ import * as WI from './whatif.js';
 import * as PR from './presidency.js';
 import {makeApi,isProtected,chapterEvent,adaptCampaignEvent,applyChapterChoice,runChapterPre,composeEnding} from './campaigns.js';
 import {PRE_ARENA_50,buildRoster50,createPreArena50State,getPreArena50Scene,applyPreArena50Choice,applyPreArena50ToGame,renderPreArena50Panel} from './campaign-50th-prearena.js';
+import {adaptDynamic50Event} from './campaign-50th-dynamic-adapter.js';
 const $=s=>document.querySelector(s), esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const portraitId=n=>String(((n-1)%12)+1).padStart(2,'0');
 const portrait=n=>`assets/tributes/tribute-${portraitId(n)}.jpg`;
@@ -102,6 +103,7 @@ function triggerCampaignEvent(){
  if(game.edition===74&&turn===8)event={title:'La decisión final',body:'El Capitolio exige un único vencedor. Peeta sigue siendo parte de tu historia, pero las reglas pueden cambiar si decides desafiarlas.',choices:[['berries','Desafiar al Capitolio con una victoria compartida'],['solo','Aceptar una victoria individual'],['refuse','Negarte a representar el final que esperan']]};
  if(game.edition===75&&turn===8)event={title:'La ruptura del reloj',body:'El plan de los vencedores llega a su punto crítico. Una acción coordinada puede romper la Arena, aunque no garantiza que todos escapen.',choices:[['breakout','Ejecutar el plan coordinado'],['rescue','Priorizar el rescate de tus aliados'],['independent','Actuar por tu cuenta']]};
  const capi=makeApi(game,log);if(event)event=adaptCampaignEvent(game,event,capi);else{event=chapterEvent(game,turn);if(event)runChapterPre(game,turn,capi);}
+ if(event)event=adaptDynamic50Event(game,event);
  if(event){game.pendingStoryEvent=event;game.flags[key]=true;log(`Acontecimiento narrativo: ${event.title}.`);}
 }
 function resolveStoryChoice(choice){

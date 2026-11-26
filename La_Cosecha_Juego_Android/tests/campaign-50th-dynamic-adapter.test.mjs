@@ -1,5 +1,6 @@
 // Prueba el adaptador 5.5 contra los acontecimientos reales del motor (app.js y campaigns.js sin modificar).
-// El adaptador se conecta solo dentro de esta prueba; el juego no lo usa todavía.
+// app.js ya aplica el adaptador dentro de triggerCampaignEvent(). Aquí el motor recibe una función
+// identidad para obtener los acontecimientos originales y compararlos con los adaptados.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -9,10 +10,12 @@ import * as campaigns from '../js/campaigns.js';
 import * as WI from '../js/whatif.js';
 import * as PR from '../js/presidency.js';
 import {adaptDynamic50Event,inventoryState} from '../js/campaign-50th-dynamic-adapter.js';
+import * as PRE from '../js/campaign-50th-prearena.js';
+const _real=adaptDynamic50Event;
 
 function engine(){
   const el={textContent:'',innerHTML:''};
-  const ctx={...data,...campaigns,WI,PR,document:{querySelector:()=>el},console,Math,Date,JSON,Number,String,Array,Object,Map,Set,
+  const ctx={...data,...campaigns,...PRE,adaptDynamic50Event:(g,ev)=>ev,WI,PR,Proxy,document:{querySelector:()=>el},console,Math,Date,JSON,Number,String,Array,Object,Map,Set,
     localStorage:{setItem(){},getItem(){return null}},alert(){},navigator:{},window:{},setTimeout};
   let src=fs.readFileSync(new URL('../js/app.js',import.meta.url),'utf8').replace(/^import .*\n/gm,'');
   src=src.slice(0,src.indexOf("document.addEventListener('click'"));

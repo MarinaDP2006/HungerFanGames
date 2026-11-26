@@ -9,6 +9,9 @@
 //    estado previo) y se añaden otras que sí dependen de lo que el jugador ya ha hecho.
 // 2. Las etiquetas alternativas se perdían si no había otra variante activa: ahora cuentan.
 // 3. El inventario no reconocía la mochila de la Cornucopia: se cuenta como suministros.
+//
+// Conexión con 5.1: las decisiones previas a la Arena se guardan como indicadores «50th-…»
+// (applyPreArena50ToGame) y como estadísticas en game.preArena50. El adaptador lee ambos.
 
 const clamp = (n, min, max) => Math.max(min, Math.min(max, Number(n) || 0));
 
@@ -30,7 +33,10 @@ export function adaptDynamic50Event(game, event) {
   const turn = Number(event.turn ?? game.arenaTurn ?? 0);
   if (turn < 1 || turn > 8) return event;
 
-  const flags = game.flags || {};
+  const rawFlags = game.flags || {};
+  // Un indicador cuenta tanto si lo puso el motor como si viene de la precampaña 5.1.
+  const flags = new Proxy(rawFlags, { get: (f, k) => typeof k === 'string' ? (f[k] || f[`50th-${k}`]) : undefined });
+  const pre = game.preArena50?.stats || {};
   const inventory = inventoryState(game.inventory);
   const maysilee = game.tributes?.find(t => t.name === 'Maysilee Donner');
   const state = {
@@ -43,7 +49,9 @@ export function adaptDynamic50Event(game, event) {
     rebellion: clamp(game.rebellion, 0, 100),
     maysileeRelation: Number(game.relationships?.maysilee ?? 0),
     maysileeAlly: maysilee?.alliance === 'player',
-    maysileeAlive: maysilee ? maysilee.alive !== false : false
+    maysileeAlive: maysilee ? maysilee.alive !== false : false,
+    observation: Number(pre.observation || 0),
+    suspicion: Number(pre.suspicion || 0)
   };
 
   const variants = [];
@@ -62,6 +70,12 @@ export function adaptDynamic50Event(game, event) {
       } else if (state.skill <= 6) {
         add('cornucopia-inexperienced', 'Sabes que no estás preparado para pelear en el centro de la Cornucopia.');
       }
+      if (flags.trainedCombat50 && state.health > 45) {
+        add('cornucopia-combat-training', 'Lo que practicaste en el centro de entrenamiento vuelve a tus manos.');
+        labels.grab = 'Usar lo que practicaste en combate para alcanzar un arma';
+      } else if (flags.trainedSurvival50) {
+        add('cornucopia-survival-training', 'El entrenamiento de supervivencia te recuerda que un arma no sirve de nada sin agua ni refugio.');
+      }
       break;
 
     case 2:
@@ -71,6 +85,9 @@ export function adaptDynamic50Event(game, event) {
       } else if (state.maysileeRelation < 0) {
         add('alliance-distance', 'Las decisiones anteriores han dejado cierta distancia entre ambos.');
         labels.cautious = 'Mantener la distancia y dejar una advertencia';
+      }
+      if (flags.enteredArenaAlone && !state.maysileeAlly) {
+        add('alliance-solo', 'Anoche decidiste entrar solo. Maysilee lo recuerda.');
       }
       if (inventory.tools > 0) {
         add('alliance-armed', 'Llevas un cuchillo de la Cornucopia: puedes ofrecer protección, o imponer condiciones.');
@@ -102,6 +119,9 @@ export function adaptDynamic50Event(game, event) {
       if (state.health <= 45) {
         add('water-wounded', 'Tu estado físico reduce el margen para asumir riesgos.');
       }
+      if (flags.trainedSurvival50) {
+        add('water-survival', 'Lo que aprendiste de plantas en el centro de entrenamiento te hace desconfiar de todo lo que brilla.');
+      }
       if (state.support >= 25) {
         add('water-sponsors', 'Tu apoyo en el Capitolio hace pensar que un patrocinador podría responder.');
       }
@@ -111,7 +131,7 @@ export function adaptDynamic50Event(game, event) {
       if (flags.forcefieldStudied || flags.forcefieldTested) {
         add('forcefield-studied', 'Ya has observado el comportamiento de la barrera. Puedes contrastar lo aprendido.');
         labels.study = 'Contrastar el patrón del campo de fuerza';
-      } else if (state.skill >= 10) {
+      } else if (state.skill >= 10 || state.observation >= 5 || flags.studiedCareers50 || flags.watchedParade50) {
         add('forcefield-observant', 'Tu habilidad y capacidad de observación te ayudan a detectar irregularidades.');
       }
       break;
@@ -121,8 +141,14 @@ export function adaptDynamic50Event(game, event) {
         add('broadcast-support', 'La audiencia ya conoce tu historia y tu comportamiento ante las cámaras tiene más peso.');
         labels.family = 'Hablar a la cámara con el respaldo de la audiencia';
       }
-      if (state.rebellion >= 20 || flags.watchedGamemakers) {
+      if (state.rebellion >= 20 || flags.watchedGamemakers || flags.interviewDefiance50 || flags.defiedCapitolArrival || flags.defiedParade50 || state.suspicion >= 5) {
         add('broadcast-defiance', 'Tus decisiones anteriores han llamado la atención de los Vigilantes.');
+      }
+      if (flags.interviewHuman50) {
+        add('broadcast-interview-human', 'En la entrevista hablaste de las personas que quieres proteger. La audiencia espera verlas en tus palabras.');
+      } else if (flags.interviewMask50) {
+        add('broadcast-interview-mask', 'En la entrevista no les diste nada. Las cámaras siguen buscando una grieta.');
+        labels.mask = 'Mantener la máscara de la entrevista';
       }
       break;
 

@@ -6,9 +6,10 @@ import * as campaigns from '../js/campaigns.js';
 import * as WI from '../js/whatif.js';
 import * as PR from '../js/presidency.js';
 import * as PRE from '../js/campaign-50th-prearena.js';
+import * as AD from '../js/campaign-50th-dynamic-adapter.js';
 let screen={innerHTML:''},indicator={textContent:''};
 const document={querySelector:(s)=>s==='#screen'?screen:s==='#save-indicator'?indicator:null};
-const context={...campaigns,...PRE,WI,PR,Proxy,districts,characters,canonEditions,arenaTypes,mentors,document,console,Math,Date,JSON,Number,String,Array,Object,Map,Set,Blob:class{},URL:{},localStorage:{setItem(){},getItem(){return null}},alert(){},navigator:{},window:{},
+const context={...campaigns,...PRE,...AD,WI,PR,Proxy,districts,characters,canonEditions,arenaTypes,mentors,document,console,Math,Date,JSON,Number,String,Array,Object,Map,Set,Blob:class{},URL:{},localStorage:{setItem(){},getItem(){return null}},alert(){},navigator:{},window:{},
   setTimeout,clearTimeout};
 let src=fs.readFileSync(new URL('../js/app.js',import.meta.url),'utf8');
 src=src.replace(/^import .*\n/gm,'');
