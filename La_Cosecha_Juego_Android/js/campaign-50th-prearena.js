@@ -94,8 +94,8 @@ export const PRE_ARENA_50 = [
   {
     id: 'arrival',
     phase: 'training',
-    title: 'La bienvenida del Capitolio',
-    body: 'El Capitolio convierte la llegada de los tributos en un espectáculo. Drusilla exige disciplina, el equipo de preparación trabaja contra reloj y cada gesto de los distritos se interpreta como parte de una historia televisiva.',
+    title: 'La llegada al Capitolio',
+    body: 'Al llegar al Capitolio, el registro oficial del Distrito 12 presenta un cambio: Louella ya no figura en la alineación y Lou Lou ocupa su plaza. El Capitolio no comunica públicamente el motivo. La preparación continúa bajo el protocolo habitual.',
     choices: [
       { id: 'comply', label: 'Cumplir el protocolo y observar', effects: { suspicion: -1, observation: 2, sponsor: 1 }, flags: ['playedByProtocol'] },
       { id: 'defy', label: 'Dejar claro que no estás agradecido', effects: { rebellion: 3, suspicion: 3, support: 2 }, flags: ['defiedCapitolArrival'] },
@@ -117,15 +117,12 @@ export const PRE_ARENA_50 = [
   {
     id: 'parade',
     phase: 'training',
-    // TEXTO PROVISIONAL TÉCNICO (5.x): la escena original introducía la muerte de Louella.
-    // Por instrucción del proyecto, el desfile no presenta muertes de tributos secundarios.
-    // ChatGPT debe sustituir este texto por la versión narrativa definitiva.
     title: 'El desfile de los tributos',
-    body: 'Los carros avanzan por la avenida del Capitolio entre aplausos y cámaras. El Distrito 12 desfila con el carbón convertido en disfraz. Cada gesto que hagáis será repetido en todas las pantallas de Panem.',
+    body: 'Los carros recorren la avenida bajo una lluvia de luces. El Capitolio convierte cada distrito en una imagen fácil de vender, y el Distrito 12 no es una excepción: el carbón, el vestuario y la puesta en escena quedan reducidos a unos segundos de espectáculo. Haymitch siente el peso de miles de miradas. Los Vigilantes observan menos el traje que la reacción del público. No basta con llegar al final del recorrido: cada gesto puede convertirse en una etiqueta que lo acompañe dentro de la Arena.',
     choices: [
-      { id: 'challenge', label: 'Mostrar en el carro que no estás agradecido', effects: { rebellion: 3, suspicion: 3, resolve: 1 }, flags: ['defiedParade50'] },
-      { id: 'comfort', label: 'Mantener unido al Distrito 12 ante las cámaras', effects: { maysilee: 1, wyatt: 1, resolve: 2 }, flags: ['district12UnitedParade50'] },
-      { id: 'record', label: 'Observar a los Vigilantes durante el desfile', effects: { observation: 3, rebellion: 1 }, flags: ['watchedParade50'] }
+      { id: 'challenge', label: 'Sostener la mirada de las cámaras sin fingir gratitud', effects: { rebellion: 3, suspicion: 3, resolve: 1 }, flags: ['defiedParade50'] },
+      { id: 'comfort', label: 'Coordinar el gesto con Maysilee y Wyatt para proyectar unidad', effects: { maysilee: 1, wyatt: 1, resolve: 2 }, flags: ['district12UnitedParade50'] },
+      { id: 'record', label: 'Observar a los Vigilantes y memorizar quién presta atención', effects: { observation: 3, rebellion: 1 }, flags: ['watchedParade50'] }
     ]
   },
   {

@@ -172,3 +172,32 @@ test('13. Otras ediciones y el modo libre no cambian',()=>{
   assert.equal(g.phase,'harvest');assert.equal(g.preArena50,undefined);assert.equal(g.tributes.length,24);
   assert.equal(AD.adaptDynamic50Event({mode:'free',edition:50,arenaTurn:3},{title:'x',choices:[]}).dynamic50,undefined);
 });
+
+test('14. Textos aprobados de la llegada (Louella / Lou Lou) y del desfile, con IDs y efectos intactos',()=>{
+  const arrival=PRE.PRE_ARENA_50.find(s=>s.id==='arrival'),parade=PRE.PRE_ARENA_50.find(s=>s.id==='parade');
+  assert.equal(arrival.title,'La llegada al Capitolio');
+  assert.equal(arrival.body,'Al llegar al Capitolio, el registro oficial del Distrito 12 presenta un cambio: Louella ya no figura en la alineación y Lou Lou ocupa su plaza. El Capitolio no comunica públicamente el motivo. La preparación continúa bajo el protocolo habitual.');
+  assert.doesNotMatch(arrival.body,/muere|muerte|murió|accidente|herid|duelo|despedid/i,'la llegada no explica qué le ocurrió a Louella');
+  assert.equal(parade.title,'El desfile de los tributos');
+  assert.equal(parade.body,'Los carros recorren la avenida bajo una lluvia de luces. El Capitolio convierte cada distrito en una imagen fácil de vender, y el Distrito 12 no es una excepción: el carbón, el vestuario y la puesta en escena quedan reducidos a unos segundos de espectáculo. Haymitch siente el peso de miles de miradas. Los Vigilantes observan menos el traje que la reacción del público. No basta con llegar al final del recorrido: cada gesto puede convertirse en una etiqueta que lo acompañe dentro de la Arena.');
+  assert.equal(JSON.stringify(parade.choices.map(c=>[c.id,c.label])),JSON.stringify([
+    ['challenge','Sostener la mirada de las cámaras sin fingir gratitud'],
+    ['comfort','Coordinar el gesto con Maysilee y Wyatt para proyectar unidad'],
+    ['record','Observar a los Vigilantes y memorizar quién presta atención']]));
+  // Efectos e indicadores exactamente como estaban antes de integrar los textos.
+  assert.equal(JSON.stringify(parade.choices.map(c=>[c.effects,c.flags])),JSON.stringify([
+    [{rebellion:3,suspicion:3,resolve:1},['defiedParade50']],
+    [{maysilee:1,wyatt:1,resolve:2},['district12UnitedParade50']],
+    [{observation:3,rebellion:1},['watchedParade50']]]));
+  assert.equal(JSON.stringify(arrival.choices.map(c=>[c.id,c.effects,c.flags])),JSON.stringify([
+    ['comply',{suspicion:-1,observation:2,sponsor:1},['playedByProtocol']],
+    ['defy',{rebellion:3,suspicion:3,support:2},['defiedCapitolArrival']],
+    ['network',{observation:2,sponsor:2},['networkedCapitol']]]));
+  assert.equal(PRE.PRE_ARENA_50.length,9,'sigue habiendo nueve escenas');
+  // En la partida real se ven los textos aprobados.
+  const e=start50();for(const id of route.slice(0,4))e.click({pre50Choice:id});e.api.renderGame();
+  assert.ok(html(e).includes('La llegada al Capitolio')&&html(e).includes('Lou Lou ocupa su plaza'));
+  for(const id of route.slice(4,6))e.click({pre50Choice:id});e.api.renderGame();
+  assert.ok(html(e).includes('Sostener la mirada de las cámaras sin fingir gratitud'));
+  assert.doesNotMatch(fs.readFileSync(new URL('../js/campaign-50th-prearena.js',import.meta.url),'utf8'),/provisional/i);
+});
