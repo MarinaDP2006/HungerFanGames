@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.7 — modo «¿Y si…?»
+- Nuevo panel «¿Y si…?» en el modo libre (`js/whatif.js`): parte de tributos originales o de la alineación del 74.º o del 75.º.
+- Escenarios listos: Prim es cosechada, Katniss y Prim juntas, Gale en lugar de Peeta, Haymitch en lugar de Peeta en el 75.º, Annie en lugar de Mags y Peeta sin Katniss.
+- Alineación editable: sustituir cualquier tributo por un personaje canónico o inventado, añadir tributos nuevos, quitar tributos y elegir con quién juegas.
+- Corregido: la lista de tributos vivos solo mostraba 16; ahora salen todos, con aliados y tu distrito primero.
+- Corregido: los personajes canónicos del modo libre intentaban cargar un retrato inexistente.
+- La postura de combate se muestra en español.
+
 ## 4.6 — campañas completas y finales alternativos
 - Nuevo `js/campaigns.js`: las tres campañas tienen ahora un capítulo en cada uno de los 8 días de Arena.
 - 50.º: la Cornucopia del Vasallaje, el agua envenenada, el mensaje a cámara y los pájaros rosas.

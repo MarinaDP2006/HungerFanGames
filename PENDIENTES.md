@@ -20,7 +20,8 @@ El código del juego ocupa ~77 KB (`js/app.js`) y `js/data.js` ~8,5 KB: la estru
 - [ ] Ampliar las campañas fuera de la Arena: desfile, entrenamiento y entrevistas propias de cada edición.
 - [ ] Más ramas en el 75.º (Johanna, Beetee) y consecuencias que continúen en el modo Presidente.
 - [ ] Revisar fidelidad al canon de personajes, distritos y acontecimientos.
-- [ ] Modo libre: creación completa de tributos, arenas y reglas.
+- [x] Modo libre: alineaciones «¿Y si…?», tributos nuevos y sustituciones (4.7).
+- [ ] Modo libre: editor de arenas y reglas propias.
 - [ ] Modo Presidente: Pacificadores, Capitolio y política con más profundidad.
 - [ ] IA de tributos: alianzas, rivalidades, movimiento y combate.
 - [ ] Heridas, hambre, sed y consecuencias persistentes: probar partidas largas.
@@ -40,6 +41,8 @@ El código del juego ocupa ~77 KB (`js/app.js`) y `js/data.js` ~8,5 KB: la estru
 ## Errores encontrados y corregidos
 | Versión | Error | Estado |
 |---|---|---|
+| 4.7 | La lista de tributos vivos cortaba en 16 y escondía a parte de la alineación | ✅ Corregido |
+| 4.7 | Retratos rotos para personajes canónicos en el modo libre | ✅ Corregido |
 | 4.6 | El azar podía matar a Rue, Peeta o Maysilee antes de su escena | ✅ Corregido y con prueba |
 | 4.5 | El modo libre mostraba el texto y las decisiones del 75.º Vasallaje | ✅ Corregido y con prueba |
 | 4.5 | Errata «CORNucopia» en el mapa | ✅ Corregido |
