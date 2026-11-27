@@ -1,9 +1,17 @@
 # Changelog
 
-## Sin publicar (rama `integracion-cosecha-5x`)
-- Corregido: los botones de la cabecera (inicio y ⚙ Ajustes) no respondían.
-- CSS compartido con Android: eliminada la regla muerta `.map-frame`; estilos de la pantalla de Ajustes y de las ranuras.
+## Archivo de Panem 1.0 — sin publicar (rama `integracion-cosecha-5x`)
+- La Web deja de ser una copia del videojuego y pasa a ser el **Archivo de Panem**, un sitio editorial propio:
+  - entrada, navegación, vistas y estilo nuevos;
+  - secciones: portada, mapa (esquema), distritos y Capitolio, personajes con filtros, vencedores, ediciones, cronología, arenas, documentos, galería y novedades.
+- Retirados de la Web el motor y las pantallas del juego (`js/app.js`, `campaigns.js`, `presidency.js`, `whatif.js`, `css/style.css`) y sus pruebas. Siguen en Android, que es el producto del juego; el historial de Git conserva las versiones web.
+- Datos: `js/data.js` es una copia de `compartido/data.js`.
+- Lo que no tiene contenido aprobado aparece como pendiente; no se ha escrito contenido nuevo.
+- Pruebas propias: `tests/archivo.test.mjs` (10 casos) y `tests/navegador.mjs` (Chrome, móvil y escritorio).
 - No se ha desplegado en Render.
+
+## Sin publicar, anterior a la separación
+- Corregido: los botones de la cabecera (inicio y ⚙ Ajustes) no respondían.
 
 ## 4.8 — Presidencia, APK y pruebas
 - Presidencia (`js/presidency.js`): cada orden muestra su efecto real (antes todas decían lo mismo), en verde, rojo o ámbar según convenga.

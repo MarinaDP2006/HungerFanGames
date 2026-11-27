@@ -1,4 +1,4 @@
-# La Cosecha · Despliegue en Render
+# Archivo de Panem · Despliegue en Render
 
 ## Recomendado: usar el Blueprint incluido
 1. En Render abre **New + → Blueprint** y conecta el repositorio `MarinaDP2006/HungerFanGames`.
@@ -18,9 +18,14 @@ El Blueprint también configura las cabeceras de seguridad, desactiva la caché 
 No necesita servidor Node ni variables de entorno. La PWA y el service worker requieren HTTPS (o localhost). No abras `index.html` como `file://`; usa un servidor HTTP local (por ejemplo `npx serve .`).
 
 ## Contenido
-- `index.html`, `css/`, `js/`: interfaz y lógica cliente.
+- `index.html`, `css/archivo.css`, `js/archivo*.js`: el Archivo de Panem (sitio editorial, sin el videojuego).
+- `js/data.js`: copia de los datos compartidos (`compartido/data.js`).
 - `assets/`: ilustraciones originales, iconos y retratos generados.
-- `manifest.webmanifest`, `sw.js`: instalación PWA y caché.
+- `manifest.webmanifest`, `sw.js`: instalación y consulta sin conexión. El service worker nuevo sustituye al del antiguo juego web y borra su caché.
+
+## Al desplegar esta versión
+- La dirección pasa de ser el juego web a ser el Archivo. Las partidas que alguien tuviera en el juego web siguen en su navegador, pero el Archivo no las abre: el juego está en Android.
+- El nombre del servicio en Render (`la-cosecha-web`) no cambia; se puede renombrar en Render si se quiere.
 
 ## Alcance real
-Es una versión web jugable/prototipo ampliado. Las campañas canónicas, el sistema de combate, la simulación presidencial y los mapas aún no equivalen a un videojuego comercial completo. Los retratos incluidos son originales generados y no representan a los actores. Los fotogramas de películas no se redistribuyen.
+Es la primera versión del Archivo: estructura completa y datos existentes. Mapa, documentos, novedades, cronología ampliada y fichas completas esperan contenido aprobado y aparecen como pendientes. Los retratos incluidos son originales generados y no representan a los actores. Los fotogramas de películas no se redistribuyen.

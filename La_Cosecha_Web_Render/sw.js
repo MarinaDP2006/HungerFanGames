@@ -1,5 +1,17 @@
-const CACHE='la-cosecha-v4-8';
-const ASSETS=['./','./index.html','./css/style.css','./js/app.js','./js/data.js','./js/campaigns.js','./js/whatif.js','./js/presidency.js','./manifest.webmanifest','./assets/optimized/capitolio-960.webp','./assets/optimized/arena-bosque-960.webp','./assets/optimized/arena-bosque-1600.webp','./assets/icons/la-cosecha-192.png','./assets/icons/la-cosecha-512.png'];
-self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
-self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))));
-self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{const copy=res.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return res;}).catch(()=>e.request.mode==='navigate'?caches.match('./index.html'):Response.error())));});
+const CACHE='archivo-panem-1.0.0';
+// Archivo de Panem (Web). Precarga la estructura del sitio para consultarlo sin conexión.
+// Sustituye al service worker del juego web (la-cosecha-v4-*): se activa al momento y borra sus cachés.
+const ASSETS=['./','./index.html','./css/archivo.css','./js/archivo.js','./js/archivo-vistas.js','./js/archivo-datos.js','./js/data.js','./manifest.webmanifest','./assets/optimized/capitolio-960.webp','./assets/optimized/capitolio-960.jpg','./assets/icons/la-cosecha-192.png','./assets/icons/la-cosecha-512.png'];
+self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));});
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+// Páginas y código: primero la red (para ver siempre la última versión) y la caché si no hay conexión.
+// Imágenes: primero la caché.
+self.addEventListener('fetch',e=>{
+  const req=e.request;
+  if(req.method!=='GET'||new URL(req.url).origin!==location.origin)return;
+  const imagen=req.destination==='image';
+  const desdeRed=()=>fetch(req).then(res=>{if(res.ok){const copia=res.clone();caches.open(CACHE).then(c=>c.put(req,copia));}return res;});
+  e.respondWith(imagen
+    ?caches.match(req).then(r=>r||desdeRed()).catch(()=>Response.error())
+    :desdeRed().catch(()=>caches.match(req).then(r=>r||(req.mode==='navigate'?caches.match('./index.html'):Response.error()))));
+});
