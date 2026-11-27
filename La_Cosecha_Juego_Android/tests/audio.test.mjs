@@ -14,19 +14,26 @@ test('catálogo de cues de la Entrega Maestra registrado, sin archivos ni asigna
   assert.equal(ids.filter(i => i.startsWith('mus_')).length, 12);
   assert.equal(ids.filter(i => i.startsWith('amb_')).length, 9);
   assert.equal(ids.filter(i => i.startsWith('sfx_')).length, 9);
-  for (const [id, c] of Object.entries(AU.CUES)) { assert.equal(c.src, null, id); assert.equal(c.estado, 'POR_PRODUCIR', id); }
-  assert.deepEqual(AU.ASIGNACION, { musica: {}, ambiente: {} });
+  for (const [id, c] of Object.entries(AU.CUES)) {
+    if (c.src) { assert.equal(c.estado, 'INTEGRATED', id); assert.ok(fs.existsSync(new URL('../' + c.src, import.meta.url)), `${id}: existe ${c.src}`); }
+    else assert.equal(c.estado, 'POR_PRODUCIR', id);
+  }
+  for (const canal of AU.CANALES) for (const [ctx, id] of Object.entries(AU.ASIGNACION[canal])) assert.ok(AU.CUES[id]?.src, `${canal} ${ctx} → ${id} tiene archivo`);
+  assert.equal(AU.resolverPista('menu', 'musica').id, 'mus_menu_panem');
+  assert.equal(AU.resolverPista('historia:75:arena', 'ambiente').id, 'amb_arena_clock');
+  assert.equal(AU.contextoDeJuego({ mode: 'story', edition: 75, phase: 'precampana', precampana: { campaign_id: 'campaign_rebelion' } }), 'historia:rebelion');
+  assert.equal(AU.contextoDeJuego({ mode: 'story', edition: 75, phase: 'ending', precampana: { campaign_id: 'campaign_guerra' } }), 'historia:guerra:final');
 });
 
-test('nada suena en ningún contexto', async () => {
+test('cada contexto suena con su música; la Arena añade ambiente', async () => {
   const log = [];
   const d = AU.createAudioDirector({ crearAudio: fakeAudio(log), getPrefs: () => DEFAULT_SETTINGS });
   d.desbloquear();
-  for (const c of ['menu', 'historia:74', 'historia:74:arena', 'presidencia', 'libre:arena']) d.setContexto(c);
+  d.setContexto('menu'); assert.equal(d.estado().musica.cue, 'mus_menu_panem'); assert.equal(d.estado().ambiente.cue, null);
+  d.setContexto('historia:74:arena'); assert.equal(d.estado().musica.cue, 'mus_arena'); assert.equal(d.estado().ambiente.cue, 'amb_arena_forest');
+  d.setContexto('presidencia'); assert.equal(d.estado().musica.cue, 'mus_capitol');
   await tick();
-  assert.deepEqual(log, []);
-  assert.equal(d.estado().musica.cue, null);
-  assert.equal(d.estado().ambiente.cue, null);
+  assert.ok(log.some(([a, src]) => a === 'play' && /mus-capitolio\.ogg$/.test(src)), JSON.stringify(log));
 });
 
 test('contexto de audio a partir de la partida', () => {
@@ -84,8 +91,8 @@ test('si el audio falla, no rompe el juego', () => {
   assert.doesNotThrow(() => { d.desbloquear(); d.setContexto('presidencia'); });
 });
 
-test('el único audio del proyecto es el OGG original (sin activar) y su máster WAV', () => {
+test('audio: solo el generado por código y el OGG antiguo (sin activar) con su máster', () => {
   const archivos = fs.readdirSync(new URL('../assets/audio/', import.meta.url)).sort();
-  assert.deepEqual(archivos, ['ambiente-capitolio-master.wav', 'ambiente-capitolio-original.ogg']);
+  assert.ok(archivos.every(f => /^(mus|amb)-[a-z-]+\.ogg$/.test(f) || f.startsWith('ambiente-capitolio')), archivos.join(', '));
   assert.ok(!Object.values(AU.CUES).some(c => c.src && c.src.includes('ambiente-capitolio')), 'el OGG no está asignado a ningún cue');
 });

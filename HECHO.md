@@ -1,6 +1,6 @@
 # HECHO
 
-Estado a 27-11-2026 · rama `integracion-cosecha-5x` · Android 4.19.0 · Archivo de Panem 1.3
+Estado a 27-11-2026 · rama `integracion-cosecha-5x` · Android 4.20.0 · Archivo de Panem 1.3
 
 ## Juego Android
 - **App:** APK con Capacitor 7. CI compila, prueba en emulador (Android 14) y comprueba la actualización desde 4.9.
@@ -25,7 +25,8 @@ Estado a 27-11-2026 · rama `integracion-cosecha-5x` · Android 4.19.0 · Archiv
   - `74_private_o3` pasa a `exceptional`.
 - **Gira y 75.º (jugables desde 4.17):** la historia sigue del 74.º a la Gira, al 75.º y a su Arena con crónica en cada acontecimiento.
 - **Rebelión y Guerra (jugables desde 4.19):** 16 escenas más y el final «El Sinsajo»; la historia de Katniss se juega de principio a fin.
-- **Ajustes:** texto, sonido, música y ambiente. El catálogo de audio está preparado, pero sin pistas.
+- **Audio (4.20):** 8 temas de música y 4 ambientes originales generados por código, asignados a cada momento del juego.
+- **Ajustes:** texto, sonido, música y ambiente.
 
 ## Web · Archivo de Panem
 - **Navegación:** 12 secciones con rutas limpias (`/distritos/12`), menú definitivo y sin enlaces externos.

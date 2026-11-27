@@ -1,5 +1,18 @@
 # Changelog
 
+## 4.20 — Música y ambientes originales
+- **8 temas de música y 4 ambientes originales**, sintetizados por código con `scripts/generar-audio.py`. No usan muestras ni audio de las películas.
+  - Música: menú, distrito, Capitolio, Arena, Gira, Rebelión, Guerra y final.
+  - Ambientes: bosque, lago del reloj, base rebelde y ciudad en guerra.
+- **Cada momento tiene su pista:**
+  - el menú y los modos;
+  - la Arena del 74.º con el bosque y la del 75.º con el reloj;
+  - la Gira, la Rebelión y la Guerra con la suya;
+  - los finales con el epílogo.
+
+  Bucles sin corte. Suenan tras el primer toque y se controlan desde Ajustes.
+- Los efectos de interfaz siguen sin sonido propio.
+
 ## 4.19 — Rebelión y Guerra: la historia de Katniss hasta el final
 - **Rebelión (8 escenas):** despertar tras la Arena y el Distrito 12 arrasado (escenas 75-16 y 75-17 del documento), Coin, el hospital del Distrito 8, la presa, el bombardeo del 13, el rescate de Peeta y el Hueso.
 - **Guerra (8 escenas):** la unidad Estrella, las vainas, las alcantarillas, la tienda de Tigris, los paracaídas, el invernadero de Snow, la votación de los últimos Juegos y la flecha.

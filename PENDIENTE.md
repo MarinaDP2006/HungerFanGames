@@ -9,8 +9,8 @@
 ## Juego Android
 - **Historia:**
   - diálogos separados (`dialogue[]`) en las escenas del 74.º;
-- **Música y efectos:** el catálogo está preparado, pero faltan las pistas.
-- **Pruebas en un móvil físico** con las correcciones de la 4.18.
+- **Efectos de interfaz:** sin sonido propio (la música y los ambientes ya están).
+- **Pruebas en un móvil físico** con las correcciones de la 4.18 y siguientes.
 
 ## Web · Archivo de Panem
 - **Imágenes:** en cuanto estén subidas, revisar cómo quedan.
