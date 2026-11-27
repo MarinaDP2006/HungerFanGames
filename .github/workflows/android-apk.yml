@@ -171,8 +171,16 @@ jobs:
             for f in apk-anterior/app-debug.apk apk/app-debug.apk; do
               "$BT/apksigner" sign --ks prueba.keystore --ks-pass pass:android --key-pass pass:android --out "${f%.apk}-prueba.apk" "$f"
             done
-            ls -la apk-anterior apk
+            mkdir -p prueba-actualizacion
+            cp apk-anterior/app-debug-prueba.apk prueba-actualizacion/app-debug-prueba-anterior.apk
+            cp apk/app-debug-prueba.apk prueba-actualizacion/app-debug-prueba-nuevo.apk
+            ls -la apk-anterior apk prueba-actualizacion
           fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: La-Cosecha-Android-prueba-actualizacion
+          path: prueba-actualizacion/
+          if-no-files-found: ignore
       - name: Activar KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules

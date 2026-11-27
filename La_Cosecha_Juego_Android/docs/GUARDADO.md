@@ -45,7 +45,43 @@ Las pantallas de Partidas y Ajustes esperan a que termine esta comparación, que
 | `tests/device/upgrade-prepare.mjs` (CI, emulador) | Instala el APK 4.9.0, deja una partida, instala el nuevo encima y comprueba que la partida sigue, carga y pasa a la copia nativa |
 
 ## Limitaciones
-- **Ventana mínima.** La copia nativa viaja por el puente de Capacitor, que es asíncrono: queda una ventana de milisegundos entre pulsar y que Android la registre. Es mucho menor que la anterior (segundos), pero no es cero.
+- **Margen residual.** Si Android mata la app en las primeras décimas de segundo después de guardar, esa última partida se pierde. Ver la sección siguiente. **El guardado no es infalible.**
 - **Borrado con cierre inmediato.** Si se borra una partida y Android mata la app en ese mismo instante, la partida puede volver a aparecer. Se prefiere eso a perder datos.
 - **Primer arranque tras actualizar.** Si se empieza una partida nueva en los primeros milisegundos del arranque, antes de la comparación, la elección de ranura libre usa lo local. En la práctica no da tiempo.
 - **Desinstalar borra las dos copias.** Para conservar partidas, usa Exportar.
+
+## Margen residual de pérdida (medido)
+
+### Por qué existe
+Entre «el juego guarda» y «la partida está en el disco del móvil» hay tres pasos, y ninguno es instantáneo:
+1. **Puente de Capacitor.** El WebView pasa la escritura a Android de forma asíncrona.
+2. **SharedPreferences `apply()`.** El plugin oficial (`@capacitor/preferences` 7.0.4, `Preferences.java`) usa `editor.apply()`. Deja el dato en memoria al momento y lo escribe en disco poco después, en un hilo aparte, reescribiendo el archivo entero (`CapacitorStorage.xml`, unos 28 KB por partida).
+3. **Copia del WebView.** Chromium la graba con un retraso de segundos; no sirve como red en este margen.
+
+Si el proceso muere (cierre forzado, falta de memoria, un fallo, el ahorro de batería de algunos fabricantes) antes del paso 2, la partida nueva se pierde. Al abrir la app se carga la **anterior**: no se corrompe nada, porque SharedPreferences escribe con archivo de respaldo y cada ranura lleva su huella.
+
+### Medición (CI, emulador Android 14, ejecución 45996263112)
+`tests/device/ventana-perdida.mjs`:
+- Cierra la app con `am force-stop` a distintos milisegundos de un guardado, 3 veces cada uno.
+- Lee la copia nativa del disco y abre la app para ver qué se recupera.
+- La confirmación de Android (pasos 1 y 2 en memoria) tardó **16–20 ms**.
+
+| Orden de cierre tras guardar | Copia nativa ya en disco | Partida recuperada |
+|---|---|---|
+| 0–50 ms | 0/15 | 0/15 (se carga la partida anterior) |
+| 100 ms | 3/3 | 3/3 |
+| 250 ms | 3/3 | 3/3 |
+| 1000 ms | 3/3 | 3/3 |
+
+`am force-stop` tarda además entre 56 y 119 ms en matar el proceso. Así que el límite real en este emulador está entre **unos 50 y unos 200 ms** después de guardar. En la 4.9, sin copia nativa, se perdían escenas guardadas varios segundos antes.
+
+### Qué no está medido
+- **Un móvil físico.** El almacenamiento, la carga y el fabricante cambian el margen. La medición está preparada para lanzarla por USB (`docs/PRUEBA_MOVIL_FISICO.md`).
+- **Pasar a segundo plano o cambiar de app justo después de guardar.** Android espera a las escrituras `apply()` pendientes cuando la actividad se detiene (`onStop`), así que en ese caso no debería perderse nada. Es comportamiento documentado de Android, **no comprobado** aquí.
+- **Varias partidas grandes.** Con las tres ranuras llenas el archivo crece y su escritura puede tardar algo más.
+
+### Cómo se podría estrechar (sin implementar; necesita autorización)
+- **Plugin nativo propio** que escriba con `commit()` (síncrono) dentro de la llamada del puente. Quedaría solo el viaje por el puente (unos 17 ms medidos).
+- **Un archivo por ranura** en lugar de un único XML, para escribir menos datos en cada guardado.
+
+Ninguna de las dos lleva el margen a cero: el puente entre el WebView y Android siempre es asíncrono.

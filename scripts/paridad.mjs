@@ -65,7 +65,7 @@ const ONLY_WEB = [];
 // Configuración y documentación de cada plataforma (fuera del alcance comparado).
 const PLATFORM_FILES = {
   web: ['README_RENDER.md'],
-  android: ['package.json', 'capacitor.config.json', 'scripts/build-web.mjs', 'scripts/android-version.mjs', 'README_ANDROID.md', 'CHANGELOG.md', 'docs/VERSIONADO.md', 'docs/GUARDADO.md', 'docs/PRUEBA_MOVIL_FISICO.md', 'docs/FIRMA_APK.md'],
+  android: ['package.json', 'capacitor.config.json', 'scripts/build-web.mjs', 'scripts/android-version.mjs', 'README_ANDROID.md', 'CHANGELOG.md', 'docs/VERSIONADO.md', 'docs/GUARDADO.md', 'docs/PRUEBA_MOVIL_FISICO.md', 'docs/FIRMA_APK.md', 'docs/PLANTILLA_RESULTADOS_MOVIL.md'],
 };
 
 const list = (base, rel) => {
