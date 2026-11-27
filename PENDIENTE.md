@@ -9,7 +9,6 @@
 ## Juego Android
 - **Historia:**
   - diálogos separados (`dialogue[]`) en las escenas del 74.º;
-- **Patrocinio e imagen pública:** decidir si los valores de la precampaña cambian el apoyo y los patrocinadores de la Arena (hoy solo quedan en la continuidad).
 - **Música y efectos:** el catálogo está preparado, pero faltan las pistas.
 - **Pruebas en un móvil físico** con las correcciones de la 4.18.
 

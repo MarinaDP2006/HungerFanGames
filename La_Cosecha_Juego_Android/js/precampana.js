@@ -166,9 +166,15 @@ export function responseEchoes(campaign, state, optionId) {
 
 // Transferencia a la Arena (anexo 74 v1.1, sección 4). Instantánea completa e idempotente: si ya se
 // aplicó, devuelve la existente sin sumar nada otra vez. No convierte flags en ventajas, no crea objetos,
-// alianzas ni conocimiento del mapa. Los valores numéricos (patrocinio e imagen pública) NO se aplican
-// todavía: el anexo pide confirmar antes los límites del sistema de patrocinio.
-export const MAPEO_NUMERICO_ACTIVO = false;
+// alianzas ni conocimiento del mapa. Patrocinio e imagen pública (4.19, decisión de Nina): se aplican una
+// sola vez al entrar en la Arena, con límites para no desequilibrarla:
+//   apoyo del público (support, 0–100)   += public.image_capitol × 2, entre −6 y +10
+//   patrocinadores (sponsorTrust, ≥ 0)    += sponsor.interest × 3, entre 0 y +15
+export const MAPEO_NUMERICO_ACTIVO = true;
+const lim = (v, a, b) => Math.max(a, Math.min(b, v));
+export function mapeoNumerico(vars = {}) {
+  return { support: lim(Math.round((vars['public.image_capitol'] || 0) * 2), -6, 10), sponsorTrust: lim(Math.round((vars['sponsor.interest'] || 0) * 3), 0, 15) };
+}
 export function buildTransfer(campaign, state, game = {}) {
   return {
     transfer_id: campaign.transfer_id || `${campaign.campaign_id}:prearena:v1`,
@@ -179,7 +185,8 @@ export function buildTransfer(campaign, state, game = {}) {
     vars: { ...state.vars }, flags: { ...state.flags },
     decision_ids: (game.decisionLog || []).filter(d => d.campaign_id === campaign.campaign_id).map(d => d.decision_id),
     diary_entry_ids: state.journal.map(j => j.entry_id),
-    numeric_mapping: MAPEO_NUMERICO_ACTIVO ? 'aplicado' : 'pendiente de confirmar límites',
+    // Solo las precampañas que desembocan en una Arena (sin campaña siguiente ni final de historia).
+    numeric_mapping: MAPEO_NUMERICO_ACTIVO && !campaign.next && !campaign.ends_story ? mapeoNumerico(state.vars) : null,
     transfer_applied: true,
   };
 }
@@ -190,6 +197,11 @@ export function applyTransfer(game, campaign, state) {
   if (prev?.transfer_applied && prev.transfer_id === snapshot.transfer_id) return { applied: false, snapshot: prev };
   if (!state.complete) throw new Error('La precampaña no está terminada');
   game.continuity[campaign.campaign_id] = snapshot;
+  const m = snapshot.numeric_mapping;
+  if (m) {
+    if (typeof game.support === 'number') game.support = lim(game.support + m.support, 0, 100);
+    if (typeof game.sponsorTrust === 'number') game.sponsorTrust = Math.max(0, game.sponsorTrust + m.sponsorTrust);
+  }
   return { applied: true, snapshot };
 }
 // Compatibilidad con la versión anterior del motor.

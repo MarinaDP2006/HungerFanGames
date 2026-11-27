@@ -5,6 +5,7 @@
 - **Guerra (8 escenas):** la unidad Estrella, las vainas, las alcantarillas, la tienda de Tigris, los paracaídas, el invernadero de Snow, la votación de los últimos Juegos y la flecha.
 - **Final de la historia «El Sinsajo»:** cambia según tus relaciones con Peeta, Haymitch y Gale y lo que descubriste sobre los paracaídas.
 - **Al salir vivo del 75.º,** el botón «Continuar: Rebelión» sigue en la misma partida.
+- **Patrocinio e imagen pública llegan a la Arena:** al entrar en la Arena del 74.º o del 75.º, la imagen ante el Capitolio suma apoyo del público (×2, entre −6 y +10) y el interés de los patrocinadores suma patrocinio (×3, hasta +15). Se aplica una sola vez.
 - **Hitos fijos de las películas:** la muerte de Boggs, Finnick y Prim, y la flecha contra Coin no cambian.
 
 ## 4.18 — Diseño «Retransmisión del Capitolio» y arreglos para móviles reales

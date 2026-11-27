@@ -203,9 +203,11 @@ test('transferencia: instantánea completa, idempotente y sin valores numéricos
   const r2 = PC.applyTransfer(game, CAMPANA_74, st);
   assert.equal(r2.applied, false, 'la segunda vez no aplica nada');
   assert.equal(r2.snapshot, r1.snapshot);
-  assert.equal(game.support, 12);
-  assert.equal(game.sponsorTrust, 0, 'patrocinio e imagen pública: pendientes de confirmar límites');
-  assert.equal(PC.MAPEO_NUMERICO_ACTIVO, false);
+  const m = PC.mapeoNumerico(st.vars);
+  assert.equal(game.support, Math.max(0, Math.min(100, 12 + m.support)), 'apoyo del público: se aplica una sola vez');
+  assert.equal(game.sponsorTrust, m.sponsorTrust);
+  assert.ok(m.support >= -6 && m.support <= 10 && m.sponsorTrust >= 0 && m.sponsorTrust <= 15);
+  assert.equal(PC.MAPEO_NUMERICO_ACTIVO, true);
   assert.throws(() => PC.applyTransfer({}, CAMPANA_74, PC.createState(CAMPANA_74)), /no está terminada/);
   assert.equal(t.vars['campaign.launch_plan'], 'observation');
   assert.equal(t.flags.launch_observation_focus, true);
@@ -220,8 +222,9 @@ test('revisión 27-11, pregunta 6: arco, supervivencia y observación no tocan l
     for (const s of CAMPANA_74.scenes) PC.choose(CAMPANA_74, st, s.options[i].option_id, { game });
     PC.applyTransfer(game, CAMPANA_74, st);
     assert.equal(game.skill, 6);
-    assert.equal(game.support, 12);
-    assert.equal(game.sponsorTrust, 0);
+    const m = PC.mapeoNumerico(st.vars);
+    assert.equal(game.support, 12 + m.support, 'solo el mapeo limitado, nada más');
+    assert.equal(game.sponsorTrust, m.sponsorTrust);
     assert.ok(!Object.keys(game).some(k => /archery|survival|observation/.test(k)), 'sin atributos nuevos en la partida');
   }
 });
