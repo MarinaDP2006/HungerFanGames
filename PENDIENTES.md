@@ -1,18 +1,32 @@
 # Productos
-- **Android · La Cosecha (videojuego)**, versión 4.11.0.
-- **Web · Archivo de Panem**, versión 1.0, sin desplegar.
+- **Android · La Cosecha (videojuego)**, versión 4.12.0.
+- **Web · Archivo de Panem**, versión 1.1, sin desplegar.
 
 Arquitectura en `docs/SEPARACION_ANDROID_WEB.md`. Entrega creativa en `docs/ENTREGA_MAESTRA_V1_INVENTARIO.md`.
 
-# Matriz del Archivo de Panem (Web 1.0)
+# Matriz del Archivo de Panem (Web 1.1)
 | Funcionalidad | Implementado | Pruebas automáticas (CI) | Navegador | Terminado |
 |---|---|---|---|---|
 | Separado del videojuego (sin motor, partidas ni pantallas de juego) | ✅ | ✅ `archivo.test`, contratos | ✅ Chrome | ✅ |
 | Portada, distritos, personajes (con filtros), vencedores, ediciones, cronología, arenas y galería con datos existentes | ✅ | ✅ | ✅ móvil y escritorio | ❌ esperan contenido aprobado |
 | Estado de canon y fuente en cada ficha | ✅ (todo «Sin clasificar») | ✅ | ✅ | ❌ faltan valores |
-| Mapa ilustrado, Capitolio, documentos y novedades | Aviso de pendiente | ✅ | ✅ | ❌ `BLOCKED_CREATIVE` |
-| Navegación definitiva según la Entrega Maestra (Lugares, Acerca, rutas sin `#`) | ❌ | — | — | ❌ falta tu decisión |
+| Mapa ilustrado, ficha del Capitolio y documentos | Aviso de pendiente | ✅ | ✅ | ❌ `BLOCKED_CREATIVE` |
+| Menú definitivo (12 secciones, sin Novedades) y direcciones sin `#` | ✅ | ✅ | ✅ menú, Atrás, 404 | ✅ como estructura |
+| Gira de la Victoria, Rebelión y Guerra, Lugares (fichas) | Aviso de pendiente | ✅ | ✅ | ❌ `BLOCKED_CREATIVE` |
+| Acerca (aviso fan y leyenda de canon) | ✅ | ✅ | ✅ | ✅ |
 | Despliegue en Render | ❌ no autorizado | — | — | — |
+
+# Matriz del motor de campañas (Android 4.12)
+| Pieza | Implementado | Probado | Activo en el juego |
+|---|---|---|---|
+| Motor común de precampañas (fase 2) | ✅ | ✅ 11 pruebas del motor y 7 dentro del juego con el 74.º aprobado solo en la prueba | Solo para campañas `APPROVED`: hoy ninguna |
+| 74.º: escenas 1.0, y respuestas, diario y 2 ecos del anexo 1.1 | ✅ generado literalmente | ✅ las 33 opciones | ❌ `DRAFT_FOR_REVIEW` (falta tu aprobación) |
+| 74.º: 28 ecos descritos sin frase y la frase de la promesa a Gale | ❌ | — | ❌ `BLOCKED_CREATIVE` |
+| Transferencia a la Arena idempotente y guardada antes | ✅ | ✅ | Solo con el 74.º aprobado |
+| Valores de patrocinio e imagen pública en la Arena | Preparado, desactivado | ✅ desactivado | ❌ faltan los límites |
+| Gira y 75.º | Solo IDs de escena | ✅ no se pueden jugar | ❌ `STRUCTURE_ONLY` |
+| Guardado formato 5 (registro de decisiones, migración, copia de seguridad) | ✅ | ✅ 8 pruebas, más emulador | ✅ |
+| Sin enlaces externos en el juego | ✅ | ✅ | ✅ |
 
 # Matriz de funcionalidades (Android)
 Leyenda: ✅ sí · ⏳ pendiente · — no aplica. «Emulador» = Android 14 en GitHub Actions. «Móvil físico» = teléfono real (guía en `La_Cosecha_Juego_Android/docs/PRUEBA_MOVIL_FISICO.md`).
