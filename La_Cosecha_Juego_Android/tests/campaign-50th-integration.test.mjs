@@ -10,6 +10,9 @@ import * as campaigns from '../js/campaigns.js';
 import * as WI from '../js/whatif.js';
 import * as PR from '../js/presidency.js';
 import * as PRE from '../js/campaign-50th-prearena.js';
+import * as ST from '../js/settings.js';
+import * as SV from '../js/saves.js';
+import {GAME_VERSION} from '../js/version.js';
 import * as AD from '../js/campaign-50th-dynamic-adapter.js';
 
 // Motor con DOM mínimo. A diferencia de otras pruebas, aquí se conserva el manejador de clics de
@@ -24,7 +27,7 @@ function engine(opts={}){
     addEventListener:(type,fn)=>{if(type==='click')clickHandler=fn;},
   };
   class Blob{constructor(parts){lastBlob=parts.join('');}}
-  const ctx={...data,...campaigns,...PRE,...AD,WI,PR,Proxy,document,console,Math,Date,JSON,Number,String,Array,Object,Map,Set,Blob,
+  const ctx={...data,...campaigns,...PRE,ST,SV,GAME_VERSION,...AD,WI,PR,Proxy,document,console,Math,Date,JSON,Number,String,Array,Object,Map,Set,Blob,
     URL:{createObjectURL:()=>'blob:x',revokeObjectURL(){}},
     localStorage:{setItem:(k,v)=>{store[k]=String(v)},getItem:k=>store[k]??null},
     alert:m=>alerts.push(m),navigator:{},window:{addEventListener(){}},setTimeout,clearTimeout,AudioContext:undefined,...(opts.overrides||{})};

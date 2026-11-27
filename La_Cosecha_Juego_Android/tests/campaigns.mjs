@@ -7,12 +7,15 @@ import * as campaigns from '../js/campaigns.js';
 import * as WI from '../js/whatif.js';
 import * as PR from '../js/presidency.js';
 import * as PRE from '../js/campaign-50th-prearena.js';
+import * as ST from '../js/settings.js';
+import * as SV from '../js/saves.js';
+import {GAME_VERSION} from '../js/version.js';
 import * as AD from '../js/campaign-50th-dynamic-adapter.js';
 
 function engine(){
   const screen={innerHTML:''},indicator={textContent:''};
   const document={querySelector:s=>s==='#screen'?screen:s==='#save-indicator'?indicator:null};
-  const context={...data,...campaigns,...PRE,...AD,WI,PR,Proxy,document,console,Math,Date,JSON,Number,String,Array,Object,Map,Set,Blob:class{},URL:{},
+  const context={...data,...campaigns,...PRE,ST,SV,GAME_VERSION,...AD,WI,PR,Proxy,document,console,Math,Date,JSON,Number,String,Array,Object,Map,Set,Blob:class{},URL:{},
     localStorage:{setItem(){},getItem(){return null}},alert(){},navigator:{},window:{},setTimeout,clearTimeout};
   let src=fs.readFileSync(new URL('../js/app.js',import.meta.url),'utf8').replace(/^import .*\n/gm,'');
   src=src.slice(0,src.indexOf("document.addEventListener('click'"));

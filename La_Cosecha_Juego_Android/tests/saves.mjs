@@ -7,6 +7,9 @@ import * as campaigns from '../js/campaigns.js';
 import * as WI from '../js/whatif.js';
 import * as PR from '../js/presidency.js';
 import * as PRE from '../js/campaign-50th-prearena.js';
+import * as ST from '../js/settings.js';
+import * as SV from '../js/saves.js';
+import {GAME_VERSION} from '../js/version.js';
 import * as AD from '../js/campaign-50th-dynamic-adapter.js';
 
 function engine(){
@@ -16,7 +19,7 @@ function engine(){
   const document={querySelector:s=>nodes[s]||null,createElement:()=>({click(){downloads.push(this.href)},set href(v){this._h=v},get href(){return this._h}})};
   let lastBlob=null;
   class Blob{constructor(parts){this.text=parts.join('');lastBlob=this.text;}}
-  const ctx={...data,...campaigns,...PRE,...AD,WI,PR,Proxy,document,console,Math,Date,JSON,Number,String,Array,Object,Map,Set,Blob,
+  const ctx={...data,...campaigns,...PRE,ST,SV,GAME_VERSION,...AD,WI,PR,Proxy,document,console,Math,Date,JSON,Number,String,Array,Object,Map,Set,Blob,
     URL:{createObjectURL:()=>'blob:prueba',revokeObjectURL(){}},
     localStorage:{setItem:(k,v)=>{store[k]=String(v)},getItem:k=>store[k]??null},
     alert:m=>alerts.push(m),navigator:{},window:{},setTimeout,clearTimeout};
@@ -32,10 +35,11 @@ const file=text=>({text:async()=>text});
 {const e=engine();e.api.setMode('story',74);e.api.begin();const g=e.api.g();
  assert.equal(g.mode,'story');assert.equal(g.name,'Katniss Everdeen');
  g.phase='arena';g.arenaTurn=4;g.health=63;g.flags={peetaSavedYou:true};g.relationships={rue:3};g.inventory.push('arco');
- e.api.save();assert.ok(e.store.laCosechaSave,'se guarda en localStorage');
+ e.api.save();// 4.9: el guardado va a una ranura (laCosechaSave:<n>); antes iba a la clave única laCosechaSave.
+ assert.ok(e.store['laCosechaSave:1'],'se guarda en la ranura 1 de localStorage');
  e.api.set(null);e.api.load();const r=e.api.g();
  assert.equal(r.health,63);assert.equal(r.arenaTurn,4);assert.deepEqual(r.flags,{peetaSavedYou:true});assert.equal(r.relationships.rue,3);
- assert.ok(r.inventory.includes('arco'));assert.equal(r.tributes.length,24);assert.equal(e.nodes['#save-indicator'].textContent,'CARGADO');}
+ assert.ok(r.inventory.includes('arco'));assert.equal(r.tributes.length,24);assert.match(e.nodes['#save-indicator'].textContent,/^CARGADO · RANURA 1$/);}
 
 // 2) Cargar sin partida guardada avisa y no rompe nada.
 {const e=engine();e.api.load();assert.equal(e.alerts.length,1);assert.equal(e.api.g(),null);}

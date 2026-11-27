@@ -1,7 +1,11 @@
 # Changelog
 
 ## 4.9 — Fase 1: base técnica (Android)
-- Versión única: `package.json` es la fuente; la app muestra la versión en el pie, el service worker usa `la-cosecha-android-<versión>` y el APK recibe `versionName`/`versionCode` (criterio en `docs/VERSIONADO.md`).
+- Versión única: `package.json` es la fuente; la app muestra la versión en el pie y en Ajustes, el service worker usa `la-cosecha-android-<versión>` y el APK recibe `versionName`/`versionCode` (criterio en `docs/VERSIONADO.md`).
+- APK limpio: `scripts/build-web.mjs` empaqueta solo lo que la app carga desde `index.html` y los recursos referenciados. Quedan fuera (se conservan en el repositorio) los módulos 5.2, `campaign-50th-dynamic.js`, `canon-50th.js`, `music.js`, el máster WAV y cinco imágenes sin uso.
+- Ajustes: sonido, volumen, reducir movimiento, tamaño de texto y partidas guardadas (borrar con confirmación). Se guardan aparte de las partidas.
+- Guardados: tres ranuras, formato con versión (`saveVersion` 4) y migración automática de la ranura única anterior, que no se borra.
+- CSS: eliminada la regla muerta `.map-frame`, que referenciaba `menu-panem.png`. La imagen se conserva.
 
 ## 4.8 — Presidencia, APK y pruebas
 - Presidencia (`js/presidency.js`): cada orden muestra su efecto real (antes todas decían lo mismo), en verde, rojo o ámbar según convenga.
