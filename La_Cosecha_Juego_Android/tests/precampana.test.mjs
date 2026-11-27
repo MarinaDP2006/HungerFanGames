@@ -72,8 +72,13 @@ test('revisión 27-11, pregunta 2: 74_private_o3 pasa a exceptional; se conserva
   assert.equal(o.amendment, ENMIENDAS['74_private_o3'].motivo);
 });
 
-test('revisión 27-11: diálogos, player_prompt y participantes quedan pendientes (null), sin extraerlos de la prosa', () => {
-  for (const s of CAMPANA_74.scenes) { assert.equal(s.dialogue, null); assert.equal(s.player_prompt, null); assert.equal(s.participant_ids, null); assert.equal(s.location_id, null); }
+test('diálogos del 74.º: cada escena tiene sus líneas habladas con hablante; player_prompt sigue sin usarse', () => {
+  const ids = new Set();
+  for (const s of CAMPANA_74.scenes) {
+    assert.ok(s.dialogue.length >= 2, s.scene_id);
+    for (const d of s.dialogue) { assert.ok(d.speaker && d.text, d.line_id); assert.ok(!ids.has(d.line_id)); ids.add(d.line_id); }
+    assert.equal(s.player_prompt, null); assert.equal(s.location_id, null);
+  }
 });
 
 test('ecos: puros, deduplicados por grupo y sin efectos mecánicos', () => {

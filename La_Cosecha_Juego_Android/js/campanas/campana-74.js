@@ -127,7 +127,26 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "label_anexo": "Buscar a Peeta entre la multitud"
         }
       ],
-      "dialogue": null,
+      "dialogue": [
+        {
+          "line_id": "74_reaping.d1",
+          "speaker": "Effie Trinket",
+          "text": "Las damas primero.",
+          "delivery_note": "sonriendo hacia la urna"
+        },
+        {
+          "line_id": "74_reaping.d2",
+          "speaker": "Effie Trinket",
+          "text": "Primrose Everdeen.",
+          "delivery_note": null
+        },
+        {
+          "line_id": "74_reaping.d3",
+          "speaker": "Katniss",
+          "text": "¡Me ofrezco! ¡Me ofrezco voluntaria!",
+          "delivery_note": "corriendo hacia el escenario"
+        }
+      ],
       "player_prompt": null,
       "participant_ids": null
     },
@@ -240,7 +259,26 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "label_anexo": "Abrazar a Prim sin decir nada"
         }
       ],
-      "dialogue": null,
+      "dialogue": [
+        {
+          "line_id": "74_goodbyes.d1",
+          "speaker": "Prim",
+          "text": "No tenías que hacerlo.",
+          "delivery_note": "llorando"
+        },
+        {
+          "line_id": "74_goodbyes.d2",
+          "speaker": "Katniss",
+          "text": "Sí tenía. Escúchame: no te apuntes a más teselas. Prométemelo.",
+          "delivery_note": null
+        },
+        {
+          "line_id": "74_goodbyes.d3",
+          "speaker": "Gale",
+          "text": "Me encargaré de que no les falte comida. Tú preocúpate de volver.",
+          "delivery_note": "en voz baja"
+        }
+      ],
       "player_prompt": null,
       "participant_ids": null
     },
@@ -363,7 +401,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "label_anexo": "Observar a Peeta sin hablar"
         }
       ],
-      "dialogue": null,
+      "dialogue": [
+        {
+          "line_id": "74_departure.d1",
+          "speaker": "Escolta",
+          "text": "Por aquí. No se detenga.",
+          "delivery_note": null
+        },
+        {
+          "line_id": "74_departure.d2",
+          "speaker": "Katniss",
+          "text": "Solo un segundo.",
+          "delivery_note": "mirando atrás"
+        }
+      ],
       "player_prompt": null,
       "participant_ids": null
     },
@@ -486,7 +537,26 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "label_anexo": "Escuchar sin revelar tus habilidades"
         }
       ],
-      "dialogue": null,
+      "dialogue": [
+        {
+          "line_id": "74_train.d1",
+          "speaker": "Effie Trinket",
+          "text": "Mañana hay que causar buena impresión. Todo cuenta.",
+          "delivery_note": null
+        },
+        {
+          "line_id": "74_train.d2",
+          "speaker": "Haymitch",
+          "text": "Si queréis un consejo, ahí va: aceptad que vais a morir. Es más fácil.",
+          "delivery_note": "con una copa en la mano"
+        },
+        {
+          "line_id": "74_train.d3",
+          "speaker": "Peeta",
+          "text": "Entonces no nos sirve de nada. Dinos algo que sí nos sirva.",
+          "delivery_note": null
+        }
+      ],
       "player_prompt": null,
       "participant_ids": null
     },
@@ -604,7 +674,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "label_anexo": "Responder con cortesía breve"
         }
       ],
-      "dialogue": null,
+      "dialogue": [
+        {
+          "line_id": "74_arrival.d1",
+          "speaker": "Effie Trinket",
+          "text": "Sonreíd. Os están mirando.",
+          "delivery_note": null
+        },
+        {
+          "line_id": "74_arrival.d2",
+          "speaker": "Haymitch",
+          "text": "Que os miren. Vosotros mirad todo lo demás.",
+          "delivery_note": "aparte, a Katniss"
+        }
+      ],
       "player_prompt": null,
       "participant_ids": null
     },
@@ -727,7 +810,26 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "label_anexo": "Aceptar el trabajo sin mostrar entusiasmo"
         }
       ],
-      "dialogue": null,
+      "dialogue": [
+        {
+          "line_id": "74_prep.d1",
+          "speaker": "Cinna",
+          "text": "No voy a cambiar quién eres. Solo quiero que no puedan olvidarte.",
+          "delivery_note": null
+        },
+        {
+          "line_id": "74_prep.d2",
+          "speaker": "Katniss",
+          "text": "¿Y cómo piensas conseguirlo?",
+          "delivery_note": null
+        },
+        {
+          "line_id": "74_prep.d3",
+          "speaker": "Cinna",
+          "text": "Con fuego. No te preocupes, es de mentira.",
+          "delivery_note": "sonriendo"
+        }
+      ],
       "player_prompt": null,
       "participant_ids": null
     },
@@ -855,7 +957,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "label_anexo": "Seguir las indicaciones de Cinna"
         }
       ],
-      "dialogue": null,
+      "dialogue": [
+        {
+          "line_id": "74_parade.d1",
+          "speaker": "Cinna",
+          "text": "Levanta la barbilla. Que te vean.",
+          "delivery_note": null
+        },
+        {
+          "line_id": "74_parade.d2",
+          "speaker": "Peeta",
+          "text": "Si nos agarramos de la mano, no se fijarán en lo que tiemblan.",
+          "delivery_note": "tendiéndole la mano"
+        }
+      ],
       "player_prompt": null,
       "participant_ids": null
     },
@@ -993,7 +1108,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "label_anexo": "Observar estaciones y comportamientos"
         }
       ],
-      "dialogue": null,
+      "dialogue": [
+        {
+          "line_id": "74_training.d1",
+          "speaker": "Haymitch",
+          "text": "No enseñes lo que sabes hacer con el arco. Guárdatelo para los Vigilantes.",
+          "delivery_note": null
+        },
+        {
+          "line_id": "74_training.d2",
+          "speaker": "Peeta",
+          "text": "Puedo levantar sacos de harina de cincuenta kilos. Algo es algo.",
+          "delivery_note": "a medias en broma"
+        }
+      ],
       "player_prompt": null,
       "participant_ids": null
     },
@@ -1118,7 +1246,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "amendment": "Revisión 27-11-2026, pregunta 2: las tres opciones conservan la puntuación extraordinaria"
         }
       ],
-      "dialogue": null,
+      "dialogue": [
+        {
+          "line_id": "74_private_session.d1",
+          "speaker": "Vigilante",
+          "text": "Katniss Everdeen, Distrito 12. Cuando quiera.",
+          "delivery_note": "sin levantar la vista"
+        },
+        {
+          "line_id": "74_private_session.d2",
+          "speaker": "Katniss",
+          "text": "Gracias por su atención.",
+          "delivery_note": "con la flecha aún vibrando"
+        }
+      ],
       "player_prompt": null,
       "participant_ids": null
     },
@@ -1256,7 +1397,26 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "label_anexo": "Responder con firmeza"
         }
       ],
-      "dialogue": null,
+      "dialogue": [
+        {
+          "line_id": "74_interview.d1",
+          "speaker": "Caesar Flickerman",
+          "text": "Katniss, la chica en llamas. ¿Qué te ha parecido el Capitolio?",
+          "delivery_note": "al público"
+        },
+        {
+          "line_id": "74_interview.d2",
+          "speaker": "Katniss",
+          "text": "Que todo huele a flores. Y que la comida es mucho mejor que en casa.",
+          "delivery_note": null
+        },
+        {
+          "line_id": "74_interview.d3",
+          "speaker": "Caesar Flickerman",
+          "text": "Háblanos de Prim. Todos la vimos aquel día.",
+          "delivery_note": "bajando la voz"
+        }
+      ],
       "player_prompt": null,
       "participant_ids": null
     },
@@ -1356,7 +1516,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "label_anexo": "Prepararte para observar el terreno"
         }
       ],
-      "dialogue": null,
+      "dialogue": [
+        {
+          "line_id": "74_launch.d1",
+          "speaker": "Voz de control",
+          "text": "Sesenta segundos. Tributos, a sus plataformas.",
+          "delivery_note": null
+        },
+        {
+          "line_id": "74_launch.d2",
+          "speaker": "Katniss",
+          "text": "Prim, voy a volver.",
+          "delivery_note": "en voz muy baja"
+        }
+      ],
       "player_prompt": null,
       "participant_ids": null
     }

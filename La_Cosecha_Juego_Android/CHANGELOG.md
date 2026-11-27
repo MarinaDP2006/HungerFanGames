@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.21 — Efectos de sonido y diálogos del 74.º
+- **Efectos de interfaz sintetizados (sin archivos):**
+  - confirmar (decisiones y botones principales), volver, seleccionar (acciones, sectores y armas) y clic;
+  - aviso al aparecer un acontecimiento y elevación de la plataforma al entrar en la Arena;
+  - el cañón se mantiene para las muertes.
+- **Diálogos del 74.º:** cada escena muestra sus líneas habladas, con hablante y acotación, como subtítulos de retransmisión (`scripts/dialogos-74.mjs`).
+
 ## 4.20 — Música y ambientes originales
 - **8 temas de música y 4 ambientes originales**, sintetizados por código con `scripts/generar-audio.py`. No usan muestras ni audio de las películas.
   - Música: menú, distrito, Capitolio, Arena, Gira, Rebelión, Guerra y final.

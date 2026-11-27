@@ -8,6 +8,7 @@
 // Los ecos que el anexo describe sin escribir la frase se guardan como nota (no se muestran). Lo que falte queda en null.
 import fs from 'node:fs';
 import path from 'node:path';
+import { DIALOGOS_74 } from './dialogos-74.mjs';
 
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 export const FUENTE = 'docs/fuentes/74_PreArena_11_Escenas_v1.md';
@@ -116,7 +117,7 @@ export function generar(md, anexoMd = null, revisionMd = null) {
       const en = ENMIENDAS[o.option_id];
       if (en) { if (o.source_effect.includes(en.from)) { o.source_effect_original = o.source_effect; o.source_effect = o.source_effect.replace(en.from, en.to); o.effects = efectos(o.source_effect); o.amendment = en.motivo; } else throw new Error(`Enmienda sin efecto original: ${o.option_id}`); }
     }
-    for (const sc of scenes) Object.assign(sc, { dialogue: null, player_prompt: null, participant_ids: null });
+    for (const sc of scenes) Object.assign(sc, { dialogue: (DIALOGOS_74[sc.scene_id] || []).map(([speaker, text, delivery_note], i) => ({ line_id: `${sc.scene_id}.d${i + 1}`, speaker, text, delivery_note })), player_prompt: null, participant_ids: null });
   }
   const campaign = {
     campaign_id: 'campaign_74', title: '74.º Juegos del Hambre · precampaña', status: revisionMd ? 'APPROVED' : 'DRAFT_FOR_REVIEW', approval: revisionMd ? 'Activado el 27-11-2026 para la prueba de Nina; la aprobación definitiva es la suya en el PR' : null,
