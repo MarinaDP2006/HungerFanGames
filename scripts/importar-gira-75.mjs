@@ -9,6 +9,7 @@
 // escenas nuevas sino contenido para los acontecimientos de Arena del 75.º que ya existen.
 import fs from 'node:fs';
 import path from 'node:path';
+import { VALOR_ADD, FLAG_DE_VARIABLE, CORRECCIONES, TEXTOS, CRONICA_ARENA_75 } from './gira-75-complemento.mjs';
 
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 export const FUENTE = 'docs/paquetes/gira_75_v1/La_Cosecha_Gira_75_Produccion_Narrativa_v1.md';
@@ -144,16 +145,76 @@ export function construir(md) {
   return { gira, c75, arena, despues, escenas };
 }
 
+// Formato de pantalla: quita las marcas de Markdown del documento (negritas e itálicas) sin cambiar el texto.
+const sinMarkdown = t => t == null ? t : String(t).replace(/\*\*([^*]+?):\*\*/g, '$1:').replace(/\*\*([^*]+)\*\*/g, '$1').replace(/(^|\s)\*([^*\n]+)\*(?=\s|[.,;:]|$)/g, '$1$2').replace(/[ \t]+\n/g, '\n').trim();
+
+export const VARIABLES_GIRA_75 = [
+  { path: 'rel.katniss_peeta', type: 'int', default: 0 },
+  { path: 'rel.katniss_haymitch', type: 'int', default: 0 },
+  { path: 'sponsor.interest', type: 'int', default: 0 },
+];
+// Efectos jugables a partir del borrador y de las reglas del complemento.
+function efectosJugables(o) {
+  const out = [];
+  for (const e of o.effects) {
+    if (e.op === 'SET_FLAG') out.push({ op: 'SET_FLAG', path: e.path });
+    else if (e.op === 'ADD' && e.path && VARIABLES_GIRA_75.some(v => v.path === e.path)) out.push({ op: 'ADD', path: e.path, value: VALOR_ADD });
+    else if (e.op === 'ADD' && FLAG_DE_VARIABLE[e.variable]) out.push({ op: 'SET_FLAG', path: FLAG_DE_VARIABLE[e.variable] });
+    else if (!e.op) for (const m of String(e.fuente).matchAll(/`journal_flags: ([a-z0-9_]+)`/g)) out.push({ op: 'SET_FLAG', path: m[1] });
+    if (!e.op) for (const m of String(e.fuente).matchAll(/`([a-z_]+) \+`/g)) {
+      const ruta = VARIABLES[m[1]]?.ruta;
+      if (ruta && VARIABLES_GIRA_75.some(v => v.path === ruta)) out.push({ op: 'ADD', path: ruta, value: VALOR_ADD });
+      else if (FLAG_DE_VARIABLE[m[1]]) out.push({ op: 'SET_FLAG', path: FLAG_DE_VARIABLE[m[1]] });
+    }
+  }
+  const unicos = out.filter((e, i) => out.findIndex(x => x.op === e.op && x.path === e.path) === i);
+  return unicos.length ? unicos : [{ op: 'SET_FLAG', path: `decision_${o.option_id}` }];
+}
+export function construirJugables(md) {
+  const { gira, c75 } = construir(md);
+  const jugable = (c, prefijo, extra) => ({
+    campaign_id: c.campaign_id, title: c.title, status: 'APPROVED', source_version: 'gira-75-narrativa-1.0+complemento-1', source_ref: FUENTE,
+    approval: 'Completado por Claude el 27-11-2026; aprobación de Nina en el PR', transfer_id: `${c.campaign_id}:v1`, ...extra,
+    scenes: c.scenes.map((sc, i) => {
+      const cor = CORRECCIONES[sc.scene_id] || {};
+      return {
+        scene_id: sc.scene_id, narrative_id: sc.narrative_id, sequence: i + 1, title: sc.title, location: sc.location, participants: sc.participants,
+        text: sinMarkdown(cor.text || sc.text), milestone: sinMarkdown(sc.fixed_consequence || sc.consequence || ''), canon_correction: cor.motivo || null,
+        journal_base: cor.journal_base || sc.journal_base,
+        options: sc.options.map(o => {
+          const [resp, diario] = TEXTOS[o.option_id] || [];
+          if (!resp) throw new Error(`Falta la respuesta de ${o.option_id}`);
+          return { option_id: o.option_id, label: (cor.labels || {})[o.option_id] || o.label, source_effect: o.efecto_fuente, effects: efectosJugables(o),
+            response_text: resp, journal_text: o.journal_text || diario, journal_entry_id: `${prefijo}.diary.${sc.scene_id}.${o.option_id}` };
+        }),
+      };
+    }),
+  });
+  return { gira: jugable(gira, 'gira', { next: 'campaign_75' }), c75: jugable(c75, '75', { next: null }) };
+}
+
+export function cronica(md) {
+  const escenas = parse(md);
+  return Object.fromEntries(Object.entries(CRONICA_ARENA_75).map(([t, c]) => [t, c.propio || c.escenas.map(n => sinMarkdown(escenas.find(e => e.narrative_id === n).text)).join('\n\n')]));
+}
+
 export function generar(md) {
   const { gira, c75, arena, despues } = construir(md);
+  const J = construirJugables(md);
   return `// GENERADO por scripts/importar-gira-75.mjs desde ${FUENTE}.
-// No editar a mano. BORRADOR (DRAFT_FOR_REVIEW): efectos sin cifras y variables sin equivalente; no se puede jugar.
+// No editar a mano. *_BORRADOR: el documento tal cual. GIRA y CAMPANA_75: versiones jugables con el complemento.
 export const GIRA_BORRADOR = Object.freeze(${JSON.stringify({ ...gira, variables: [] }, null, 1)});
 export const CAMPANA_75_BORRADOR = Object.freeze(${JSON.stringify({ ...c75, variables: [] }, null, 1)});
 // Escenas 75-07 a 75-15: contenido para los acontecimientos de Arena del 75.º que ya existen (no son escenas nuevas).
 export const ARENA_75_BORRADOR = Object.freeze(${JSON.stringify(arena, null, 1)});
 // Escenas posteriores a la Arena (extracción y Distrito 12): sin lugar todavía en el motor.
 export const DESPUES_ARENA_75_BORRADOR = Object.freeze(${JSON.stringify(despues, null, 1)});
+// Versiones JUGABLES (APPROVED): borrador + complemento (scripts/gira-75-complemento.mjs). La Gira encadena con el 75.º.
+const VARIABLES = ${JSON.stringify(VARIABLES_GIRA_75)};
+export const GIRA = Object.freeze({ ...${JSON.stringify(J.gira, null, 1)}, variables: VARIABLES });
+export const CAMPANA_75 = Object.freeze({ ...${JSON.stringify(J.c75, null, 1)}, variables: VARIABLES });
+// Crónica de la Arena del 75.º por turno (amplía los acontecimientos existentes; no crea ninguno).
+export const CRONICA_ARENA_75 = Object.freeze(${JSON.stringify(cronica(md), null, 1)});
 `;
 }
 

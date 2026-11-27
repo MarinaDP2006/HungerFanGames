@@ -1,6 +1,8 @@
 // Registro de precampañas del motor común. Solo se juegan las que tienen estado APPROVED.
 import { CAMPANA_74 } from './campana-74.js';
-import { GIRA, CAMPANA_75 } from './estructuras.js';
+// La Gira y el 75.º jugables se generan con scripts/importar-gira-75.mjs (estructuras.js queda como referencia).
+import { GIRA, CAMPANA_75, CRONICA_ARENA_75 } from './campana-gira-75.js';
+export const cronicaArena75 = turno => CRONICA_ARENA_75[turno] || null;
 import { JUGABLE } from '../precampana.js';
 
 export const CAMPANAS = Object.freeze({ 74: CAMPANA_74, gira: GIRA, 75: CAMPANA_75 });
@@ -12,6 +14,11 @@ export function campanaJugable(edicion, registro = CAMPANAS) {
   const c = registro[edicion];
   return c && JUGABLE(c.status) ? c : null;
 }
+
+// Primera precampaña de una edición del modo Historia: el 75.º empieza por la Gira de la Victoria.
+export const inicioDeEdicion = (edicion, registro = CAMPANAS) => Number(edicion) === 75 ? (campanaJugable('gira', registro) || campanaJugable(75, registro)) : campanaJugable(edicion, registro);
+// Siguiente precampaña encadenada (campaign.next), si es jugable.
+export const siguiente = (camp, registro = CAMPANAS) => { const n = camp?.next ? campana(camp.next) : null; return n && JUGABLE(n.status) ? n : null; };
 
 // Ediciones retiradas del juego activo (decisión de dirección del 27-11-2026). Retirada REVERSIBLE:
 // no aparecen en el selector ni se pueden empezar, pero su código, pruebas y documentación se conservan

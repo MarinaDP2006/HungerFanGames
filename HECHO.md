@@ -1,6 +1,6 @@
 # HECHO
 
-Estado a 27-11-2026 · rama `integracion-cosecha-5x` · Android 4.16.0 · Archivo de Panem 1.2
+Estado a 27-11-2026 · rama `integracion-cosecha-5x` · Android 4.17.0 · Archivo de Panem 1.2
 
 ## Juego Android
 - **App:** APK con Capacitor 7. CI compila, prueba en emulador (Android 14) y comprueba la actualización desde 4.9.
@@ -23,7 +23,7 @@ Estado a 27-11-2026 · rama `integracion-cosecha-5x` · Android 4.16.0 · Archiv
 - **74.º (jugable desde 4.16):**
   - 11 escenas, 33 opciones con respuesta y diario y 31 ecos;
   - `74_private_o3` pasa a `exceptional`.
-- **Gira y 75.º (borrador):** las 25 escenas están importadas. La Arena del 75.º sigue la tabla aprobada de 8 acontecimientos.
+- **Gira y 75.º (jugables desde 4.17):** la historia sigue del 74.º a la Gira, al 75.º y a su Arena con crónica en cada acontecimiento.
 - **Ajustes:** texto, sonido, música y ambiente. El catálogo de audio está preparado, pero sin pistas.
 
 ## Web · Archivo de Panem

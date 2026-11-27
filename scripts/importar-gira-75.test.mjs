@@ -13,11 +13,16 @@ test('las 25 escenas del documento, con 3 opciones cada una', () => {
   for (const s of e) assert.equal(s.options.length, 3, s.narrative_id);
 });
 
-test('todo queda en borrador y no se puede jugar', () => {
+test('borradores intactos; versiones jugables APPROVED con respuesta, diario y efectos en todas las opciones', () => {
   for (const c of [D.GIRA_BORRADOR, D.CAMPANA_75_BORRADOR]) assert.equal(c.status, 'DRAFT_FOR_REVIEW');
-  for (const k of ['gira', 75]) assert.ok(!campanaJugable(k));
-  const app = fs.readFileSync(new URL('../La_Cosecha_Juego_Android/js/app.js', import.meta.url), 'utf8');
-  assert.ok(!app.includes('campana-gira-75'), 'el juego no carga los borradores');
+  for (const c of [D.GIRA, D.CAMPANA_75]) {
+    assert.equal(c.status, 'APPROVED');
+    for (const s of c.scenes) for (const o of s.options) { assert.ok(o.response_text && o.journal_text && o.effects.length, o.option_id); }
+  }
+  assert.equal(D.GIRA.next, 'campaign_75');
+  assert.equal(campanaJugable('gira').campaign_id, 'campaign_gira');
+  assert.match(D.CAMPANA_75.scenes[0].text, /Peeta se ofrece voluntario/, 'canon: Katniss no se ofrece en el 75.º');
+  assert.doesNotMatch(D.CAMPANA_75.scenes.map(s => s.text).join(' '), /\*\*/, 'sin marcas de Markdown en pantalla');
 });
 
 test('ninguna cifra inventada: los «+» del documento quedan en null', () => {

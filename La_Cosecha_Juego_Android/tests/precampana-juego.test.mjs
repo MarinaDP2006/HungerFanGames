@@ -184,3 +184,36 @@ test('50.º retirado del juego activo: no sale en el selector ni se puede empeza
   assert.equal(e.api.g().edition, 50);
   assert.equal(e.api.g().phase, 'prearena50');
 });
+
+test('historia encadenada: 74.º → final → Gira (8) → precampaña del 75.º (6) → Arena del 75.º, conservando la continuidad', () => {
+  const e = engine();
+  e.api.setMode('story', 74); e.api.begin();
+  for (let i = 0; i < 11; i++) { const s = PCI.campana(74).scenes[i]; e.click({ pcOption: s.options[1].option_id }); e.click({ pcContinue: '1' }); }
+  const g74 = e.api.g();
+  assert.equal(g74.phase, 'arena');
+  const peeta74 = g74.continuity.campaign_74.vars['rel.katniss_peeta'];
+  g74.phase = 'ending';
+  e.click({ a: 'continuar-historia' });
+  const g = e.api.g();
+  assert.notEqual(g, g74);
+  assert.equal(g.edition, 75);
+  assert.equal(g.precampana.campaign_id, 'campaign_gira');
+  assert.equal(g.precampana.vars['rel.katniss_peeta'], peeta74, 'la Gira empieza con la relación del 74.º');
+  assert.ok(g.continuity.campaign_74, 'la continuidad del 74.º viaja');
+  for (const s of PCI.campana('gira').scenes) { e.click({ pcOption: s.options[0].option_id }); e.click({ pcContinue: '1' }); }
+  assert.equal(g.precampana.campaign_id, 'campaign_75');
+  assert.equal(g.phase, 'precampana');
+  for (const s of PCI.campana(75).scenes) { e.click({ pcOption: s.options[2].option_id }); e.click({ pcContinue: '1' }); }
+  assert.equal(g.phase, 'arena');
+  assert.deepEqual(Object.keys(g.continuity).sort(), ['campaign_74', 'campaign_75', 'campaign_gira']);
+  assert.equal(new Set(g.decisionLog.map(d => d.decision_id)).size, g.decisionLog.length, 'sin decisiones duplicadas');
+});
+
+test('si Peeta muere en el 74.º, no se ofrece continuar (la Gira exige la continuidad de las películas)', () => {
+  const e = engine();
+  e.api.setMode('story', 74); e.api.begin();
+  const g = e.api.g();
+  g.phase = 'ending'; g.tributes.find(t => t.name === 'Peeta Mellark').alive = false;
+  e.click({ a: 'continuar-historia' });
+  assert.equal(e.api.g(), g);
+});

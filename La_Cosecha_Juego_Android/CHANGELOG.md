@@ -1,5 +1,17 @@
 # Changelog
 
+## 4.17 — La historia completa: 74.º → Gira → 75.º
+- **Gira de la Victoria (8 escenas) y precampaña del 75.º (6 escenas) jugables.**
+  - Texto del documento narrativo v1.0, completado por Claude (`scripts/gira-75-complemento.mjs`) con:
+    - respuesta y diario de las 42 opciones;
+    - efectos con cifras: +1 en las relaciones con Peeta y Haymitch; flags en lugar de medidores nuevos.
+  - Corrección de canon: en la cosecha del 75.º, Katniss no se ofrece voluntaria; Peeta se ofrece por Haymitch.
+- **Historia encadenada:**
+  - al terminar el 74.º con Katniss y Peeta vivos, «Continuar: Gira de la Victoria» lleva a la Gira, de ahí al 75.º y a su Arena;
+  - las relaciones y la continuidad viajan de una campaña a la siguiente y la partida nueva se guarda en otra ranura;
+  - elegir el 75.º en el selector también empieza por la Gira.
+- **Arena del 75.º:** cada acontecimiento existente se abre con su crónica (escenas 75-07 a 75-15 según la tabla aprobada, con el comienzo en las plataformas). La confianza en Finnick de la precampaña llega a la Arena.
+
 ## 4.16 — El 74.º se juega
 - **Fondos propios:** la carpeta `imagenes-propias/juego/` tiene la lista de nombres en `LEEME.md`. Cada pantalla usa su fondo si existe (menú, cosecha, tren, entrenamiento, entrevista, lanzamiento, Arena 74/75, Presidente y finales), y el APK lleva todos los que haya.
 - **Retratos compartidos con la web:** los retratos de `imagenes-propias/personajes/` de la web se copian al APK al compilar y salen en la lista de tributos del modo Historia. Se suben una sola vez.
