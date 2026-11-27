@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - 'La_Cosecha_Juego_Android/**'
-      - 'La_Cosecha_Web_Render/**'
+      - 'compartido/**'
       - 'scripts/**'
       - '.github/workflows/android-apk.yml'
 
@@ -13,7 +13,7 @@ on:
 # si falla el APK, no se prueba en el emulador.
 jobs:
   pruebas:
-    name: Pruebas obligatorias (Android, Web y paridad)
+    name: Pruebas obligatorias (Android y contratos)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -61,16 +61,14 @@ jobs:
       - name: 'Android · guardado duradero (copia nativa, cierre forzado, migración)'
         working-directory: La_Cosecha_Juego_Android
         run: node --test tests/durable-storage.test.mjs
-      - name: 'Web · smoke, campañas, presidencia y guardado'
-        working-directory: La_Cosecha_Web_Render
-        run: |
-          node tests/smoke.mjs
-          node tests/campaigns.mjs
-          node tests/presidency.mjs
-          node tests/saves.mjs
-      - name: 'Paridad Web / Android'
+      - name: 'Android · audio por contextos (música aún sin pistas)'
+        working-directory: La_Cosecha_Juego_Android
+        run: node --test tests/audio.test.mjs
+      - name: 'Datos compartidos sincronizados'
+        run: node scripts/sincronizar-compartido.mjs --comprobar
+      - name: 'Contratos Android / Web'
         run: node scripts/paridad.mjs
-      - name: 'Paridad · detección de divergencias'
+      - name: 'Contratos · detección de mezclas y divergencias'
         run: node --test scripts/paridad.test.mjs
 
   apk:

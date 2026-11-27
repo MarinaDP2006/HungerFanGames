@@ -1,0 +1,39 @@
+name: Archivo de Panem (Web)
+on:
+  workflow_dispatch:
+  push:
+    # También en la rama de integración: un workflow nuevo no se puede lanzar a mano hasta que exista en main.
+    branches: [main, integracion-cosecha-5x]
+    paths:
+      - 'La_Cosecha_Web_Render/**'
+      - 'compartido/**'
+      - 'scripts/**'
+      - '.github/workflows/web-archivo.yml'
+
+jobs:
+  web:
+    name: Pruebas del Archivo de Panem
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: 'Web · vistas, rutas, datos y separación del videojuego'
+        working-directory: La_Cosecha_Web_Render
+        run: node --test tests/archivo.test.mjs
+      - name: 'Datos compartidos sincronizados'
+        run: node scripts/sincronizar-compartido.mjs --comprobar
+      - name: 'Contratos Android / Web'
+        run: node scripts/paridad.mjs
+      - name: 'Contratos · detección de mezclas y divergencias'
+        run: node --test scripts/paridad.test.mjs
+      - name: Herramienta de control del navegador (Playwright, usa el Chrome del sistema)
+        run: npm install --no-save --no-audit --no-fund playwright-core@1.49.1
+      - name: 'Web · recorrido en Chrome (móvil y escritorio)'
+        run: CHROME="$(command -v google-chrome || command -v google-chrome-stable)" node La_Cosecha_Web_Render/tests/navegador.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Archivo-de-Panem-capturas
+          path: web-report/
+          if-no-files-found: warn
