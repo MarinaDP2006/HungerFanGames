@@ -176,7 +176,7 @@ test('12. El adaptador 5.5 cambia textos sin cambiar identificadores ni efectos'
 
 test('13. Otras ediciones y el modo libre no cambian',()=>{
   for(const ed of [74,75]){const e=engine();e.api.setMode('story',ed);e.api.begin();const g=e.api.g();
-    assert.equal(g.phase,'harvest');assert.equal(g.preArena50,undefined);assert.equal(g.tributes.length,24);
+    assert.equal(g.phase,ed===74?'precampana':'harvest');assert.equal(g.preArena50,undefined);assert.equal(g.tributes.length,24);
     g.phase='arena';g.arenaTurn=2;e.api.triggerCampaignEvent();assert.equal(g.pendingStoryEvent?.dynamic50,undefined);}
   const e=engine();e.api.setMode('free','custom');e.api.begin();const g=e.api.g();
   assert.equal(g.phase,'harvest');assert.equal(g.preArena50,undefined);assert.equal(g.tributes.length,24);

@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.16 — El 74.º se juega
+- **El 74.º se juega con su precampaña completa.** El modo Historia del 74.º ya no usa la cosecha, el entrenamiento y la entrevista genéricos. Ahora pasa por las 11 escenas (cosecha, despedidas, tren, Capitolio, desfile, entrenamiento, sesión privada, entrevista y lanzamiento) con:
+  - respuesta a cada decisión y diario;
+  - 31 ecos;
+  - transferencia guardada antes de entrar en la Arena.
+- **Aprobación:** el estado pasa a `APPROVED` para tu prueba. La aprobación definitiva es la de Nina en el PR.
+- **Prueba en el emulador:** juega 6 escenas, guarda, fuerza el cierre, vuelve a cargar en la misma escena y termina la precampaña y la Arena.
+
 ## 4.15 — Arena rediseñada y Mags según el canon
 - **Arena:**
   - HUD fijo con día, arena, tributos vivos y barras de salud, hambre, sed y fatiga, que se ponen en rojo cuando hay peligro;

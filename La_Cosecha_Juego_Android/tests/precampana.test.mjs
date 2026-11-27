@@ -104,9 +104,9 @@ test('74.º: cada efecto de la fuente se traduce al contrato maestro sin perder 
   assert.deepEqual(priv, ['74_private_o1', '74_private_o2', '74_private_o3'], 'los IDs se conservan tal cual, aunque no sigan el patrón de la escena');
 });
 
-test('74.º, Gira y 75.º no se pueden jugar todavía', () => {
-  assert.equal(CAMPANA_74.status, 'DRAFT_FOR_REVIEW');
-  assert.equal(PCI.campanaJugable(74), null);
+test('el 74.º se juega (activado el 27-11-2026); la Gira y el 75.º todavía no', () => {
+  assert.equal(CAMPANA_74.status, 'APPROVED');
+  assert.equal(PCI.campanaJugable(74), CAMPANA_74);
   assert.equal(PCI.campanaJugable(75), null);
   assert.equal(PCI.campanaJugable('gira'), null);
   assert.equal(PCI.campanaJugable(50), null, 'el 50.º no pasa por el motor común');

@@ -1,5 +1,4 @@
-// Motor común de precampañas dentro del juego real (app.js), con una copia del 74.º marcada como APPROVED
-// SOLO en esta prueba. En el juego el 74.º sigue en DRAFT_FOR_REVIEW y no se puede jugar.
+// Motor común de precampañas dentro del juego real (app.js) con el 74.º (APPROVED desde el 27-11-2026).
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -50,10 +49,10 @@ function engine(opts={}){
 }
 const aprobada = { ...CAMPANA_74, status: 'APPROVED' };
 const PCI_PRUEBA = { edicionActiva: PCI.edicionActiva, campana: id => (['74', 'campaign_74'].includes(String(id)) ? aprobada : null), campanaJugable: e => (Number(e) === 74 ? aprobada : null) };
-const start74 = (approved = true) => { const e = engine({ overrides: approved ? { PCI: PCI_PRUEBA } : {} }); e.api.setMode('story', 74); e.api.begin(); return e; };
+const start74 = (approved = true) => { const e = engine({ overrides: { PCI: approved ? PCI_PRUEBA : { ...PCI_PRUEBA, campanaJugable: () => null } } }); e.api.setMode('story', 74); e.api.begin(); return e; };
 const html = e => e.nodes['#screen'].innerHTML;
 
-test('sin aprobación, el 74.º sigue con las fases de siempre', () => {
+test('si una campaña no está aprobada, la edición sigue con las fases de siempre', () => {
   const e = start74(false);
   assert.notEqual(e.api.g().phase, 'precampana');
   assert.equal(e.api.g().precampana, undefined);

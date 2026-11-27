@@ -119,12 +119,12 @@ export function generar(md, anexoMd = null, revisionMd = null) {
     for (const sc of scenes) Object.assign(sc, { dialogue: null, player_prompt: null, participant_ids: null });
   }
   const campaign = {
-    campaign_id: 'campaign_74', title: '74.º Juegos del Hambre · precampaña', status: 'DRAFT_FOR_REVIEW',
+    campaign_id: 'campaign_74', title: '74.º Juegos del Hambre · precampaña', status: revisionMd ? 'APPROVED' : 'DRAFT_FOR_REVIEW', approval: revisionMd ? 'Activado el 27-11-2026 para la prueba de Nina; la aprobación definitiva es la suya en el PR' : null,
     source_version: revisionMd ? '74-prearena-1.2-borrador' : anexoMd ? '74-prearena-1.1' : '74-prearena-1.0', source_ref: FUENTE, annex_ref: anexoMd ? ANEXO : null, revision_ref: revisionMd ? REVISION : null,
     transfer_id: 'campaign_74:prearena:v1',
     scenes,
   };
-  return `// GENERADO por scripts/importar-campana-74.mjs desde ${FUENTE}${anexoMd ? ` y ${ANEXO}` : ''}${revisionMd ? ` y ${REVISION}` : ''}.\n// No editar a mano. Estado DRAFT_FOR_REVIEW: no se puede jugar hasta su aprobación.\nimport { VARIABLES_74 } from '../precampana.js';\n\nexport const CAMPANA_74 = Object.freeze({ ...${JSON.stringify(campaign, null, 2)}, variables: VARIABLES_74 });\n`;
+  return `// GENERADO por scripts/importar-campana-74.mjs desde ${FUENTE}${anexoMd ? ` y ${ANEXO}` : ''}${revisionMd ? ` y ${REVISION}` : ''}.\n// No editar a mano.\nimport { VARIABLES_74 } from '../precampana.js';\n\nexport const CAMPANA_74 = Object.freeze({ ...${JSON.stringify(campaign, null, 2)}, variables: VARIABLES_74 });\n`;
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname)) {

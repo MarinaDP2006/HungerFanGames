@@ -1,11 +1,12 @@
 // GENERADO por scripts/importar-campana-74.mjs desde docs/paquetes/entrega_maestra_v1/00_FUENTES_APROBADAS/74_v1/narrativa/74_PreArena_11_Escenas_v1.md y docs/paquetes/74_anexo_1_1/74_Diario_Respuestas_y_Transferencia_Arena_v1_1.md y docs/paquetes/74_revision_chatgpt/La_Cosecha_Respuesta_Revision_74_y_Correspondencias_Gira_75_v1.md.
-// No editar a mano. Estado DRAFT_FOR_REVIEW: no se puede jugar hasta su aprobación.
+// No editar a mano.
 import { VARIABLES_74 } from '../precampana.js';
 
 export const CAMPANA_74 = Object.freeze({ ...{
   "campaign_id": "campaign_74",
   "title": "74.º Juegos del Hambre · precampaña",
-  "status": "DRAFT_FOR_REVIEW",
+  "status": "APPROVED",
+  "approval": "Activado el 27-11-2026 para la prueba de Nina; la aprobación definitiva es la suya en el PR",
   "source_version": "74-prearena-1.2-borrador",
   "source_ref": "docs/paquetes/entrega_maestra_v1/00_FUENTES_APROBADAS/74_v1/narrativa/74_PreArena_11_Escenas_v1.md",
   "annex_ref": "docs/paquetes/74_anexo_1_1/74_Diario_Respuestas_y_Transferencia_Arena_v1_1.md",

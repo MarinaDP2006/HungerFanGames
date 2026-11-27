@@ -129,23 +129,20 @@ try {
   check('Música: sin pistas todavía (no suena nada)', await page.evaluate(() => !!document.querySelector('#music-status') && document.documentElement.dataset.music === 'on'));
   await tap(page, '[data-a="settings-back"]');
 
-  // 4. 74.º (el 50.º está retirado del juego activo): no aparece en el selector; cosecha, entrenamiento y
-  // entrevista con guardado en la ranura 1.
+  // 4. 74.º (el 50.º está retirado del juego activo): no aparece en el selector. Precampaña de 11 escenas
+  // del motor común: se juegan seis (decisión, respuesta y diario) y se guarda en la ranura 1.
   await tap(page, '[data-a="story"]');
   check('El 50.º no aparece en el selector y el 74.º y el 75.º sí', !(await page.$('[data-ed="50"]')) && !!(await page.$('[data-ed="74"]')) && !!(await page.$('[data-ed="75"]')));
   await tap(page, '[data-ed="74"]');
   await tap(page, '[data-a="begin"]');
   check('Audio: el contexto sigue al juego (menú → historia:74)', await page.evaluate(() => document.documentElement.dataset.audioContext) === 'historia:74', await page.evaluate(() => document.documentElement.dataset.audioContext));
-  await tap(page, '[data-decision="0"]');
-  await tap(page, '[data-a="training"]');
-  await tap(page, '[data-train="survival"]');
-  await tap(page, '[data-a="interview"]');
-  await tap(page, '[data-interview="human"]');
+  const escena = async () => { await tap(page, '[data-pc-option]'); if (await page.$('[data-pc-continue]')) await tap(page, '[data-pc-continue]'); };
+  for (let i = 0; i < 6; i++) await escena();
   await tap(page, '[data-a="save"]');
   const fase = await page.textContent('h1.display');
   const slot1 = await page.evaluate(() => JSON.parse(localStorage.getItem('laCosechaSave:1') || 'null'));
-  check('74.º: cosecha, entrenamiento y entrevista; guardado en la ranura 1 (formato 5)', slot1?.saveVersion === 5 && slot1.game.edition === 74 && slot1.game.phase === 'interview', `${fase} · saveVersion ${slot1?.saveVersion}`);
-  await snap('74-entrevista');
+  check('74.º: seis escenas de la precampaña con diario; guardado en la ranura 1 (formato 5)', slot1?.saveVersion === 5 && slot1.game.edition === 74 && slot1.game.phase === 'precampana' && slot1.game.precampana?.index === 6 && slot1.game.precampana.journal.length === 6, `${fase} · saveVersion ${slot1?.saveVersion} · escena ${slot1?.game?.precampana?.index}`);
+  await snap('74-precampana');
 
   // 5. Cierre forzado medio segundo después de guardar, sin pasar a segundo plano: es el caso en que
   // la versión 4.9 perdía lo último. La copia nativa debe tenerlo.
@@ -159,11 +156,13 @@ try {
   await page.waitForSelector('[data-slot-load="1"]');
   await snap('partidas');
   await tap(page, '[data-slot-load="1"]');
-  const resumed = await page.evaluate(() => ({ h1: document.querySelector('h1.display')?.textContent, arena: !!document.querySelector('[data-a="arena"]') }));
-  check('Tras reiniciar: se carga la ranura 1 en el mismo punto', resumed.h1 === fase && resumed.arena, JSON.stringify(resumed));
+  const resumed = await page.evaluate(() => ({ h1: document.querySelector('h1.display')?.textContent, opciones: document.querySelectorAll('[data-pc-option]').length }));
+  check('Tras reiniciar: se carga la ranura 1 en la misma escena', resumed.h1 === fase && resumed.opciones === 3, JSON.stringify(resumed));
 
-  // 6. Arena del 74.º hasta el final
-  await tap(page, '[data-a="arena"]');
+  // 6. Resto de la precampaña y Arena del 74.º hasta el final
+  for (let i = 0; i < 5; i++) await escena();
+  const enArena = await page.evaluate(() => !!document.querySelector('.hud'));
+  check('74.º: tras la escena 11 se entra en la Arena (transferencia guardada)', enArena && await page.evaluate(() => !!JSON.parse(localStorage.getItem('laCosechaSave:1') || 'null')?.game?.continuity?.campaign_74), '');
   let arenaEvents = 0;
   for (let i = 0; i < 80; i++) {
     if (await page.$('.epilogue')) break;
