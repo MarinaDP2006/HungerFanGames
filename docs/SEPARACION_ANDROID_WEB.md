@@ -41,7 +41,10 @@
    - los service workers.
 
    `scripts/paridad.test.mjs` provoca 14 mezclas o divergencias y comprueba que se detectan todas.
-5. **Audio en Android.** `js/audio.js` decide la música por contexto: menú, Historia por edición, Arena, finales, Libre, Presidencia, crisis y escenas. Ajustes nuevos: Silenciar todo, Efectos y Música con volumen, guardados en las dos copias. **No hay pistas: no suena música.** El OGG original se conserva sin conectar.
+5. **Audio en Android.** `js/audio.js` lleva dos canales, música y ambiente, y decide qué suena según el contexto: menú, Historia por edición, Arena, finales, Libre, Presidencia, crisis y escenas.
+   - El catálogo de cues de la Entrega Maestra está registrado **sin archivos ni asignaciones**: no suena nada.
+   - Ajustes nuevos: Silenciar todo, Efectos, Música y Ambiente, cada uno con su volumen, guardados en las dos copias.
+   - El OGG original se conserva sin conectar.
 6. **Guardado de Android intacto.** Mismo formato (`saveVersion` 4), mismas ranuras y misma copia nativa. Las preferencias anteriores se completan con los valores de música por defecto (con prueba).
 
 ## Riesgos y cómo se controlan

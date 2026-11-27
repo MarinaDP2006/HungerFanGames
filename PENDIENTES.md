@@ -1,4 +1,20 @@
-# Matriz de funcionalidades (Android 4.10.1)
+# Productos
+- **Android · La Cosecha (videojuego)**, versión 4.11.0.
+- **Web · Archivo de Panem**, versión 1.0, sin desplegar.
+
+Arquitectura en `docs/SEPARACION_ANDROID_WEB.md`. Entrega creativa en `docs/ENTREGA_MAESTRA_V1_INVENTARIO.md`.
+
+# Matriz del Archivo de Panem (Web 1.0)
+| Funcionalidad | Implementado | Pruebas automáticas (CI) | Navegador | Terminado |
+|---|---|---|---|---|
+| Separado del videojuego (sin motor, partidas ni pantallas de juego) | ✅ | ✅ `archivo.test`, contratos | ✅ Chrome | ✅ |
+| Portada, distritos, personajes (con filtros), vencedores, ediciones, cronología, arenas y galería con datos existentes | ✅ | ✅ | ✅ móvil y escritorio | ❌ esperan contenido aprobado |
+| Estado de canon y fuente en cada ficha | ✅ (todo «Sin clasificar») | ✅ | ✅ | ❌ faltan valores |
+| Mapa ilustrado, Capitolio, documentos y novedades | Aviso de pendiente | ✅ | ✅ | ❌ `BLOCKED_CREATIVE` |
+| Navegación definitiva según la Entrega Maestra (Lugares, Acerca, rutas sin `#`) | ❌ | — | — | ❌ falta tu decisión |
+| Despliegue en Render | ❌ no autorizado | — | — | — |
+
+# Matriz de funcionalidades (Android)
 Leyenda: ✅ sí · ⏳ pendiente · — no aplica. «Emulador» = Android 14 en GitHub Actions. «Móvil físico» = teléfono real (guía en `La_Cosecha_Juego_Android/docs/PRUEBA_MOVIL_FISICO.md`).
 
 | Funcionalidad | Implementado | Pruebas automáticas (CI) | Probado en emulador | Validado en móvil físico |
