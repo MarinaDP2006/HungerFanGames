@@ -6,6 +6,9 @@
 - Ajustes: sonido, volumen, reducir movimiento, tamaño de texto y partidas guardadas (borrar con confirmación). Se guardan aparte de las partidas.
 - Guardados: tres ranuras, formato con versión (`saveVersion` 4) y migración automática de la ranura única anterior, que no se borra.
 - CSS: eliminada la regla muerta `.map-frame`, que referenciaba `menu-panem.png`. La imagen se conserva.
+- Corregido: los botones de la cabecera (inicio y ⚙ Ajustes) no respondían; también en la Web.
+- CI: cada suite es un paso propio (16 en total) y el workflow falla si falla cualquiera; se comprueba el contenido y la versión del APK.
+- Prueba en emulador (`tests/device/android-e2e.mjs`, en CI): instala el APK en Android 14 y recorre navegación, ajustes, sonido, guardado, reinicio, carga y el 50.º completo. Deja informe y capturas.
 
 ## 4.8 — Presidencia, APK y pruebas
 - Presidencia (`js/presidency.js`): cada orden muestra su efecto real (antes todas decían lo mismo), en verde, rojo o ámbar según convenga.

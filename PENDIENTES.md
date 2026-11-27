@@ -11,7 +11,9 @@
 | Presidencia: órdenes, crisis y finales | ✅ `tests/presidency.mjs` y 1000 mandatos simulados con el motor real |
 | Web y Android con el mismo juego | ✅ `scripts/paridad.mjs` (53 archivos idénticos), también en GitHub Actions |
 | Despliegue automático en Render | ⚠️ No se lanza solo al subir a GitHub; se publica a mano desde la API. Hay que reconectar el repositorio en Render |
-| APK Android | ✅ Compila en GitHub Actions (ejecución 45729499528): 13 MB, `com.lacosecha.panem`, Android 6.0+ (SDK 23), compilado con SDK 35; contiene el mismo `app.js` que la web. ⏳ Falta probarlo instalado en un móvil |
+| APK Android 4.9 (CI) | ✅ GitHub Actions, ejecución 45982199817 sobre `integracion-cosecha-5x`: 16 suites en verde (13 Android, Web, paridad y detección de divergencias), APK de depuración de 7,2 MB con `versionName` 4.9.0 / `versionCode` 40900, 52 archivos de juego, sin WAV ni módulos rechazados |
+| APK Android 4.9 instalado (CI, emulador) | ✅ Emulador Android 14 (API 34, x86_64, imagen AOSP, WebView 113): arranque y versión, navegación por los cuatro modos, ajustes, sonido, guardado automático, cierre y reapertura de la app, carga de la ranura, 50.º completo (9 escenas, 8 acontecimientos de Arena y final) y borrar partida con confirmación. 18/18 comprobaciones; informe y capturas en el artefacto «La-Cosecha-Android-emulador». ⏳ Falta un móvil físico |
+| Pruebas locales (no CI) | Recorridos en Chrome de escritorio y móvil del bundle `www/` (50.º, ajustes y ranuras). Sirven de apoyo; la referencia es CI |
 | Web publicada (versión 4.8) | ✅ Comprobada en Chrome contra `la-cosecha-web.onrender.com`: sin errores de JavaScript ni recursos rotos, service worker con caché `la-cosecha-v4-8`, presidencia y «¿Y si…?» funcionando (escritorio y móvil) |
 
 ## Qué es prototipo todavía
@@ -35,8 +37,9 @@ El código del juego ocupa ~77 KB (`js/app.js`) y `js/data.js` ~8,5 KB: la estru
 - [x] Guardado, carga, importación y exportación: prueba de ida y vuelta automatizada (4.8).
 - [ ] Música original (ahora solo hay efectos sintetizados).
 - [x] APK compilado en GitHub Actions y contenido verificado (4.8).
-- [ ] Instalar el APK en un móvil Android y probar los tres modos.
-- [ ] El APK dice «versión 1.0»: pasar la versión del juego (4.8) a `versionName` en la compilación.
+- [x] APK instalado y recorrido en un emulador Android 14 (4.9, en CI).
+- [ ] Probarlo en un móvil físico.
+- [x] El APK lleva la versión del juego (4.9.0 / 40900); criterio en `La_Cosecha_Juego_Android/docs/VERSIONADO.md`.
 - [ ] Actualizar las acciones de GitHub a versiones con Node 24 (aviso de GitHub; ahora funcionan).
 
 ### Web
@@ -48,9 +51,17 @@ El código del juego ocupa ~77 KB (`js/app.js`) y `js/data.js` ~8,5 KB: la estru
 ### GitHub
 - [ ] Crear un Release cuando el APK se haya probado en un móvil. **No se publica todavía.**
 
+### Deuda técnica detectada en la fase 1
+- [ ] Guardado en Android: el WebView escribe `localStorage` en disco con unos segundos de retraso. Si el sistema mata la app justo después de guardar, se pierde lo último (visto en el emulador). Propuesta: guardar también con el almacenamiento nativo de Capacitor (`@capacitor/preferences`). Necesita autorización.
+- [ ] Tamaño de texto: usa `zoom` de CSS. En WebView antiguos (113) Playwright no calcula bien dónde pulsar con el texto ampliado; en el emulador se hizo clic directo en esos botones (queda anotado en el informe). Hay que comprobarlo con el dedo en un móvil y, si falla, pasar los tamaños a `rem`.
+- [ ] `app.js` sigue siendo un único archivo de ~87 KB.
+
 ## Errores encontrados y corregidos
 | Versión | Error | Estado |
 |---|---|---|
+| 4.9 | Los botones de la cabecera (inicio «LA COSECHA» y ⚙ Ajustes) no hacían nada en Web ni Android | ✅ Corregido y con prueba (lo detectó la prueba en el emulador) |
+| 4.9 | El APK incluía módulos rechazados, el máster WAV e imágenes sin uso | ✅ Corregido y comprobado en CI |
+| 4.9 | CI solo ejecutaba 4 suites | ✅ Corregido: 16 pasos separados |
 | 4.8 | Presidencia: todas las órdenes tenían la misma descripción | ✅ Corregido |
 | 4.8 | Presidencia: se perdía siempre en 8-16 días; el régimen caía con rebelión 0 si el orden llegaba a 0 | ✅ Corregido y simulado |
 | 4.8 | Presidencia: el indicador decía «SIN PARTIDA» durante el mandato | ✅ Corregido |
