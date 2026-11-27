@@ -1,3 +1,7 @@
+// Datos de Panem compartidos por el videojuego (Android) y el Archivo de Panem (Web).
+// Fuente única: compartido/data.js. Las copias en La_Cosecha_*/js/data.js se generan con
+// `node scripts/sincronizar-compartido.mjs` y el detector de contratos exige que sean idénticas.
+// Solo datos: nada de interfaz ni lógica de juego.
 export const districts=[
 {id:1,name:"Distrito 1",industry:"Artículos de lujo",description:"Distrito rico, estrechamente vinculado al Capitolio. Sus tributos suelen recibir entrenamiento privilegiado.",color:"#b88d4d"},
 {id:2,name:"Distrito 2",industry:"Cantería y defensa",description:"Centro de cantería, armamento y formación militar. Produce muchos profesionales.",color:"#8f7660"},
