@@ -1,18 +1,25 @@
 // Ranuras de guardado de La Cosecha.
 //
-// Formato de cada ranura (saveVersion 4):
-//   { format: 'la-cosecha-save', saveVersion: 4, slot, savedAt, gameVersion, checksum, game }
+// Formato de cada ranura (saveVersion 5):
+//   { format: 'la-cosecha-save', saveVersion: 5, slot, savedAt, gameVersion, checksum, game }
+//   game.timeline y game.decisionLog: registro de decisiones (js/decisiones.js), desde la versión 5.
+// Al leer una ranura de las versiones 1–4 se migra en una copia (si la migración falla, se devuelve
+// la partida tal cual estaba). La primera vez que se sobrescribe, el texto anterior se guarda en
+// laCosechaSaveBackup:<n> y no se vuelve a tocar.
 //   `checksum` (desde 4.9.1, opcional) detecta una copia dañada; las ranuras sin él se siguen leyendo.
 // Versiones anteriores que se siguen leyendo:
 //   - Ranura única antigua: clave 'laCosechaSave' con el objeto de partida sin envoltorio.
 //     Se migra a la ranura 1 la primera vez; la clave antigua NO se borra.
 //   - Exportaciones anteriores: { format:'la-cosecha-save', version: 3, game }.
 export const SAVE_FORMAT = 'la-cosecha-save';
-export const SAVE_VERSION = 4;
+import { migrateGame } from './decisiones.js';
+
+export const SAVE_VERSION = 5;
 export const SLOTS = [1, 2, 3];
 export const LEGACY_KEY = 'laCosechaSave';
 export const MIGRATED_KEY = 'laCosechaSaveMigrated';
 export const slotKey = n => `laCosechaSave:${n}`;
+export const backupKey = n => `laCosechaSaveBackup:${n}`;
 
 const MODES = ['story', 'free', 'president'];
 const isGame = g => !!g && typeof g === 'object' && MODES.includes(g.mode);
@@ -45,13 +52,24 @@ export function unwrapSave(raw) {
   return null;
 }
 
+// Lleva un registro al formato actual en una copia. Si algo falla, devuelve el original intacto.
+export function migrateRecord(record) {
+  if (!record || (record.saveVersion >= SAVE_VERSION && Array.isArray(record.game?.decisionLog))) return record;
+  try {
+    const game = migrateGame(JSON.parse(JSON.stringify(record.game)));
+    return { ...record, game, migratedFrom: record.saveVersion, saveVersion: SAVE_VERSION };
+  } catch (e) {
+    return { ...record, migrationError: String(e && e.message || e) };
+  }
+}
+
 function migrateLegacy(storage) {
   const legacy = storage.getItem(LEGACY_KEY);
   if (legacy == null || storage.getItem(MIGRATED_KEY) === '1') return null;
   let game;
   try { game = unwrapSave(JSON.parse(legacy)); } catch { return { status: 'corrupt', slot: 1, legacy: true }; }
   if (!game) return { status: 'corrupt', slot: 1, legacy: true };
-  const record = wrapSave(game, 1, null);
+  const record = wrapSave(migrateGame(game), 1, null);
   record.migratedFrom = LEGACY_KEY;
   storage.setItem(slotKey(1), JSON.stringify(record));
   storage.setItem(MIGRATED_KEY, '1');
@@ -73,13 +91,18 @@ export function readSlot(storage, slot) {
     if (!game) return { status: 'corrupt', slot };
     if (raw.format === SAVE_FORMAT && raw.checksum && raw.checksum !== checksum(JSON.stringify(raw.game))) return { status: 'corrupt', slot };
     const record = raw.format === SAVE_FORMAT ? { ...raw, saveVersion: raw.saveVersion ?? raw.version ?? 1, game } : wrapSave(game, slot, null);
-    return { status: 'ok', slot, record };
+    return { status: 'ok', slot, record: migrateRecord(record) };
   } catch { return { status: 'corrupt', slot }; }
 }
 
 export function writeSlot(storage, slot, game, gameVersion) {
   if (!SLOTS.includes(Number(slot))) throw new Error(`Ranura no válida: ${slot}`);
   const record = wrapSave(game, Number(slot), gameVersion);
+  // Copia de seguridad de la partida en formato anterior antes de sobrescribirla por primera vez.
+  const prev = storage.getItem(slotKey(record.slot));
+  if (prev != null && storage.getItem(backupKey(record.slot)) == null) {
+    try { const v = JSON.parse(prev).saveVersion ?? JSON.parse(prev).version ?? 1; if (v < SAVE_VERSION) storage.setItem(backupKey(record.slot), prev); } catch { storage.setItem(backupKey(record.slot), prev); }
+  }
   storage.setItem(slotKey(record.slot), JSON.stringify(record));
   return record;
 }
@@ -87,6 +110,7 @@ export function writeSlot(storage, slot, game, gameVersion) {
 export function deleteSlot(storage, slot) {
   if (!SLOTS.includes(Number(slot))) return false;
   storage.removeItem?.(slotKey(Number(slot)));
+  storage.removeItem?.(backupKey(Number(slot)));
   // Si se borra la ranura 1, la partida antigua no debe volver a aparecer por migración.
   if (Number(slot) === 1 && storage.getItem(LEGACY_KEY) != null) storage.setItem(MIGRATED_KEY, '1');
   return true;
@@ -106,4 +130,4 @@ export function slotSummary(record) {
 }
 
 // Claves que deben sobrevivir a un cierre de la app (las copia el almacenamiento duradero).
-export const DURABLE_SAVE_KEYS = [...SLOTS.map(slotKey), LEGACY_KEY, MIGRATED_KEY];
+export const DURABLE_SAVE_KEYS = [...SLOTS.map(slotKey), ...SLOTS.map(backupKey), LEGACY_KEY, MIGRATED_KEY];
