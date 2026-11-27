@@ -67,7 +67,7 @@ for (const f of list(APP, 'assets')) {
 const modWeb = modulos(WEB, ENTRADA.Web);
 const modApp = modulos(APP, ENTRADA.Android);
 const html = exists(WEB, 'index.html') ? read(WEB, 'index.html') : '';
-if (!/<script[^>]+src="js\/archivo\.js"/.test(html)) problems.push('La Web debe entrar por js/archivo.js');
+if (!/<script[^>]+src="\/?js\/archivo\.js"/.test(html)) problems.push('La Web debe entrar por js/archivo.js');
 const juego = list(APP, 'js').filter(f => !compartidos.includes(f));             // módulos propios del videojuego
 for (const f of juego) if (exists(WEB, f)) problems.push(`La Web contiene un módulo del videojuego: ${f}`);
 if (exists(WEB, 'css/style.css')) problems.push('La Web contiene la hoja de estilos del videojuego (css/style.css)');

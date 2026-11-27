@@ -4,26 +4,30 @@ import * as A from './archivo-datos.js';
 
 export const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
+// Menú definitivo (decisión de la directora, 27-11-2026).
 export const SECCIONES = [
-  { id: '', label: 'Portada' },
-  { id: 'mapa', label: 'Mapa' },
+  { id: '', label: 'Inicio' },
   { id: 'distritos', label: 'Distritos' },
+  { id: 'capitolio', label: 'Capitolio' },
   { id: 'personajes', label: 'Personajes' },
-  { id: 'vencedores', label: 'Vencedores' },
-  { id: 'ediciones', label: 'Ediciones' },
+  { id: 'juegos', label: 'Juegos' },
   { id: 'cronologia', label: 'Cronología' },
-  { id: 'arenas', label: 'Arenas' },
-  { id: 'documentos', label: 'Documentos' },
+  { id: 'gira', label: 'Gira de la Victoria' },
+  { id: 'rebelion-y-guerra', label: 'Rebelión y Guerra' },
+  { id: 'lugares', label: 'Lugares' },
   { id: 'galeria', label: 'Galería' },
-  { id: 'novedades', label: 'Novedades' },
+  { id: 'documentos', label: 'Documentos' },
+  { id: 'acerca', label: 'Acerca' },
 ];
 
 // «#/distritos/12» → { seccion: 'distritos', id: '12' }
-export function parseRuta(hash = '') {
-  const partes = String(hash).replace(/^#?\/?/, '').split('/').map(decodeURIComponent);
+// Direcciones estables sin «#»: /distritos/12, /personajes/katniss-everdeen, /juegos/74.
+// Se aceptan también las antiguas con «#/…».
+export function parseRuta(ruta = '/') {
+  const partes = String(ruta).replace(/^#/, '').replace(/[?#].*$/, '').replace(/^\/+|\/+$/g, '').split('/').filter(Boolean).map(decodeURIComponent);
   return { seccion: partes[0] || '', id: partes[1] || null };
 }
-export const enlace = (seccion, id) => `#/${seccion}${id != null ? '/' + encodeURIComponent(id) : ''}`;
+export const enlace = (seccion, id) => `/${seccion}${id != null ? '/' + encodeURIComponent(id) : ''}`;
 
 const pendiente = (clave, titulo = 'Pendiente de contenido aprobado') => `
   <aside class="pendiente" data-pendiente="${esc(clave)}">
@@ -39,7 +43,7 @@ const cabecera = (antetitulo, titulo, entradilla = '') => `
     ${entradilla ? `<p class="entradilla">${esc(entradilla)}</p>` : ''}
   </header>`;
 
-const migas = (...pasos) => `<nav class="migas" aria-label="Estás en"><a href="#/">Archivo</a>${pasos.map(([t, h]) => ` <span aria-hidden="true">›</span> ${h ? `<a href="${h}">${esc(t)}</a>` : `<span aria-current="page">${esc(t)}</span>`}`).join('')}</nav>`;
+const migas = (...pasos) => `<nav class="migas" aria-label="Estás en"><a href="/">Archivo</a>${pasos.map(([t, h]) => ` <span aria-hidden="true">›</span> ${h ? `<a href="${h}">${esc(t)}</a>` : `<span aria-current="page">${esc(t)}</span>`}`).join('')}</nav>`;
 
 const sello = d => `<span class="sello-distrito" style="--c:${esc(d.color)}" aria-hidden="true">${d.id}</span>`;
 // Estado de canon y fuente de cada ficha (modelo de datos de la Entrega Maestra v1).
@@ -53,7 +57,7 @@ function portada() {
   const cifras = [
     ['Distritos', A.DISTRITOS.length, 'distritos'],
     ['Personajes', A.PERSONAJES.length, 'personajes'],
-    ['Ediciones', A.EDICIONES.length, 'ediciones'],
+    ['Juegos', A.EDICIONES.length, 'juegos'],
     ['Ilustraciones', A.GALERIA.length, 'galeria'],
   ];
   return `
@@ -61,33 +65,33 @@ function portada() {
     <div class="portada-texto">
       <p class="antetitulo">Proyecto fan no oficial · Registro del universo de La Cosecha</p>
       <h1>Archivo de Panem</h1>
-      <p class="entradilla">Consulta los distritos, los personajes, las ediciones de los Juegos y las arenas que forman el mundo de La Cosecha. Cada sección indica qué está documentado y qué falta por completar.</p>
+      <p class="entradilla">Consulta los distritos, el Capitolio, los personajes, las ediciones de los Juegos y los lugares que forman el mundo de La Cosecha. Cada sección indica qué está documentado y qué falta por completar.</p>
       <ul class="cifras">${cifras.map(([t, n, s]) => `<li><a href="${enlace(s)}"><b>${n}</b><span>${esc(t)}</span></a></li>`).join('')}</ul>
     </div>
     ${imagen(A.GALERIA[0], 'portada-imagen', 'eager')}
   </section>
   <section class="indice" aria-label="Secciones del archivo">
-    ${SECCIONES.slice(1).map((s, i) => `<a class="indice-item" href="${enlace(s.id)}"><span class="indice-num">${String(i + 1).padStart(2, '0')}</span><span>${esc(s.label)}</span>${A.PENDIENTES[s.id] && ['mapa', 'documentos', 'novedades'].includes(s.id) ? '<em>pendiente</em>' : ''}</a>`).join('')}
+    ${SECCIONES.slice(1).map((s, i) => `<a class="indice-item" href="${enlace(s.id)}"><span class="indice-num">${String(i + 1).padStart(2, '0')}</span><span>${esc(s.label)}</span>${['capitolio', 'gira', 'rebelion-y-guerra', 'lugares', 'documentos'].includes(s.id) ? '<em>pendiente</em>' : ''}</a>`).join('')}
   </section>
   <section class="bloque">
-    <h2>Ediciones registradas</h2>
-    <ol class="lista-ediciones">${A.EDICIONES.map(e => `<li><a href="${enlace('ediciones', e.year)}"><span class="anio">Año ${e.year}</span><span>${esc(e.title)}</span></a></li>`).join('')}</ol>
+    <h2>Juegos registrados</h2>
+    <ol class="lista-ediciones">${A.EDICIONES.map(e => `<li><a href="${enlace('juegos', e.year)}"><span class="anio">Año ${e.year}</span><span>${esc(e.title)}</span></a></li>`).join('')}</ol>
   </section>
   <section class="bloque juego">
     <h2>El videojuego</h2>
-    <p>La Cosecha es también un videojuego para Android, en desarrollo. El Archivo es un sitio de consulta: aquí no se juega ni se guardan partidas.</p>
+    <p>La Cosecha es también un videojuego para Android, en desarrollo. El Archivo es un sitio de consulta: aquí no se juega ni se guardan partidas. <a href="/acerca">Acerca del proyecto</a></p>
   </section>`;
 }
 
 function mapa() {
   const celda = d => `<a class="mapa-celda" href="${enlace('distritos', d.id)}" style="--c:${esc(d.color)}"><span class="mapa-num">${d.id}</span><span class="mapa-ind">${esc(d.industry)}</span></a>`;
-  return `${migas(['Mapa'])}${cabecera('Panem', 'Mapa de Panem', 'Índice de los distritos y el Capitolio. Es un esquema de navegación: no representa la geografía.')}
+  return `<section class="bloque" aria-labelledby="t-mapa"><h2 id="t-mapa">Mapa de Panem</h2><p class="nota">Esquema de navegación: no representa la geografía.</p>
   ${pendiente('mapa', 'Mapa ilustrado pendiente')}
   <div class="mapa-esquema" role="list">
     <a class="mapa-celda capitolio" role="listitem" href="${enlace('capitolio')}"><span class="mapa-num">C</span><span class="mapa-ind">El Capitolio</span></a>
     ${A.DISTRITOS.map(d => celda(d).replace('<a ', '<a role="listitem" ')).join('')}
   </div>
-  ${A.DISTRITO_13 ? `<p class="nota-13">El <a href="${enlace('distritos', 13)}">Distrito 13</a> figura aparte: no forma parte de las cosechas.</p>` : ''}`;
+  </section>`;
 }
 
 function distritos(id) {
@@ -97,7 +101,8 @@ function distritos(id) {
     <a class="tarjeta-distrito capitolio" href="${enlace('capitolio')}"><span class="sello-distrito" aria-hidden="true">C</span><h2>El Capitolio</h2><p>Sede del gobierno de Panem.</p><em>Ficha pendiente</em></a>
     ${A.DISTRITOS.map(d => `<a class="tarjeta-distrito" href="${enlace('distritos', d.id)}">${sello(d)}<h2>${esc(d.name)}</h2><p class="industria">${esc(d.industry)}</p><p>${esc(d.description)}</p></a>`).join('')}
   </div>
-  ${A.DISTRITO_13 ? `<section class="bloque historico"><h2>Fuera de las cosechas</h2><a class="tarjeta-distrito d13" href="${enlace('distritos', 13)}">${sello(A.DISTRITO_13)}<h2>${esc(A.DISTRITO_13.name)}</h2><p class="industria">${esc(A.DISTRITO_13.industry)}</p><p>${esc(A.DISTRITO_13.description)}</p></a></section>` : ''}`;
+  ${A.DISTRITO_13 ? `<section class="bloque historico"><h2>Fuera de las cosechas</h2><a class="tarjeta-distrito d13" href="${enlace('distritos', 13)}">${sello(A.DISTRITO_13)}<h2>${esc(A.DISTRITO_13.name)}</h2><p class="industria">${esc(A.DISTRITO_13.industry)}</p><p>${esc(A.DISTRITO_13.description)}</p></a></section>` : ''}
+  ${mapa()}`;
 }
 
 function fichaDistrito(id) {
@@ -116,7 +121,7 @@ function fichaDistrito(id) {
 }
 
 function capitolio() {
-  return `${migas(['Distritos', enlace('distritos')], ['El Capitolio'])}
+  return `${migas(['Capitolio'])}
   <article class="ficha capitolio">${cabecera('Sede del gobierno de Panem', 'El Capitolio')}
     ${imagen(A.GALERIA[0], 'ficha-imagen')}
     ${pendiente('capitolio')}
@@ -139,7 +144,8 @@ function personajes(id, filtros = {}) {
   </form>
   <p class="recuento" aria-live="polite">${lista.length} de ${A.PERSONAJES.length} fichas</p>
   ${lista.length ? `<ul class="lista-personajes">${lista.map(tarjetaPersonaje).join('')}</ul>` : '<p class="vacio">Ninguna ficha coincide con la búsqueda.</p>'}
-  ${pendiente('personajes')}`;
+  ${pendiente('personajes')}
+  ${vencedoresVista()}`;
 }
 
 function fichaPersonaje(s) {
@@ -161,12 +167,12 @@ function fichaPersonaje(s) {
 
 function vencedoresVista() {
   const v = A.vencedores();
-  return `${migas(['Vencedores'])}${cabecera('Registro de vencedores', 'Mentores y vencedores', 'Nombres registrados por distrito. Solo enlazan a ficha los que la tienen.')}
+  return `<section class="bloque" aria-labelledby="t-vencedores"><h2 id="t-vencedores">Mentores y vencedores</h2><p class="nota">Nombres registrados por distrito. Solo enlazan a ficha los que la tienen.</p>
   <table class="tabla"><thead><tr><th scope="col">Distrito</th><th scope="col">Nombre</th><th scope="col">Ficha</th></tr></thead><tbody>
   ${v.map(x => `<tr><td>${x.district}</td><td>${esc(x.name)}</td><td>${x.ficha ? `<a href="${enlace('personajes', x.ficha)}">Ver ficha</a>` : '<span class="vacio">Pendiente</span>'}</td></tr>`).join('')}
   </tbody></table>
   <p class="nota">Distritos sin vencedores identificados en el registro: ${A.MENTORES.filter(m => !m.nombres.length).map(m => m.district).join(', ') || 'ninguno'}.</p>
-  ${pendiente('vencedores')}`;
+  ${pendiente('vencedores')}</section>`;
 }
 
 function ediciones(id) {
@@ -174,34 +180,62 @@ function ediciones(id) {
     const e = A.edicion(id);
     if (!e) return noEncontrado();
     const i = A.EDICIONES.indexOf(e);
-    return `${migas(['Ediciones', enlace('ediciones')], [e.title])}
+    return `${migas(['Juegos', enlace('juegos')], [e.title])}
     <article class="ficha">${cabecera(`Edición ${e.year}`, e.title, e.note)}
       <dl class="datos"><div><dt>Año de los Juegos</dt><dd>${e.year}.º</dd></div><div><dt>Arena</dt><dd>${esc(e.arena)}</dd></div></dl>
       ${pendiente('ediciones')}
-      <nav class="paginacion">${i > 0 ? `<a href="${enlace('ediciones', A.EDICIONES[i - 1].year)}">← ${A.EDICIONES[i - 1].year}.º</a>` : '<span></span>'}${i < A.EDICIONES.length - 1 ? `<a href="${enlace('ediciones', A.EDICIONES[i + 1].year)}">${A.EDICIONES[i + 1].year}.º →</a>` : ''}</nav>
+      <nav class="paginacion">${i > 0 ? `<a href="${enlace('juegos', A.EDICIONES[i - 1].year)}">← ${A.EDICIONES[i - 1].year}.º</a>` : '<span></span>'}${i < A.EDICIONES.length - 1 ? `<a href="${enlace('juegos', A.EDICIONES[i + 1].year)}">${A.EDICIONES[i + 1].year}.º →</a>` : ''}</nav>
     </article>`;
   }
-  return `${migas(['Ediciones'])}${cabecera('Los Juegos del Hambre', 'Ediciones de los Juegos')}
-  <ul class="tarjetas-ediciones">${A.EDICIONES.map(e => `<li><a href="${enlace('ediciones', e.year)}"><span class="anio">${e.year}.º</span><h2>${esc(e.title)}</h2><p>${esc(e.note)}</p><p class="arena">Arena: ${esc(e.arena)}</p></a></li>`).join('')}</ul>
+  return `${migas(['Juegos'])}${cabecera('Archivo de los Juegos', 'Ediciones de los Juegos')}
+  <ul class="tarjetas-ediciones">${A.EDICIONES.map(e => `<li><a href="${enlace('juegos', e.year)}"><span class="anio">${e.year}.º</span><h2>${esc(e.title)}</h2><p>${esc(e.note)}</p><p class="arena">Arena: ${esc(e.arena)}</p></a></li>`).join('')}</ul>
   ${pendiente('ediciones')}`;
 }
 
 function cronologia() {
   return `${migas(['Cronología'])}${cabecera('Panem', 'Cronología', 'Hitos registrados en el archivo, por año de los Juegos.')}
-  <ol class="linea-tiempo">${A.EDICIONES.map(e => `<li><span class="anio">Año ${e.year}</span><div><h2><a href="${enlace('ediciones', e.year)}">${esc(e.title)}</a></h2><p>${esc(e.note)}</p></div></li>`).join('')}</ol>
+  <ol class="linea-tiempo">${A.EDICIONES.map(e => `<li><span class="anio">Año ${e.year}</span><div><h2><a href="${enlace('juegos', e.year)}">${esc(e.title)}</a></h2><p>${esc(e.note)}</p></div></li>`).join('')}</ol>
   ${pendiente('cronologia')}`;
 }
 
-function arenas() {
-  return `${migas(['Arenas'])}${cabecera('Los Juegos del Hambre', 'Arenas')}
+function lugares() {
+  return `${migas(['Lugares'])}${cabecera('Panem', 'Lugares', 'Arenas, Capitolio, distritos y escenarios de los Juegos.')}
+  ${pendiente('lugares')}
   <section class="bloque"><h2>Arenas de las ediciones registradas</h2>
-    <ul class="lista-simple">${A.EDICIONES.map(e => `<li><a href="${enlace('ediciones', e.year)}">${e.year}.º</a> — ${esc(e.arena)}</li>`).join('')}</ul>
+    <ul class="lista-simple">${A.EDICIONES.map(e => `<li><a href="${enlace('juegos', e.year)}">${e.year}.º</a> — ${esc(e.arena)}</li>`).join('')}</ul>
     <figure class="figura">${imagen(A.GALERIA[1])}<figcaption>Arena del bosque · ilustración del proyecto</figcaption></figure>
   </section>
   <section class="bloque"><h2>Tipos de arena del videojuego</h2><p class="nota">Plantillas del modo libre del videojuego, no arenas de ediciones concretas.</p>
     <ul class="tarjetas-arenas">${A.TIPOS_ARENA.map(a => `<li><h3>${esc(a.name)}</h3><p>${esc(a.description)}</p><p class="peligros">Peligros: ${a.danger.map(esc).join(', ')}</p></li>`).join('')}</ul>
   </section>
   ${pendiente('arenas')}`;
+}
+
+function gira() {
+  return `${migas(['Gira de la Victoria'])}${cabecera('Después de los Juegos', 'Gira de la Victoria')}${pendiente('gira', 'Archivo pendiente de guion aprobado')}`;
+}
+
+function rebelion() {
+  return `${migas(['Rebelión y Guerra'])}${cabecera('Panem', 'Rebelión y Guerra')}${pendiente('rebelion', 'Archivo pendiente de guion aprobado')}`;
+}
+
+function acerca() {
+  return `${migas(['Acerca'])}${cabecera('Archivo de Panem', 'Acerca del proyecto')}
+  <section class="bloque">
+    <p>El Archivo de Panem es la parte de consulta de <b>La Cosecha</b>, un proyecto fan no oficial y sin ánimo de lucro. Reúne los distritos, personajes, Juegos y lugares que aparecen en el videojuego.</p>
+    <p>No está afiliado a los titulares de los derechos de la saga ni cuenta con su respaldo. Los nombres de la saga se usan como referencia. Las ilustraciones del Archivo son originales del proyecto; no se reproducen imágenes de las películas.</p>
+    <p>El videojuego se desarrolla aparte, para Android. En el Archivo no se juega ni se guardan partidas.</p>
+  </section>
+  <section class="bloque"><h2>Cómo leer las fichas</h2>
+    <dl class="datos">
+      <div><dt>Hecho canónico</dt><dd>Establecido en la saga.</dd></div>
+      <div><dt>Compatible con el canon</dt><dd>Detalle del proyecto que no contradice la saga.</dd></div>
+      <div><dt>Interpretación del proyecto</dt><dd>Lectura propia de La Cosecha.</dd></div>
+      <div><dt>Ruta alternativa</dt><dd>Lo que cambia por las decisiones del videojuego; no forma parte del canon.</dd></div>
+      <div><dt>Sin clasificar</dt><dd>Ficha aún sin revisar.</dd></div>
+    </dl>
+    <p class="nota">Las secciones marcadas como pendientes esperan contenido aprobado. El Archivo no las completa con textos provisionales.</p>
+  </section>`;
 }
 
 function documentos() {
@@ -214,16 +248,11 @@ function galeria() {
   ${pendiente('galeria')}`;
 }
 
-function novedades() {
-  return `${migas(['Novedades'])}${cabecera('Para la comunidad', 'Novedades')}
-  ${A.NOVEDADES.length ? `<ol class="novedades">${A.NOVEDADES.map(n => `<li><time datetime="${esc(n.fecha)}">${esc(n.fecha)}</time><h2>${esc(n.titulo)}</h2><p>${esc(n.texto)}</p></li>`).join('')}</ol>` : pendiente('novedades', 'Sin novedades publicadas')}`;
-}
-
 function noEncontrado() {
-  return `${cabecera('Archivo de Panem', 'Expediente no encontrado', 'No hay ninguna ficha en esa dirección.')}<p><a href="#/">Volver a la portada</a></p>`;
+  return `${cabecera('Archivo de Panem', 'Expediente no encontrado', 'No hay ninguna ficha en esa dirección.')}<p><a href="/">Volver al inicio</a></p>`;
 }
 
-const VISTAS = { '': portada, mapa, distritos, capitolio, personajes, vencedores: vencedoresVista, ediciones, cronologia, arenas, documentos, galeria, novedades };
+const VISTAS = { '': portada, distritos, capitolio, personajes, juegos: ediciones, cronologia, gira, 'rebelion-y-guerra': rebelion, lugares, galeria, documentos, acerca };
 
 export function render(ruta, filtros) {
   const v = VISTAS[ruta.seccion];
@@ -233,7 +262,6 @@ export function tituloDe(ruta) {
   const s = SECCIONES.find(x => x.id === ruta.seccion);
   const extra = ruta.seccion === 'distritos' && ruta.id ? A.distrito(ruta.id)?.name
     : ruta.seccion === 'personajes' && ruta.id ? A.personaje(ruta.id)?.name
-    : ruta.seccion === 'ediciones' && ruta.id ? A.edicion(ruta.id)?.title
-    : ruta.seccion === 'capitolio' ? 'El Capitolio' : null;
+    : ruta.seccion === 'juegos' && ruta.id ? A.edicion(ruta.id)?.title : null;
   return [extra, s && s.id ? s.label : null, 'Archivo de Panem'].filter(Boolean).join(' · ');
 }

@@ -1,6 +1,18 @@
 # Changelog
 
-## Archivo de Panem 1.0 — sin publicar (rama `integracion-cosecha-5x`)
+## Archivo de Panem 1.1 — sin publicar (rama `integracion-cosecha-5x`)
+- **Menú definitivo:** Inicio, Distritos, Capitolio, Personajes, Juegos, Cronología, Gira de la Victoria, Rebelión y Guerra, Lugares, Galería, Documentos y Acerca. Sin Novedades.
+- **Direcciones estables sin «#»:** `/distritos/12`, `/personajes/katniss-everdeen`, `/juegos/74`. Las antiguas `#/…` se convierten solas. Render ya sirve `index.html` en cualquier ruta.
+- **Contenido movido, no inventado:**
+  - el mapa esquemático pasa a Distritos;
+  - la tabla de mentores y vencedores, a Personajes;
+  - las arenas, a Lugares.
+- **Páginas nuevas:**
+  - Gira de la Victoria y Rebelión y Guerra, marcadas como pendientes de guion aprobado;
+  - Acerca, con el aviso de proyecto fan y la leyenda de estados de canon.
+- Pruebas: 14 de páginas y 69 comprobaciones en Chrome (incluidos el menú, el botón Atrás y la página no encontrada).
+
+## Archivo de Panem 1.0 — sin publicar
 - La Web deja de ser una copia del videojuego y pasa a ser el **Archivo de Panem**, un sitio editorial propio:
   - entrada, navegación, vistas y estilo nuevos;
   - secciones: portada, mapa (esquema), distritos y Capitolio, personajes con filtros, vencedores, ediciones, cronología, arenas, documentos, galería y novedades.

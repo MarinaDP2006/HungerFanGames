@@ -38,7 +38,7 @@ test('detecta una imagen común con contenido distinto', () =>
 test('detecta que la Web vuelva a llevar el motor del juego', () =>
   expectFail(d => fs.copyFileSync(path.join(d, A, 'js/campaigns.js'), path.join(d, W, 'js/campaigns.js')), /La Web contiene un módulo del videojuego: js\/campaigns\.js/));
 test('detecta que la Web vuelva a entrar por el juego', () =>
-  expectFail(d => edit(d, `${W}/index.html`, s => s.replace('js/archivo.js', 'js/app.js')), /La Web debe entrar por js\/archivo\.js/));
+  expectFail(d => edit(d, `${W}/index.html`, s => s.replace('/js/archivo.js', '/js/app.js')), /La Web debe entrar por js\/archivo\.js/));
 test('detecta que la Web use partidas del videojuego', () =>
   expectFail(d => edit(d, `${W}/js/archivo.js`, s => s + "\nlocalStorage.getItem('laCosechaSave:1');\n"), /claves de partidas o ajustes del videojuego/));
 test('detecta pantallas del juego en la Web', () =>
@@ -54,6 +54,6 @@ test('detecta que el service worker de Android vuelva a servir archivos desde ca
 test('detecta que el service worker precargue el WAV máster', () =>
   expectFail(d => edit(d, `${W}/sw.js`, s => s.replace("'./manifest.webmanifest'", "'./assets/audio/ambiente-capitolio-master.wav','./manifest.webmanifest'")), /no debe precargar másteres WAV/));
 test('detecta que Web y Android compartan identificador de service worker', () =>
-  expectFail(d => edit(d, `${A}/sw.js`, s => s.replace(/const CACHE='[^']+'/, "const CACHE='archivo-panem-1.0.0'")), /mismo identificador de service worker/));
+  expectFail(d => edit(d, `${A}/sw.js`, s => s.replace(/const CACHE='[^']+'/, "const CACHE='archivo-panem-1.1.0'")), /mismo identificador de service worker/));
 test('detecta que un producto apunte a la carpeta del otro', () =>
   expectFail(d => edit(d, `${W}/index.html`, s => s.replace('</body>', '<img src="../La_Cosecha_Juego_Android/assets/x.png"></body>')), /apunta a la carpeta del otro producto/));

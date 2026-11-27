@@ -13,7 +13,8 @@ fs.mkdirSync(OUT, { recursive: true });
 const TIPOS = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.webmanifest': 'application/manifest+json', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml' };
 const server = http.createServer((req, res) => {
   const p = decodeURIComponent(new URL(req.url, 'http://x').pathname);
-  let f = path.join(web, p === '/' ? 'index.html' : p);
+  // Como Render: cualquier ruta sin extensión devuelve index.html (direcciones /distritos/12).
+  let f = path.join(web, p === '/' || !path.extname(p) ? 'index.html' : p);
   if (!f.startsWith(web) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.writeHead(404); return res.end('no'); }
   res.writeHead(200, { 'Content-Type': TIPOS[path.extname(f)] || 'application/octet-stream' });
   fs.createReadStream(f).pipe(res);
@@ -21,8 +22,9 @@ const server = http.createServer((req, res) => {
 await new Promise(r => server.listen(0, r));
 const base = `http://localhost:${server.address().port}/`;
 
-const rutas = ['', 'mapa', 'distritos', 'distritos/12', 'distritos/13', 'capitolio', 'personajes', 'personajes/katniss-everdeen', 'vencedores', 'ediciones', 'ediciones/74', 'cronologia', 'arenas', 'documentos', 'galeria', 'novedades'];
-const capturas = new Set(['', 'mapa', 'distritos', 'distritos/12', 'personajes', 'personajes/katniss-everdeen', 'ediciones', 'cronologia', 'galeria']);
+const rutas = ['', 'distritos', 'distritos/12', 'distritos/13', 'capitolio', 'personajes', 'personajes/katniss-everdeen', 'juegos', 'juegos/74', 'cronologia', 'gira', 'rebelion-y-guerra', 'lugares', 'galeria', 'documentos', 'acerca'];
+const capturas = new Set(['', 'distritos', 'distritos/12', 'capitolio', 'personajes', 'personajes/katniss-everdeen', 'juegos', 'cronologia', 'gira', 'lugares', 'galeria', 'acerca']);
+const MENU = ['Inicio', 'Distritos', 'Capitolio', 'Personajes', 'Juegos', 'Cronología', 'Gira de la Victoria', 'Rebelión y Guerra', 'Lugares', 'Galería', 'Documentos', 'Acerca'];
 const results = [];
 const check = (name, ok, detail = '') => { results.push({ name, ok: !!ok, detail: String(detail) }); console.log(`${ok ? '✓' : '✗'} ${name}${detail ? ' · ' + detail : ''}`); };
 
@@ -35,28 +37,38 @@ try {
     page.on('console', m => { if (m.type() === 'error') errores.push(m.text()); });
     page.on('response', r => { if (r.status() >= 400) rotos.push(`${r.status()} ${r.url()}`); });
     for (const r of rutas) {
-      await page.goto(base + '#/' + r);
+      await page.goto(base + r);
       await page.waitForSelector('#contenido h1');
       const titulo = await page.textContent('#contenido h1');
       check(`${nombre} · #/${r}`, titulo && !/no encontrado/i.test(titulo), titulo);
       if (capturas.has(r)) await page.screenshot({ path: path.join(OUT, `${nombre}-${(r || 'portada').replace(/\//g, '-')}.png`), fullPage: true });
     }
-    // Navegar con el menú: cada enlace lleva a su sección y la marca como actual.
-    await page.goto(base + '#/');
-    for (const s of ['distritos', 'personajes', 'ediciones', 'galeria']) {
+    // Menú definitivo y navegación con él: cada enlace lleva a su dirección sin recargar y la marca como actual.
+    await page.goto(base);
+    const etiquetas = await page.$$eval('#navegacion a', as => as.map(a => a.textContent.trim()));
+    check(`${nombre} · menú definitivo`, JSON.stringify(etiquetas) === JSON.stringify(MENU), etiquetas.join(' · '));
+    await page.evaluate(() => { window.__sinRecargar = true; });
+    for (const s of ['distritos', 'capitolio', 'personajes', 'juegos', 'gira', 'rebelion-y-guerra', 'lugares', 'acerca']) {
       await page.click(`#navegacion a[data-seccion="${s}"]`);
       await page.waitForFunction(x => document.documentElement.dataset.ruta === x, s);
-      check(`${nombre} · menú → ${s}`, await page.getAttribute(`#navegacion a[data-seccion="${s}"]`, 'aria-current') === 'page');
+      check(`${nombre} · menú → /${s}`, new URL(page.url()).pathname === `/${s}` && await page.getAttribute(`#navegacion a[data-seccion="${s}"]`, 'aria-current') === 'page');
     }
+    await page.goBack();
+    await page.waitForFunction(() => document.documentElement.dataset.ruta === 'lugares');
+    check(`${nombre} · botón Atrás del navegador`, await page.evaluate(() => window.__sinRecargar === true), new URL(page.url()).pathname);
+    await page.goto(base + '#/juegos/74');
+    check(`${nombre} · direcciones antiguas «#/…» se convierten`, new URL(page.url()).pathname === '/juegos/74');
+    await page.goto(base + 'no-existe');
+    check(`${nombre} · página no encontrada`, /no encontrado/i.test(await page.textContent('#contenido h1')));
     // Filtros de personajes
-    await page.goto(base + '#/personajes');
+    await page.goto(base + 'personajes');
     await page.fill('input[name=q]', 'haymitch');
     check(`${nombre} · búsqueda de personajes`, /^1 de/.test(await page.textContent('.recuento')), await page.textContent('.recuento'));
     await page.fill('input[name=q]', '');
     await page.selectOption('select[name=distrito]', '12');
     check(`${nombre} · filtro por distrito`, /^3 de/.test(await page.textContent('.recuento')), await page.textContent('.recuento'));
     await page.click('a.tarjeta-personaje');
-    check(`${nombre} · ficha desde el listado`, /#\/personajes\/.+/.test(page.url()));
+    check(`${nombre} · ficha desde el listado`, /\/personajes\/.+/.test(new URL(page.url()).pathname));
     // Separación: nada del videojuego en el documento.
     const juego = await page.evaluate(() => ({ app: [...document.scripts].some(s => /app\.js/.test(s.src)), botones: document.querySelectorAll('[data-a]').length, partidas: Object.keys(localStorage).filter(k => /laCosecha/.test(k)) }));
     check(`${nombre} · sin motor ni partidas del videojuego`, !juego.app && juego.botones === 0 && juego.partidas.length === 0, JSON.stringify(juego));

@@ -49,21 +49,20 @@ export const TIPOS_ARENA = arenaTypes;
 // Ilustraciones originales del proyecto disponibles. No se incluye menu-panem.png (contiene
 // elementos protegidos) ni ninguna imagen de las películas.
 export const GALERIA = [
-  { src: 'assets/optimized/capitolio-960.webp', fallback: 'assets/optimized/capitolio-960.jpg', w: 926, h: 1240, titulo: 'El Capitolio', nota: 'Portada del proyecto' },
-  { src: 'assets/optimized/arena-bosque-1600.webp', fallback: 'assets/optimized/arena-bosque-1600.jpg', w: 1600, h: 900, titulo: 'Arena del bosque', nota: 'Mapa de Arena del videojuego' },
+  { src: '/assets/optimized/capitolio-960.webp', fallback: '/assets/optimized/capitolio-960.jpg', w: 926, h: 1240, titulo: 'El Capitolio', nota: 'Portada del proyecto' },
+  { src: '/assets/optimized/arena-bosque-1600.webp', fallback: '/assets/optimized/arena-bosque-1600.jpg', w: 1600, h: 900, titulo: 'Arena del bosque', nota: 'Mapa de Arena del videojuego' },
   ...Array.from({ length: 12 }, (_, i) => {
     const n = String(i + 1).padStart(2, '0');
-    return { src: `assets/optimized/tribute-${n}.webp`, fallback: `assets/tributes/tribute-${n}.jpg`, w: 300, h: 437, titulo: `Retrato de tributo ${n}`, nota: 'Retrato genérico del videojuego; no representa a un personaje concreto' };
+    return { src: `/assets/optimized/tribute-${n}.webp`, fallback: `/assets/tributes/tribute-${n}.jpg`, w: 300, h: 437, titulo: `Retrato de tributo ${n}`, nota: 'Retrato genérico del videojuego; no representa a un personaje concreto' };
   }),
 ];
-
-// Novedades para la comunidad: entradas aprobadas, de la más reciente a la más antigua.
-// { fecha: 'AAAA-MM-DD', titulo, texto }. Vacío hasta que se aprueben.
-export const NOVEDADES = [];
 
 // Contenido pendiente de la dirección creativa (lo que la Web no inventa).
 export const PENDIENTES = {
   mapa: 'Mapa ilustrado de Panem con la situación de cada distrito y del Capitolio.',
+  gira: 'Archivo de la Gira de la Victoria: recorrido, actos públicos y consecuencias, según el guion aprobado.',
+  rebelion: 'Archivo de la Rebelión y la Guerra: acontecimientos, lugares y personajes, según el guion aprobado.',
+  lugares: 'Fichas de lugares (plaza del Distrito 12, Edificio de Justicia, estación, tren, Centro de Entrenamiento, escenario de entrevistas, sala de lanzamiento…) con su descripción aprobada.',
   capitolio: 'Ficha del Capitolio: descripción, lugares y papel en los Juegos.',
   distrito: 'Ficha ampliada de cada distrito: geografía, vida cotidiana, símbolos y tributos destacados.',
   personajes: 'Fichas de más personajes canónicos y retratos aprobados.',
@@ -73,5 +72,4 @@ export const PENDIENTES = {
   arenas: 'Fichas y mapas de las arenas canónicas (pradera del 50.º, bosque y lago del 74.º, reloj del 75.º).',
   documentos: 'Archivo documental: textos del universo aprobados (proclamas, comunicados, registros).',
   galeria: 'Nuevas ilustraciones originales: distritos, Capitolio, arenas y retratos aprobados.',
-  novedades: 'Primeras novedades para la comunidad, redactadas y aprobadas.',
 };
