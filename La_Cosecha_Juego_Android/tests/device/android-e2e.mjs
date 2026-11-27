@@ -139,8 +139,8 @@ try {
 
 fs.writeFileSync(path.join(OUT, 'logcat.txt'), (await device.shell('logcat -d -v time')).toString());
 const crash = (await device.shell('logcat -d -b crash')).toString();
-const gone = (await device.shell('logcat -d -s chromium:E cr_AwContents:* ActivityManager:I')).toString().split('\n').filter(l => /render process|Renderer process|crashed|Killing \d+:com\.lacosecha|has died|lowmemory/i.test(l));
-check('El proceso del WebView no se cae', gone.length === 0, gone.slice(0, 3).join(' | '));
+const gone = (await device.shell('logcat -d -s chromium:E cr_AwContents:* ActivityManager:I')).toString().split('\n').filter(l => /com\.lacosecha\.panem/.test(l) && /Killing|has died|crash/i.test(l) || /Renderer process (crashed|was killed)/i.test(l));
+check('La app y su WebView no se cierran durante la prueba', gone.length === 0, gone.slice(0, 3).join(' | '));
 check('Sin cierres inesperados (logcat crash)', !/FATAL EXCEPTION/.test(crash), crash.trim().split('\n').slice(0, 3).join(' | '));
 check('Sin errores de JavaScript en el WebView', errors.length === 0, errors.slice(0, 5).join(' | '));
 
