@@ -18,6 +18,34 @@ const appJs = fs.readFileSync(path.join(app, 'js/app.js'), 'utf8');
 test.after(() => fs.rmSync(dir, {recursive: true, force: true}));
 
 test('el build termina correctamente', () => { assert.equal(build.status, 0, build.stderr); assert.match(build.stdout, /másteres WAV excluidos/); });
+test('los módulos rechazados o inactivos no viajan en el bundle, pero siguen en el repositorio', () => {
+  for (const f of ['js/campaign-50th-arena.js', 'js/campaign-50th-dynamic.js', 'js/canon-50th.js', 'js/music.js']) {
+    assert.ok(fs.existsSync(path.join(app, f)), `${f} se conserva en el repositorio`);
+    assert.ok(!fs.existsSync(path.join(www, f)), `${f} no está en www/`);
+  }
+});
+test('las imágenes sin uso no viajan en el bundle', () => {
+  for (const f of ['assets/menu-panem.png', 'assets/arena-bosque.png', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/optimized/arena-bosque-1600.jpg']) {
+    assert.ok(fs.existsSync(path.join(app, f)), `${f} se conserva`);
+    assert.ok(!fs.existsSync(path.join(www, f)), `${f} fuera del bundle`);
+  }
+});
+test('solo viajan los módulos que se cargan desde index.html', () => {
+  const inBundle = fs.readdirSync(path.join(www, 'js')).sort();
+  const imports = ['app.js', ...[...appJs.matchAll(/from '\.\/([\w.-]+\.js)'/g)].map(m => m[1])].sort();
+  assert.deepEqual(inBundle, [...new Set(imports)].sort());
+});
+test('el build falla si index.html carga un módulo que no existe', () => {
+  const bad = fs.mkdtempSync(path.join(os.tmpdir(), 'bundle-bad-'));
+  try {
+    fs.cpSync(dir, bad, {recursive: true, filter: s => !/[/\\\\]www([/\\\\]|$)/.test(s.slice(dir.length))});
+    fs.writeFileSync(path.join(bad, 'index.html'), fs.readFileSync(path.join(bad, 'index.html'), 'utf8').replace('</body>', '<script type="module" src="js/no-existe.js"></script></body>'));
+    const r = spawnSync(process.execPath, ['scripts/build-web.mjs'], {cwd: bad, encoding: 'utf8'});
+    assert.notEqual(r.status, 0);
+    assert.match(r.stderr, /no-existe\.js se carga pero no existe/);
+  } finally { fs.rmSync(bad, {recursive: true, force: true}); }
+});
+
 test('el WAV máster se conserva en el repositorio pero no viaja en el bundle', () => {
   assert.ok(fs.existsSync(path.join(app, WAV)), 'el WAV sigue en el repositorio');
   assert.ok(fs.statSync(path.join(app, WAV)).size > 10e6, 'es el máster completo');
