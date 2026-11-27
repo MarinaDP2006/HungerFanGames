@@ -184,6 +184,8 @@ ${escenas.map(e => `| ${e.narrative_id} | ${e.title} | ${ESCENAS[e.narrative_id]
 ## 2. Arena del 75.º: escenas → acontecimientos existentes
 En el juego, la Arena del 75.º tiene **ocho acontecimientos**: tres capítulos en \`campaigns.js\` y cinco eventos en \`app.js\` (esto resuelve la discrepancia de los «ocho acontecimientos»). Se conservan sus IDs técnicos; las escenas amplían su contenido.
 
+**Aviso sobre los «cuatro capítulos»:** la decisión de dirección habla de cuatro capítulos de Arena, pero el código tiene **tres** capítulos (\`chapters[75]\` en los días 1, 4 y 7) más el final del reloj (\`finalChoice\`: \`breakout\`, \`rescue\` u otro), y cinco eventos intermedios en \`app.js\`. Si los cuatro capítulos son esos tres más el final, el reparto es este: capítulo 1 = turnos 1–3 (75-07, 75-08); capítulo 2 = turnos 4–6 (75-09 a 75-13); capítulo 3 = turno 7 (sin escena); final = turno 8 (75-14, 75-15). Hay que confirmarlo antes de integrar nada.
+
 | Turno | Acontecimiento existente | ID técnico | Escenas del documento |
 |---|---|---|---|
 ${arena.map(a => `| ${a.turno} | ${a.titulo} | ${a.id} | ${a.escenas.join(', ') || '— (sin escena: se mantiene tal cual)'} |`).join('\n')}
