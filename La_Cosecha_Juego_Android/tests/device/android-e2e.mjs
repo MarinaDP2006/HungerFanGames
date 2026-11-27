@@ -39,7 +39,7 @@ async function launch() {
   return page;
 }
 const snap = async name => { const f = path.join(OUT, `${String(++shot).padStart(2, '0')}-${name}.png`); await device.screenshot({ path: f }); return f; };
-const home = async page => { await page.click('[data-action="home"]'); await page.waitForSelector('[data-a="story"]'); };
+const home = async page => { await page.click('.topbar [data-a="home"]'); await page.waitForSelector('[data-a="story"]'); };
 
 try {
   check('APK instalado con la versión del juego', info.versionName === version, `versionName ${info.versionName}, versionCode ${info.versionCode}`);
@@ -59,7 +59,7 @@ try {
   }
 
   // 3. Ajustes
-  await page.click('[data-action="settings"]');
+  await page.click('.topbar [data-a="settings"]');
   await page.waitForSelector('#set-volume');
   await page.click('[data-setting="reducedMotion"]');
   await page.click('[data-text-scale="1.15"]');
@@ -114,7 +114,7 @@ try {
   await snap('50-final');
 
   // 7. Borrar partida con confirmación
-  await page.click('[data-action="settings"]');
+  await page.click('.topbar [data-a="settings"]');
   await page.click('[data-slot-delete="1"]');
   const warned = !!(await page.$('[data-slot-delete-confirm="1"]'));
   await page.click('[data-slot-delete-confirm="1"]');

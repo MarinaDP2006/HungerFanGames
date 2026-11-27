@@ -73,3 +73,12 @@ test('service worker de Android: caché propia y precarga de los módulos del 50
   assert.doesNotMatch(sw, /\.wav'/i, 'no precarga el WAV');
   for (const m of sw.matchAll(/'\.\/([^']+)'/g)) if (m[1]) assert.ok(fs.existsSync(path.join(www, m[1])), `precarga ${m[1]} y existe en www/`);
 });
+test('los botones de la cabecera (inicio y ajustes) usan acciones que el juego atiende', () => {
+  const html = fs.readFileSync(path.join(app, 'index.html'), 'utf8');
+  const header = html.match(/<header class="topbar">[\s\S]*?<\/header>/)[0];
+  assert.doesNotMatch(header, /data-action=/, 'data-action no tiene ningún manejador');
+  for (const a of ['home', 'settings']) {
+    assert.ok(header.includes(`data-a="${a}"`), `cabecera: ${a}`);
+    assert.ok(appJs.includes(`a==='${a}'`), `app.js atiende ${a}`);
+  }
+});
