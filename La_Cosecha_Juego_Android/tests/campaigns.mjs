@@ -83,9 +83,10 @@ for(const ed of [50,74,75]){const {titles,g}=play(ed);assert.equal(titles.length
  assert.equal(alive(g,'Mags Flanagan'),false,'75 canon: Mags entra en la niebla');
  assert.equal(alive(g,'Wiress'),false,'75 canon: Wiress muere');
  assert.equal(g.endingTitle,'LA ARENA SE ROMPE');}
-// 75.º alternativo: salvar a Mags.
+// 75.º: cargar con Mags no la salva (canon cinematográfico); queda constancia en el epílogo.
 {const {g}=play(75,(t)=>({1:0,2:0,3:0,4:0}[t]??0));
- assert.equal(alive(g,'Mags Flanagan'),true,'75 alt: Mags sobrevive');}
+ assert.equal(alive(g,'Mags Flanagan'),false,'75: Mags muere aunque cargues con ella');
+ assert.ok(!(g.storyEpilogue||[]).some(x=>/Mags sale viva/.test(x)));}
 
 // Protección narrativa: el azar no mata a Rue antes de su capítulo.
 {const g=newGame(74);g.arenaTurn=3;const rue=g.tributes.find(t=>t.name==='Rue');assert.ok(campaigns.isProtected(g,rue));g.arenaTurn=7;assert.ok(!campaigns.isProtected(g,rue));}

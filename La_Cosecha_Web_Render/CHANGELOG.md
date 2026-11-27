@@ -1,5 +1,15 @@
 # Changelog
 
+## Archivo de Panem 1.2 — sin publicar (rama `integracion-cosecha-5x`)
+- **Contenido completo, sin avisos de pendiente.** Textos originales del proyecto, basados en la continuidad de las películas (`js/archivo-contenido.js`):
+  - expediente de los 13 distritos: territorio, vida cotidiana, símbolos y nombres destacados;
+  - ficha del Capitolio y ampliación de las ediciones 10.º, 50.º, 74.º y 75.º;
+  - 11 personajes nuevos (Prim, Gale, Effie, Cinna, Caesar, Snow, Seneca Crane, Plutarch, Coin, Mags y Boggs). El filtro de personajes incluye «El Capitolio»;
+  - cronología completa, 14 lugares, Gira de la Victoria (5 etapas), Rebelión y Guerra (6 fases) y 5 documentos.
+- **Etiquetas:** cada ficha indica su estado de canon (hecho de las películas, compatible o interpretación del proyecto) y su fuente.
+- **Imágenes:** solo ilustraciones originales; no se usa ninguna de las películas.
+- Service worker `archivo-panem-1.2.0`.
+
 ## Archivo de Panem 1.1 — sin publicar (rama `integracion-cosecha-5x`)
 - **Menú definitivo:** Inicio, Distritos, Capitolio, Personajes, Juegos, Cronología, Gira de la Victoria, Rebelión y Guerra, Lugares, Galería, Documentos y Acerca. Sin Novedades.
 - **Direcciones estables sin «#»:** `/distritos/12`, `/personajes/katniss-everdeen`, `/juegos/74`. Las antiguas `#/…` se convierten solas. Render ya sirve `index.html` en cualquier ruta.

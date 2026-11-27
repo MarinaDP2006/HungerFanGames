@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import * as V from '../js/archivo-vistas.js';
 import * as A from '../js/archivo-datos.js';
+import * as C from '../js/archivo-contenido.js';
 import { districts, characters, canonEditions } from '../js/data.js';
 
 const web = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
@@ -56,10 +57,11 @@ test('todos los datos compartidos aparecen: 12 distritos, el 13 aparte, 16 perso
 
 test('filtros de personajes: por rol, distrito y texto', () => {
   const cuenta = f => Number(V.render({ seccion: 'personajes' }, f).match(/(\d+) de \d+ fichas/)[1]);
-  assert.equal(cuenta({}), characters.length);
-  assert.equal(cuenta({ distrito: '12' }), characters.filter(c => c.district === 12).length);
-  assert.equal(cuenta({ rol: 'tributos' }), characters.filter(c => /tributo/i.test(c.role)).length);
-  assert.equal(cuenta({ q: 'katniss' }), 1);
+  assert.equal(cuenta({}), A.PERSONAJES.length);
+  assert.ok(A.PERSONAJES.length > characters.length, 'el Archivo añade personajes propios');
+  assert.equal(cuenta({ distrito: '12' }), A.PERSONAJES.filter(c => c.district === 12).length);
+  assert.equal(cuenta({ rol: 'tributos' }), A.PERSONAJES.filter(c => /tributo/i.test(c.role)).length);
+  assert.equal(cuenta({ q: 'katniss everdeen' }), 1);
   assert.equal(cuenta({ q: 'zzz' }), 0);
 });
 
@@ -69,16 +71,25 @@ test('vencedores: los marcadores genéricos no se muestran como personas', () =>
   for (const x of v) assert.doesNotMatch(x.name, /^(Mentor|Vencedor|Vencedora) del Distrito/);
   assert.ok(v.some(x => x.name === 'Haymitch Abernathy' && x.ficha === 'haymitch-abernathy'));
   assert.match(V.render({ seccion: 'personajes' }, {}), /Mentores y vencedores[\s\S]*Haymitch Abernathy/, 'la tabla está en Personajes');
-  assert.ok(v.some(x => x.name === 'Mags Flanagan' && x.ficha === null), 'nombres sin ficha quedan sin enlace');
+  assert.ok(v.some(x => x.name === 'Mags Flanagan' && x.ficha === 'mags-flanagan'), 'Mags tiene ficha propia del Archivo');
+  assert.ok(v.some(x => x.ficha === null), 'los nombres sin ficha quedan sin enlace');
 });
 
-test('lo que no tiene contenido aprobado se marca como pendiente, sin texto inventado', () => {
-  for (const s of ['capitolio', 'documentos', 'cronologia', 'lugares', 'galeria', 'juegos', 'gira', 'rebelion-y-guerra']) {
-    assert.match(V.render({ seccion: s }), /data-pendiente=/, s);
+test('todas las secciones tienen contenido: no queda ningún aviso de pendiente', () => {
+  for (const s of ['', 'distritos', 'capitolio', 'personajes', 'juegos', 'cronologia', 'gira', 'rebelion-y-guerra', 'lugares', 'galeria', 'documentos', 'acerca']) {
+    const h = V.render({ seccion: s }, {});
+    assert.doesNotMatch(h, /data-pendiente=|[Pp]endiente de contenido|guion aprobado/, s || 'inicio');
   }
-  assert.match(V.render({ seccion: 'distritos' }), /data-pendiente="mapa"/, 'el mapa ilustrado sigue pendiente');
-  assert.match(V.render({ seccion: 'personajes' }, {}), /data-pendiente="vencedores"/);
-  for (const k of Object.keys(A.PENDIENTES)) assert.ok(A.PENDIENTES[k].length > 10, k);
+  assert.ok(C.GIRA.etapas.length >= 4 && C.REBELION.fases.length >= 5 && C.LUGARES.length >= 10 && C.DOCUMENTOS.length >= 3);
+  for (let id = 1; id <= 13; id++) for (const k of ['geografia', 'vida', 'simbolos', 'destacados']) assert.ok(C.DISTRITOS[id][k]?.length > 10, `${id}.${k}`);
+  for (const e of A.EDICIONES) assert.ok(C.EDICIONES[e.year], `edición ${e.year}`);
+});
+
+test('personajes del Capitolio y del 13: tienen ficha y el filtro «El Capitolio» funciona', () => {
+  for (const n of ['effie-trinket', 'cinna', 'coriolanus-snow', 'alma-coin', 'primrose-everdeen', 'gale-hawthorne']) assert.match(V.render({ seccion: 'personajes', id: n }), /Estado de canon[\s\S]*Hecho canónico/, n);
+  const cap = V.render({ seccion: 'personajes' }, { distrito: '0' });
+  assert.match(cap, /Effie Trinket/); assert.doesNotMatch(cap, /Katniss Everdeen/);
+  assert.match(V.render({ seccion: 'personajes', id: 'cinna' }), /href="\/capitolio"/);
 });
 
 test('los textos de los datos se escapan', () => {
@@ -109,7 +120,7 @@ test('el service worker del archivo precarga todos sus módulos', () => {
 });
 
 test('cada ficha de distrito y de personaje muestra su estado de canon y su fuente', () => {
-  for (const d of districts) assert.match(V.render({ seccion: 'distritos', id: String(d.id) }), /data-canon="unknown"[\s\S]*Sin clasificar[\s\S]*Pendiente de referencia/, d.name);
+  for (const d of districts) assert.match(V.render({ seccion: 'distritos', id: String(d.id) }), /data-canon="CANON_(FACT|COMPATIBLE)"[\s\S]*Fuente<\/dt><dd>Películas/, d.name);
   for (const c of A.PERSONAJES) assert.match(V.render({ seccion: 'personajes', id: c.slug }), /Estado de canon[\s\S]*Fuente/, c.name);
   assert.equal(new Set(characters.map(c => c.character_id)).size, characters.length, 'character_id únicos');
   assert.deepEqual(districts.map(d => d.district_id), districts.map(d => `district_${String(d.id).padStart(2, '0')}`));

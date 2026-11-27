@@ -1,7 +1,7 @@
-const CACHE='archivo-panem-1.1.0';
+const CACHE='archivo-panem-1.2.0';
 // Archivo de Panem (Web). Precarga la estructura del sitio para consultarlo sin conexión.
 // Sustituye al service worker del juego web (la-cosecha-v4-*): se activa al momento y borra sus cachés.
-const ASSETS=['./','./index.html','./css/archivo.css','./js/archivo.js','./js/archivo-vistas.js','./js/archivo-datos.js','./js/data.js','./manifest.webmanifest','./assets/optimized/capitolio-960.webp','./assets/optimized/capitolio-960.jpg','./assets/icons/la-cosecha-192.png','./assets/icons/la-cosecha-512.png'];
+const ASSETS=['./','./index.html','./css/archivo.css','./js/archivo.js','./js/archivo-vistas.js','./js/archivo-datos.js','./js/archivo-contenido.js','./js/data.js','./manifest.webmanifest','./assets/optimized/capitolio-960.webp','./assets/optimized/capitolio-960.jpg','./assets/icons/la-cosecha-192.png','./assets/icons/la-cosecha-512.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));});
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 // Páginas y código: primero la red (para ver siempre la última versión) y la caché si no hay conexión.

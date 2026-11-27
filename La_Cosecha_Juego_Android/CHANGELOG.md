@@ -1,5 +1,13 @@
 # Changelog
 
+## 4.15 — Arena rediseñada y Mags según el canon
+- **Arena:**
+  - HUD fijo con día, arena, tributos vivos y barras de salud, hambre, sed y fatiga, que se ponen en rojo cuando hay peligro;
+  - acciones en una rejilla de iconos (el botiquín se desactiva si no tienes uno);
+  - postura en un control segmentado y armas en etiquetas;
+  - los acontecimientos se destacan como tarjeta.
+- **75.º · La niebla:** cargar con Mags ya no la salva, como en las películas. Cuesta salud, mejora la relación con los vencedores y Finnick lo recuerda en el epílogo. Pruebas nuevas en `tests/canon-75.test.mjs`.
+
 ## 4.14 — Revisión creativa del 74.º integrada (sigue en borrador)
 - **Ecos del 74.º:** hay 31 con frase, que se importan literalmente del anexo 1.1 y de la revisión de ChatGPT del 27-11-2026 (`docs/paquetes/74_revision_chatgpt/`).
   - Son solo texto: no aplican efectos.

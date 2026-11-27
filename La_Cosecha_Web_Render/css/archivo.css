@@ -190,3 +190,25 @@ figcaption { font: .8rem var(--sans); color: var(--tinta-3); margin-top: .4rem; 
   .cabecera-sitio nav, .saltar, .filtros { display: none; }
   html, body { background: #fff; }
 }
+
+/* 1.2 · contenido editorial */
+.expediente { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1.2rem 2rem; border-top: 1px solid var(--linea); padding-top: 1.2rem; }
+.expediente h2 { font: 700 .74rem var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--lacre); margin-bottom: .35rem; }
+.expediente p { margin: 0; }
+.etiqueta-canon { display: inline-block; font: 600 .68rem var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--tinta-2); border: 1px solid var(--linea); padding: .15rem .45rem; margin-top: .4rem; }
+.etiqueta-canon[data-canon="CANON_FACT"] { border-color: var(--tinta-2); }
+.etiqueta-canon[data-canon="INTERPRETATION"] { color: var(--lacre); border-color: var(--lacre); border-style: dashed; }
+.tarjetas-lugares, .documentos { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 1rem; }
+.tarjetas-lugares li { background: var(--tarjeta); border: 1px solid var(--linea); padding: 1rem 1.1rem; }
+.tarjetas-lugares h3 { margin-bottom: .3rem; }
+.tarjetas-lugares p { font-size: .95rem; margin-bottom: .5rem; }
+.documento { background: #fbf8f1; border: 1px solid var(--linea); box-shadow: 0 1px 0 var(--linea), 0 6px 0 -3px var(--papel-2), 0 7px 0 -3px var(--linea); padding: 1.3rem 1.4rem 1rem; position: relative; }
+.documento::before { content: ""; position: absolute; top: .9rem; right: .9rem; width: 2.2rem; height: 2.2rem; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #a9372a, var(--lacre-2)); opacity: .85; }
+.documento h2 { font-size: 1.25rem; padding-right: 2.8rem; }
+.relato { list-style: none; padding: 0; margin: 1.5rem 0; counter-reset: r; }
+.relato li { display: grid; grid-template-columns: 3.2rem 1fr; gap: 1rem; padding: 1.1rem 0; border-top: 1px solid var(--linea); }
+.relato-n { font: 600 1.6rem/1 var(--serif); color: var(--lacre); font-variant-numeric: oldstyle-nums; }
+.relato h2 { font-size: 1.2rem; margin-bottom: .3rem; }
+.relato p { margin: 0; }
+.hitos { columns: 2 14rem; padding-left: 1.2rem; }
+.hitos li { margin-bottom: .3rem; break-inside: avoid; }

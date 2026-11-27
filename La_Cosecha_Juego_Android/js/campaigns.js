@@ -85,7 +85,7 @@ const chapters={
       ['alone','Ir sola a por armas',(g,a)=>{a.item('arco');g.equippedWeapon='arco';a.stat('health',-10);a.rel('victors',-1);a.log('Te haces con un arco. Finnick no ataca, pero toma nota.');}],
     ]},
     4:{title:'La niebla',body:'Una niebla espesa avanza por la jungla y quema la piel. Mags no puede correr. Finnick no puede cargar con los dos.',choices:[
-      ['carry','Cargar tú con Mags',(g,a)=>{if(a.relOf('victors')>=2&&g.health>=60){a.stat('health',-25);a.flag('magsSaved');a.rel('victors',2);a.log('Cargas con Mags hasta el agua. Tienes la piel en carne viva, pero Mags vive. No era así como tenía que terminar.');}else{a.stat('health',-18);a.kill('Mags Flanagan','Se adentra en la niebla para no retrasaros.');a.log('Lo intentas, pero no puedes con ella. Mags te besa en la frente y camina hacia la niebla.');}}],
+      ['carry','Cargar tú con Mags',(g,a)=>{a.stat('health',g.health>=60?-15:-10);a.flag('carriedMags');a.rel('victors',2);a.kill('Mags Flanagan','Se adentra en la niebla para no retrasaros.');a.log('Cargas con Mags hasta que te fallan las piernas. Ella lo nota antes que tú: te aprieta la mano, besa a Finnick y camina hacia la niebla. Habéis ganado unos metros. Ella os ha dado el resto.');}],
       ['let','Dejar que Mags elija',(g,a)=>{a.kill('Mags Flanagan','Se adentra en la niebla para no retrasaros.');a.stat('health',-8);a.rel('victors',1);a.log('Mags besa a Finnick y camina hacia la niebla. Nadie la detiene.');}],
       ['run','Correr sin mirar atrás',(g,a)=>{a.kill('Mags Flanagan','La niebla la alcanza.');a.rel('victors',-2);a.log('Corres. Cuando la niebla se disipa, Finnick no te mira a los ojos.');}],
     ]},
@@ -169,7 +169,7 @@ export function composeEnding(g,finalChoice){
     else if(finalChoice==='breakout'&&f.clockPlan){title='LA ARENA SE ROMPE';out.push('La flecha con el cable de Beetee atraviesa el campo de fuerza y la cúpula estalla. Un aerodeslizador del Distrito 13 te saca de la Arena.');out.push(alive('Peeta Mellark')&&(f.guardedPeeta||finalChoice==='rescue')?'Esta vez Peeta sube al aerodeslizador contigo. El Capitolio pierde su mejor arma contra el Sinsajo.':'Peeta y Johanna caen en manos del Capitolio, como en el canon.');out.push('Esa misma noche, el Capitolio bombardea el Distrito 12. Gale saca a cientos de personas de las llamas.');}
     else if(finalChoice==='rescue'){title='NADIE SE QUEDA ATRÁS';out.push('Priorizas a tus aliados. El plan pierde precisión, pero el aerodeslizador recoge a más vencedores de los que el canon salvó.');if(alive('Peeta Mellark'))out.push('Peeta escapa contigo. Snow tendrá que buscar otra forma de quebrarte.');}
     else{title='UNA HUIDA EN SOLITARIO';out.push('Actúas por tu cuenta. La Arena se rompe, pero sin coordinación: no sabes quién ha salido y quién no.');}
-    if(f.magsSaved&&alive('Mags Flanagan'))out.push('Mags sale viva del Vasallaje. Finnick no olvidará lo que hiciste.');
+    if(f.carriedMags)out.push('Finnick no olvida que cargaste con Mags mientras pudiste.');
   }
   if(!out.length)out.push(g.storyEnding||'La Arena ha cerrado su registro.');
   const reb=g.rebellion||0;

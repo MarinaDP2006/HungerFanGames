@@ -56,3 +56,30 @@ body{zoom:var(--text-scale,1)}
 /* Precampañas del motor común: respuesta inmediata y ecos de escenas anteriores */
 .respuesta{margin:16px 0;padding:14px 18px;border-left:3px solid var(--gold,#c9a45c);font-style:italic;line-height:1.6}
 .eco{margin:0 0 12px;padding:8px 12px;border-left:2px solid rgba(201,164,92,.5);opacity:.9}
+
+/* Arena 4.15: HUD fijo, acciones en rejilla, postura segmentada */
+.hud{position:sticky;top:0;z-index:4;background:linear-gradient(180deg,#0d0a08f2,#0d0a08e6);backdrop-filter:blur(6px);border:1px solid #6b5333;padding:10px 12px;margin:0 0 12px}
+.hud-top{display:flex;justify-content:space-between;gap:8px;font:600 10px Inter,sans-serif;letter-spacing:.18em;color:var(--gold2);margin-bottom:8px}
+.hud-top span:nth-child(2){color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hud-bars{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.hud-m{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:2px 6px;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#b4a593}
+.hud-m b{font:600 15px Cinzel,serif;color:#f0dfc4}
+.hud-m i{grid-column:1/-1;height:5px;background:#2a211a;position:relative;overflow:hidden}
+.hud-m i::after{content:"";position:absolute;inset:0 auto 0 0;width:var(--v);background:linear-gradient(90deg,#8e7a45,#d9bb74);transition:width .4s}
+.hud-m.peligro b{color:#e0897a}.hud-m.peligro i::after{background:linear-gradient(90deg,#6e241c,#c4543f)}
+.event-card{border:1px solid var(--gold);border-left-width:4px;background:radial-gradient(ellipse at top left,#3a2616,#17110d 70%);box-shadow:0 0 0 1px #000,0 18px 40px #000a}
+.event-card .choice{border-color:#7a5f3c}
+.action-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.act{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:84px;padding:10px 6px;background:#15100d;border:1px solid #4d3c2b;color:#e8d9c4;font-size:12px;line-height:1.25;text-align:center}
+.act:hover:not(:disabled){border-color:var(--gold);background:#251a12}
+.act:active:not(:disabled){transform:translateY(1px)}
+.act:disabled{opacity:.35;cursor:not-allowed}
+.act-ic{font-size:22px;line-height:1;color:var(--gold2)}
+.segmented{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid #5a4630;margin:6px 0 14px}
+.seg{background:#120e0b;border:0;border-right:1px solid #3d2f22;color:#cbbba8;padding:10px 4px;font-size:12px}
+.seg:last-child{border-right:0}.seg.active{background:#3a2919;color:var(--gold2);box-shadow:inset 0 -2px 0 var(--gold)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 12px}
+.chip{background:#120e0b;border:1px solid #4d3c2b;color:#d8c8b4;padding:7px 12px;border-radius:999px;font-size:12px;text-transform:capitalize}
+.chip.active{border-color:var(--gold);color:var(--gold2);background:#2a1d14}
+@media(max-width:420px){.action-grid{grid-template-columns:repeat(3,1fr)}.act{min-height:76px;font-size:11px}.hud-m b{font-size:13px}.seg{font-size:11px}}
+@media(min-width:1000px){.hud{top:8px}}

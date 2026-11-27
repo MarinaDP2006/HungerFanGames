@@ -73,6 +73,7 @@ jobs:
         run: |
           node --test tests/precampana.test.mjs
           node --test tests/precampana-juego.test.mjs
+          node --test tests/canon-75.test.mjs
       - name: 'Datos del 74.º idénticos a la fuente creativa'
         run: node scripts/importar-campana-74.mjs --comprobar
       - name: 'Gira y 75.º en borrador, idénticos a la fuente y sin activar'

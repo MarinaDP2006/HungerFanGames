@@ -1,6 +1,6 @@
 # HECHO
 
-Estado a 27-11-2026 · rama `integracion-cosecha-5x` · Android 4.14.0 · Archivo de Panem 1.1
+Estado a 27-11-2026 · rama `integracion-cosecha-5x` · Android 4.15.0 · Archivo de Panem 1.2
 
 ## Juego Android
 - **App:** APK con Capacitor 7. CI compila, prueba en emulador (Android 14) y comprueba la actualización desde 4.9.
@@ -14,7 +14,7 @@ Estado a 27-11-2026 · rama `integracion-cosecha-5x` · Android 4.14.0 · Archiv
   - Historia: 74.º y 75.º en el selector; el 50.º está retirado de forma reversible;
   - Libre;
   - Presidente, con rebelión y guerra.
-- **Arena:** sectores, turnos, combate, inventario, heridas, patrocinadores y acontecimientos de campaña (8 en el 74.º y 8 en el 75.º) con finales.
+- **Arena (rediseñada en 4.15):** HUD fijo con barras, acciones en rejilla, postura segmentada; sectores, turnos, combate, inventario, heridas, patrocinadores y acontecimientos de campaña (8 en el 74.º y 8 en el 75.º) con finales.
 - **Motor común de precampañas:**
   - escenas, opciones, efectos, condiciones y diario;
   - respuesta antes de avanzar;
@@ -28,7 +28,7 @@ Estado a 27-11-2026 · rama `integracion-cosecha-5x` · Android 4.14.0 · Archiv
 
 ## Web · Archivo de Panem
 - **Navegación:** 12 secciones con rutas limpias (`/distritos/12`), menú definitivo y sin enlaces externos.
-- **Contenido:** fichas de distritos, personajes, vencedores, juegos, cronología y lugares, con estado de canon.
+- **Contenido completo (1.2):** 13 distritos con expediente, Capitolio, 27 personajes, 4 ediciones, cronología, 14 lugares, Gira, Rebelión y Guerra y documentos; cada ficha con su estado de canon y su fuente.
 - **Funcionamiento:** service worker y manifiesto.
 - **Separación:** la web no contiene código del juego, y una prueba lo vigila.
 

@@ -1,16 +1,18 @@
-// Archivo de Panem · índices derivados de los datos compartidos (js/data.js).
-// Aquí no se escribe contenido nuevo: solo se ordena y relaciona lo que ya existe.
-// Lo que falta se registra en PENDIENTES para que la Web lo muestre como pendiente.
+// Archivo de Panem · índices de los datos compartidos (js/data.js) y del contenido editorial (js/archivo-contenido.js).
 import { districts, characters, canonEditions, arenaTypes, mentors } from './data.js';
+import * as C from './archivo-contenido.js';
 
 export const slug = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 // Los doce distritos de las cosechas. El 13 se trata aparte: no participa en las cosechas canónicas.
 export const DISTRITOS = districts.filter(d => d.id >= 1 && d.id <= 12);
 export const DISTRITO_13 = districts.find(d => d.id === 13) || null;
-export const distrito = id => districts.find(d => d.id === Number(id)) || null;
+export const CAPITOLIO = { id: 0, name: 'El Capitolio', color: '#8a2a1f' };
+export const distrito = id => Number(id) === 0 ? CAPITOLIO : districts.find(d => d.id === Number(id)) || null;
+// Ficha de distrito con su ampliación editorial, estado de canon y fuente.
+export const distritoCompleto = id => { const d = distrito(id); const x = C.DISTRITOS[d?.id]; return d && x ? { ...d, ...x, canon_status: x.canon, source_ref: C.FUENTE_PELICULAS } : d; };
 
-export const PERSONAJES = characters.map(c => ({ ...c, slug: slug(c.name) }));
+export const PERSONAJES = [...characters, ...C.PERSONAJES_EXTRA].map(c => ({ ...c, slug: slug(c.name), canon_status: C.CANON_PERSONAJES[c.name] || (C.PERSONAJES_EXTRA.includes(c) ? 'CANON_FACT' : c.canon_status), source_ref: C.FUENTE_PELICULAS }));
 export const personaje = s => PERSONAJES.find(c => c.slug === s) || null;
 export const personajesDe = id => PERSONAJES.filter(c => c.district === Number(id));
 
@@ -57,19 +59,4 @@ export const GALERIA = [
   }),
 ];
 
-// Contenido pendiente de la dirección creativa (lo que la Web no inventa).
-export const PENDIENTES = {
-  mapa: 'Mapa ilustrado de Panem con la situación de cada distrito y del Capitolio.',
-  gira: 'Archivo de la Gira de la Victoria: recorrido, actos públicos y consecuencias, según el guion aprobado.',
-  rebelion: 'Archivo de la Rebelión y la Guerra: acontecimientos, lugares y personajes, según el guion aprobado.',
-  lugares: 'Fichas de lugares (plaza del Distrito 12, Edificio de Justicia, estación, tren, Centro de Entrenamiento, escenario de entrevistas, sala de lanzamiento…) con su descripción aprobada.',
-  capitolio: 'Ficha del Capitolio: descripción, lugares y papel en los Juegos.',
-  distrito: 'Ficha ampliada de cada distrito: geografía, vida cotidiana, símbolos y tributos destacados.',
-  personajes: 'Fichas de más personajes canónicos y retratos aprobados.',
-  vencedores: 'Fichas de los mentores y vencedores que hoy solo aparecen con su nombre o sin identificar.',
-  ediciones: 'Fichas completas de las ediciones: tributos, mentores, arena, acontecimientos y vencedor.',
-  cronologia: 'Cronología aprobada de Panem: los Días Oscuros, la Primera Rebelión, los Juegos y la Segunda Rebelión.',
-  arenas: 'Fichas y mapas de las arenas canónicas (pradera del 50.º, bosque y lago del 74.º, reloj del 75.º).',
-  documentos: 'Archivo documental: textos del universo aprobados (proclamas, comunicados, registros).',
-  galeria: 'Nuevas ilustraciones originales: distritos, Capitolio, arenas y retratos aprobados.',
-};
+export { C as CONTENIDO };

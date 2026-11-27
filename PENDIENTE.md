@@ -1,6 +1,6 @@
 # PENDIENTE
 
-## Narrativa (ChatGPT → luego Claude lo integra)
+## Narrativa (la escribe Claude y la aprueba Nina)
 - **74.º:**
   - diálogos (`dialogue[]`) y `player_prompt` de las 11 escenas;
   - confirmar la escena de 15 ecos;
@@ -9,15 +9,12 @@
   - cifras de los efectos, respuestas inmediatas y frases del diario;
   - comportamiento de las variables sin equivalente.
 - **Arena del 75.º:**
-  - nueva frase para «Cargar tú con Mags» (Mags muere siempre);
   - texto de 75-07 adaptado a las plataformas de agua.
 - **Rebelión y Guerra:** guion completo.
 - **Aprobación final** de cada campaña por Nina.
 
 ## Juego Android
-- **Rediseño definitivo:**
-  - identidad visual propia del juego, distinta de la web;
-  - interfaz de juego: HUD, mapa de Arena y pantallas de campaña.
+- **Rediseño:** la Arena ya está hecha (4.15). Faltan las pantallas de inicio, cosecha, entrenamiento, entrevista y campaña.
 - **Registros técnicos:**
   - registro de lugares (`location_id`);
   - completar el registro de personajes: Prim, Effie, Gale, Cinna, Caesar…
@@ -28,9 +25,7 @@
 - **Firma del APK:** secreto `ANDROID_DEBUG_KEYSTORE_B64` (lo crea Nina).
 
 ## Web · Archivo de Panem
-- **Rediseño definitivo:** estilo editorial propio, distinto del juego.
-- **Contenido de las secciones con aviso de pendiente:** Gira, Rebelión y Guerra, y Lugares.
-- **Galería y documentos** con material original.
+- **Galería:** más ilustraciones originales (distritos y arenas).
 - **Despliegue en Render:** solo con autorización.
 
 ## Publicación (solo con autorización de Nina)

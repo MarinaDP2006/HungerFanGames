@@ -54,6 +54,6 @@ test('detecta que el service worker de Android vuelva a servir archivos desde ca
 test('detecta que el service worker precargue el WAV máster', () =>
   expectFail(d => edit(d, `${W}/sw.js`, s => s.replace("'./manifest.webmanifest'", "'./assets/audio/ambiente-capitolio-master.wav','./manifest.webmanifest'")), /no debe precargar másteres WAV/));
 test('detecta que Web y Android compartan identificador de service worker', () =>
-  expectFail(d => edit(d, `${A}/sw.js`, s => s.replace(/const CACHE='[^']+'/, "const CACHE='archivo-panem-1.1.0'")), /mismo identificador de service worker/));
+  expectFail(d => { const web = fs.readFileSync(path.join(d, W, 'sw.js'), 'utf8').match(/const CACHE='[^']+'/)[0]; edit(d, `${A}/sw.js`, s => s.replace(/const CACHE='[^']+'/, web)); }, /mismo identificador de service worker/));
 test('detecta que un producto apunte a la carpeta del otro', () =>
   expectFail(d => edit(d, `${W}/index.html`, s => s.replace('</body>', '<img src="../La_Cosecha_Juego_Android/assets/x.png"></body>')), /apunta a la carpeta del otro producto/));

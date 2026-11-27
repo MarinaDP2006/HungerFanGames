@@ -66,7 +66,7 @@ try {
     check(`${nombre} · búsqueda de personajes`, /^1 de/.test(await page.textContent('.recuento')), await page.textContent('.recuento'));
     await page.fill('input[name=q]', '');
     await page.selectOption('select[name=distrito]', '12');
-    check(`${nombre} · filtro por distrito`, /^3 de/.test(await page.textContent('.recuento')), await page.textContent('.recuento'));
+    check(`${nombre} · filtro por distrito`, /^5 de/.test(await page.textContent('.recuento')), await page.textContent('.recuento'));
     await page.click('a.tarjeta-personaje');
     check(`${nombre} · ficha desde el listado`, /\/personajes\/.+/.test(new URL(page.url()).pathname));
     // Separación: nada del videojuego en el documento.
