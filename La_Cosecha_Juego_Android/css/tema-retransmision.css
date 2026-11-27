@@ -1,0 +1,115 @@
+/* La Cosecha · tema «Retransmisión del Capitolio» (4.18)
+   Identidad del videojuego, deliberadamente opuesta a la web (Archivo de Panem: papel claro, tinta y lacre):
+   negro azulado de pantalla, oro del Capitolio, rojo de emisión en directo, marcos de cámara y líneas de barrido.
+   Tipografías incluidas en el APK (sin internet): Cinzel para títulos e Inter para interfaz, ambas OFL. */
+@font-face{font-family:Cinzel;font-weight:400;font-display:swap;src:url('../assets/fonts/cinzel-latin-400-normal.woff2') format('woff2')}
+@font-face{font-family:Cinzel;font-weight:600;font-display:swap;src:url('../assets/fonts/cinzel-latin-600-normal.woff2') format('woff2')}
+@font-face{font-family:Cinzel;font-weight:700;font-display:swap;src:url('../assets/fonts/cinzel-latin-700-normal.woff2') format('woff2')}
+@font-face{font-family:Inter;font-weight:400;font-display:swap;src:url('../assets/fonts/inter-latin-400-normal.woff2') format('woff2')}
+@font-face{font-family:Inter;font-weight:500;font-display:swap;src:url('../assets/fonts/inter-latin-500-normal.woff2') format('woff2')}
+@font-face{font-family:Inter;font-weight:600;font-display:swap;src:url('../assets/fonts/inter-latin-600-normal.woff2') format('woff2')}
+@font-face{font-family:Inter;font-weight:700;font-display:swap;src:url('../assets/fonts/inter-latin-700-normal.woff2') format('woff2')}
+
+:root{
+  --black:#06070a;--coal:#0b0d12;--panel:#10131a;--panel2:#171b25;
+  --gold:#cfa95f;--gold2:#f3d895;--red:#c8302a;--cream:#ebe8e2;--muted:#8d95a3;--line:#262d3b;--green:#6f9c7c;
+  --live:#e0352b;--glass:#0d1016e6;--shadow:0 20px 60px #000c;
+}
+html{background:var(--black)}
+body{background:radial-gradient(ellipse 120% 60% at 50% -10%,#1d2230 0,#0b0d12 45%,#06070a 80%);color:var(--cream)}
+/* Líneas de barrido muy suaves sobre toda la pantalla: aspecto de emisión, sin estorbar la lectura */
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;background:repeating-linear-gradient(0deg,#ffffff05 0 1px,transparent 1px 3px);mix-blend-mode:overlay}
+@media (prefers-reduced-motion:reduce){body::after{display:none}}
+
+/* Barra superior: rótulo de cadena + EN DIRECTO */
+.topbar{border-bottom:1px solid #2a3142;background:linear-gradient(180deg,#0d1017,#0b0d12cc);backdrop-filter:blur(6px)}
+.wordmark{color:var(--gold2);font:700 18px Cinzel,serif;letter-spacing:.26em}
+.wordmark span{font:600 9px Inter,sans-serif;color:#7f8796;letter-spacing:.32em}
+.top-meta{color:#7f8796;font:600 10px Inter,sans-serif}
+.en-directo{display:inline-flex;align-items:center;gap:6px;color:#fff;background:var(--live);padding:4px 8px 4px 7px;font:700 9px Inter,sans-serif;letter-spacing:.18em;border-radius:2px}
+.en-directo::before{content:"";width:6px;height:6px;border-radius:50%;background:#fff;animation:latido 1.4s ease-in-out infinite}
+@keyframes latido{50%{opacity:.25}}
+.icon-button{background:#121620;border-color:#2c3446;color:var(--gold2);border-radius:4px}
+
+/* Tipografía */
+.eyebrow{color:var(--gold);font:600 10px Inter,sans-serif;letter-spacing:.3em}
+.display{font:700 clamp(36px,6vw,76px)/1.02 Cinzel,serif;color:#f6efe2;text-shadow:0 0 40px #cfa95f33}
+.section-title{font:600 20px Cinzel,serif;color:var(--gold2);letter-spacing:.08em}
+.lead{color:#b9bfca}
+.card-title,.tribute strong,.slot-card b,.whatif-card b{font-family:Cinzel,serif}
+
+/* Botones: rótulos de mando */
+.btn{border:1px solid #3a4459;background:linear-gradient(180deg,#1a1f2b,#10131a);color:#e9e4da;border-radius:3px;font:600 10px Inter,sans-serif;letter-spacing:.16em;box-shadow:inset 0 1px 0 #ffffff0d}
+.btn:hover{background:linear-gradient(180deg,#232a3a,#151924);border-color:var(--gold)}
+.btn.primary{background:linear-gradient(180deg,#d9b86e,#a9843f);border-color:#f0d391;color:#14110b;box-shadow:0 0 24px #cfa95f40,inset 0 1px 0 #fff6}
+.btn.primary:hover{background:linear-gradient(180deg,#e8c87d,#b8924b)}
+.btn.ghost{background:transparent;border-color:#2c3446;color:#aeb5c1}
+
+/* Paneles con esquinas de visor de cámara */
+.panel,.story-box,.hud,.modal,.whatif,.arena-map{position:relative;background:linear-gradient(160deg,#141822,#0d1016);border:1px solid #232a38;box-shadow:var(--shadow)}
+.panel::before,.story-box::before,.modal::before{content:"";position:absolute;inset:-1px;pointer-events:none;
+  background:linear-gradient(var(--gold),var(--gold)) top left/14px 1px,linear-gradient(var(--gold),var(--gold)) top left/1px 14px,
+             linear-gradient(var(--gold),var(--gold)) top right/14px 1px,linear-gradient(var(--gold),var(--gold)) top right/1px 14px,
+             linear-gradient(var(--gold),var(--gold)) bottom left/14px 1px,linear-gradient(var(--gold),var(--gold)) bottom left/1px 14px,
+             linear-gradient(var(--gold),var(--gold)) bottom right/14px 1px,linear-gradient(var(--gold),var(--gold)) bottom right/1px 14px;
+  background-repeat:no-repeat;opacity:.85}
+.panel-head{border-bottom-color:#232a38}
+.story-box{border-left:3px solid var(--gold)}
+.story-box p{color:#d3d6dc}
+
+/* Portada */
+.hero{border:1px solid #232a38;background:linear-gradient(90deg,#06070a 0%,#06070aee 30%,#06070a55 65%,#06070a99),#06070a}
+.hero::after{background:radial-gradient(ellipse at 78% 110%,#cfa95f2e,transparent 55%),linear-gradient(0deg,#06070a 0,transparent 30%)}
+.hero-quote{color:#e9dcc0}
+.hero-side{color:#c9ced8}
+.feature-strip{background:#0c0f15;border-color:#232a38}
+.feature-strip div{border-color:#232a38;color:#c8b07a;font-family:Inter,sans-serif}
+.card{background:#0f1218;border-color:#232a38;border-radius:3px}
+.card:hover{border-color:var(--gold);box-shadow:0 0 0 1px #cfa95f55,0 14px 30px #000a}
+.card-image{filter:saturate(.7) contrast(1.05)}
+.card-meta{color:#a8946b}.card-desc{color:#a9b0bc}
+
+/* Elecciones y formularios */
+.choice,.act,.seg,.chip,.tab,.district,.whatif-card,.roster-item,.slot-card,.stat,.tribute,.log{background:#0f1218;border-color:#263044;color:#e2e5ea}
+.choice:hover,.act:hover:not(:disabled),.district:hover,.whatif-card:hover{border-color:var(--gold);background:#161b26}
+.choice.active,.seg.active,.chip.active,.tab.active,.district.active,.slot-card.active,.roster-item.me{background:#1d1a12;border-color:var(--gold2);color:var(--gold2)}
+.district b,.stat strong{color:var(--gold2)}
+.field input,.field select,.field textarea,.whatif-form input,.whatif-form select{background:#090b10;border-color:#2c3446;color:var(--cream);border-radius:3px}
+.field label{color:var(--gold)}
+.tag{border-color:#3a4459;color:#d8c08a}
+.log p{color:#a9b0bc;border-bottom-color:#1a1f2a}
+
+/* Arena: marcador de retransmisión */
+.hud{background:linear-gradient(180deg,#0b0e14f2,#0b0e14e6);border-color:#2a3244;box-shadow:0 10px 30px #000b}
+.hud-top span:first-child::before{content:"● ";color:var(--live)}
+.hud-m{color:#8f97a6}.hud-m b{color:#f3f0ea}
+.hud-m i{background:#1c2230}
+.hud-m i::after{background:linear-gradient(90deg,#a9843f,#f3d895)}
+.event-card{border-color:var(--gold);background:radial-gradient(ellipse at top left,#2a2416,#10131a 70%)}
+.event-card .eyebrow{color:var(--live)}
+.event-card .cronica{border-left-color:#3a4459;color:#aeb4bf}
+.act-ic{color:var(--gold2)}
+.arena-map{border-color:#3a4459}.map-top,.map-legend{background:#0e1118;color:#c8ccd4}
+.canon-mark{background:#141822;border-color:#5c5134;color:var(--gold2)}
+
+/* Precampaña: respuesta, ecos y diario */
+.respuesta{border-left-color:var(--gold);background:#12151d;color:#e4e1da}
+.eco{color:#9fa7b5;border-left:2px solid #3a4459;padding-left:10px}
+.journal summary{color:var(--gold)}
+.epilogue{border-left-color:var(--gold)}.epilogue p{color:#d8dbe1}
+
+/* Ajustes y modales */
+.modal-backdrop{background:#000000d9;backdrop-filter:blur(3px)}
+.modal{background:#10131a;border-color:#2a3244}
+.setting-range input{accent-color:var(--gold2)}
+
+@media (max-width:520px){
+  .app-shell{padding:0 14px}
+  .topbar{height:auto;min-height:56px;padding:8px 0;gap:8px}
+  .wordmark{font-size:14px;letter-spacing:.18em;white-space:nowrap}.wordmark span{display:none}
+  .top-meta{gap:8px;font-size:8px;letter-spacing:.1em}
+  #save-indicator{max-width:84px;line-height:1.3}
+  .top-meta .version{font-size:8px;letter-spacing:.06em}
+  .en-directo{padding:3px 6px;font-size:8px;letter-spacing:.12em}
+  .icon-button{width:34px;height:34px;font-size:17px}
+}

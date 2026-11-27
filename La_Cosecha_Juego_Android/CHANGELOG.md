@@ -1,5 +1,14 @@
 # Changelog
 
+## 4.18 — Diseño «Retransmisión del Capitolio» y arreglos para móviles reales
+- **Diseño propio del juego, opuesto al de la web.**
+  - Fondo negro azulado de pantalla, oro del Capitolio y rótulo rojo «EN DIRECTO».
+  - Esquinas de visor de cámara en los paneles y líneas de barrido muy suaves.
+  - Botón principal dorado y marcador de Arena como rótulo de emisión.
+- **Tipografías dentro del APK:** Cinzel e Inter (licencia OFL). Antes se pedían a Google Fonts y, sin internet, el móvil ponía otras.
+- **Barra superior compacta en móvil.**
+- **WebView antiguos:** el JavaScript del APK se adapta a Chrome 61+ (pantalla en negro en móviles sin el WebView actualizado).
+
 ## 4.17 — La historia completa: 74.º → Gira → 75.º
 - **Gira de la Victoria (8 escenas) y precampaña del 75.º (6 escenas) jugables.**
   - Texto del documento narrativo v1.0, completado por Claude (`scripts/gira-75-complemento.mjs`) con:
