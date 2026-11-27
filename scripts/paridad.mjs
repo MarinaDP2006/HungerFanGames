@@ -1,162 +1,127 @@
-// Paridad Web / Android de La Cosecha.
+// Contratos entre los dos productos de La Cosecha.
 //
-// La Web y el Juego Android son dos productos con funciones distintas. Esta comprobación NO exige
-// que tengan los mismos archivos: protege lo que de verdad comparten y permite, de forma explícita
-// y documentada, lo que es propio de cada plataforma. Cualquier archivo que no encaje en una de
-// estas categorías es un error, para seguir detectando divergencias accidentales.
+// Desde la separación, Android (el videojuego) y la Web (Archivo de Panem) NO comparten interfaz
+// ni funcionamiento. Esta comprobación ya no exige archivos iguales: protege solo lo que de verdad
+// es común y vigila que los productos no se vuelvan a mezclar.
 //
-//   1. COMPARTIDO OBLIGATORIO  → debe existir en los dos productos y ser idéntico.
-//   2. COMPARTIDO SI EXISTE    → si está en los dos, debe ser idéntico; puede faltar en uno.
-//   3. PROPIO DE PLATAFORMA    → existe en los dos y puede diferir (motivo documentado).
-//   4. SOLO ANDROID / SOLO WEB → lista cerrada y justificada.
-//   5. Comprobaciones de integridad propias de cada plataforma.
+//   1. Datos compartidos: cada módulo de compartido/ está copiado, idéntico, en los dos productos.
+//   2. Imágenes originales: si un archivo de assets/ está en los dos productos, es idéntico.
+//   3. Separación de la Web: entra por js/archivo.js, no contiene módulos ni pantallas del juego,
+//      ni partidas, ni guardado.
+//   4. Separación de Android: el juego no carga nada del Archivo.
+//   5. Cada producto se sostiene solo: todo lo que importa existe en su propia carpeta y ninguno
+//      referencia archivos de la otra.
+//   6. Service workers: la Web precarga sus módulos; Android no intercepta peticiones (los archivos
+//      van en el APK); ninguno precarga el WAV máster; identificadores distintos.
 //
-// `node scripts/paridad.mjs --explicar` muestra las reglas y sus motivos.
+// `node scripts/paridad.mjs --explicar` muestra las reglas.
 import fs from 'node:fs';
 import path from 'node:path';
-import crypto from 'node:crypto';
+import { check as checkShared, sharedFiles, destino } from './sincronizar-compartido.mjs';
 
 // PARIDAD_ROOT permite ejecutar la comprobación sobre una copia (lo usa scripts/paridad.test.mjs).
 const root = process.env.PARIDAD_ROOT || path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const WEB = path.join(root, 'La_Cosecha_Web_Render');
 const APP = path.join(root, 'La_Cosecha_Juego_Android');
-const SCOPE = ['index.html', 'sw.js', 'manifest.webmanifest', 'css', 'js', 'assets', 'tests'];
+const ENTRADA = { Web: 'js/archivo.js', Android: 'js/app.js' };
 
-// 1. Datos canónicos y recursos visuales: una sola fuente de verdad para los dos productos.
-const SHARED_REQUIRED = [
-  [/^js\/data\.js$/, 'Datos canónicos de Panem (distritos, personajes, ediciones).'],
-  [/^assets\/[^/]+\.(png|jpe?g|webp)$/, 'Imágenes originales del proyecto.'],
-  [/^assets\/optimized\//, 'Versiones optimizadas de las imágenes.'],
-  [/^assets\/tributes\//, 'Retratos originales de tributos.'],
-  [/^assets\/icons\//, 'Iconos y favicon.'],
-];
-
-// 2. Código y pruebas comunes mientras ambos productos los usen. Si uno deja de usarlos
-//    (p. ej. la Web cuando se separe del motor), pueden faltar en ese producto.
-const SHARED_IF_PRESENT = [
-  [/^js\/(campaigns|whatif|presidency)\.js$/, 'Módulos de juego comunes mientras la Web los conserve.'],
-  [/^css\/style\.css$/, 'Estilos comunes mientras la Web conserve la misma identidad visual.'],
-  [/^tests\/presidency\.mjs$/, 'Prueba independiente del entorno de cada producto.'],
-];
-
-// 3. Propios de cada plataforma: existen en los dos y pueden diferir.
-const PLATFORM_SPECIFIC = [
-  [/^js\/app\.js$/, 'Punto de entrada de cada producto. Android integra la campaña del 50.º (5.1 + 5.5).'],
-  [/^index\.html$/, 'Página de entrada de cada producto.'],
-  [/^sw\.js$/, 'Service worker con identificador de caché y lista de precarga propios.'],
-  [/^manifest\.webmanifest$/, 'Manifiesto de instalación de cada plataforma.'],
-  [/^tests\/(smoke|campaigns|saves)\.mjs$/, 'Cargan app.js en un entorno aislado e inyectan los módulos que importa cada producto.'],
-];
-
-// 4. Solo en Android (lista cerrada).
-const ONLY_ANDROID = [
-  [/^js\/campaign-50th-(prearena|dynamic-adapter|dynamic|arena)\.js$/, 'Campaña del 50.º Vasallaje (5.1, 5.5 y módulos de referencia 5.x).'],
-  [/^js\/canon-50th\.js$/, 'Datos canónicos de la campaña del 50.º.'],
-  [/^js\/music\.js$/, 'Módulo de música del juego (todavía sin conectar).'],
-  [/^js\/(version|settings|saves|durable-storage)\.js$/, 'Versión del juego, Ajustes, ranuras y guardado duradero nativo (fase 1). La Web no los usa.'],
-  [/^assets\/audio\/[^/]+\.(ogg|wav)$/, 'Audio original del juego. El WAV es el máster y no viaja en el APK.'],
-  [/^tests\/campaign-50th-[a-z-]+(\.test)?\.mjs$/, 'Pruebas de la campaña del 50.º.'],
-  [/^tests\/bundle-android\.test\.mjs$/, 'Prueba del empaquetado del APK (www/): exclusión del WAV y caché de Android.'],
-  [/^tests\/(version|settings|saves-slots|durable-storage)\.test\.mjs$/, 'Pruebas de la versión, los Ajustes, las ranuras y el guardado duradero de Android.'],
-  [/^tests\/device\/[\w.-]+\.mjs$/, 'Prueba del APK en un emulador o dispositivo Android.'],
-];
-const ONLY_WEB = [];
-
-// Configuración y documentación de cada plataforma (fuera del alcance comparado).
-const PLATFORM_FILES = {
-  web: ['README_RENDER.md'],
-  android: ['package.json', 'capacitor.config.json', 'scripts/build-web.mjs', 'scripts/android-version.mjs', 'README_ANDROID.md', 'CHANGELOG.md', 'docs/VERSIONADO.md', 'docs/GUARDADO.md', 'docs/PRUEBA_MOVIL_FISICO.md', 'docs/FIRMA_APK.md', 'docs/PLANTILLA_RESULTADOS_MOVIL.md'],
-};
-
+const exists = (base, f) => fs.existsSync(path.join(base, f));
+const read = (base, f) => fs.readFileSync(path.join(base, f), 'utf8');
 const list = (base, rel) => {
   const full = path.join(base, rel);
   if (!fs.existsSync(full)) return [];
   if (fs.statSync(full).isFile()) return [rel];
   return fs.readdirSync(full).flatMap(f => list(base, path.posix.join(rel, f)));
 };
-const hash = f => crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex');
-const match = (rules, f) => rules.find(([re]) => re.test(f));
-const read = (base, f) => fs.readFileSync(path.join(base, f), 'utf8');
-
 const problems = [];
-const report = { shared: 0, sharedIfPresent: 0, platform: 0, onlyAndroid: 0, onlyWeb: 0 };
-const web = new Set(SCOPE.flatMap(r => list(WEB, r)));
-const app = new Set(SCOPE.flatMap(r => list(APP, r)));
 
-for (const f of [...new Set([...web, ...app])].sort()) {
-  const inWeb = web.has(f), inApp = app.has(f);
-  const same = inWeb && inApp && hash(path.join(WEB, f)) === hash(path.join(APP, f));
-  if (match(SHARED_REQUIRED, f)) {
-    if (!inWeb) problems.push(`Compartido obligatorio que falta en la Web: ${f}`);
-    else if (!inApp) problems.push(`Compartido obligatorio que falta en Android: ${f}`);
-    else if (!same) problems.push(`Compartido obligatorio con contenido distinto: ${f}`);
-    else report.shared++;
-  } else if (match(SHARED_IF_PRESENT, f)) {
-    if (inWeb && inApp && !same) problems.push(`Compartido con contenido distinto: ${f}`);
-    else report.sharedIfPresent++;
-  } else if (match(PLATFORM_SPECIFIC, f)) {
-    if (!inWeb || !inApp) problems.push(`Archivo de plataforma que falta en ${inWeb ? 'Android' : 'la Web'}: ${f}`);
-    else report.platform++;
-  } else if (inApp && !inWeb && match(ONLY_ANDROID, f)) {
-    report.onlyAndroid++;
-  } else if (inWeb && !inApp && match(ONLY_WEB, f)) {
-    report.onlyWeb++;
-  } else if (inWeb && inApp && same) {
-    report.sharedIfPresent++;
-  } else {
-    problems.push(inWeb && inApp
-      ? `Archivo sin categoría con contenido distinto: ${f}`
-      : `Archivo sin categoría que solo está en ${inWeb ? 'la Web' : 'Android'}: ${f}`);
+// Grafo de módulos desde la entrada (imports estáticos y dinámicos relativos).
+function modulos(base, entrada) {
+  const vistos = new Set();
+  const pila = [entrada];
+  while (pila.length) {
+    const f = pila.pop();
+    if (vistos.has(f)) continue;
+    vistos.add(f);
+    if (!exists(base, f)) continue;
+    for (const m of read(base, f).matchAll(/(?:from\s*|import\s*\(?\s*)['"](\.{1,2}\/[^'"]+)['"]/g))
+      pila.push(path.posix.normalize(path.posix.join(path.posix.dirname(f), m[1])));
   }
+  return [...vistos];
 }
 
-// 5. Integridad de cada plataforma.
-const caches = {};
-for (const [name, base] of [['Web', WEB], ['Android', APP]]) {
+// 1. Datos compartidos
+const compartidos = sharedFiles(root).map(destino);
+problems.push(...checkShared(root));
+
+// 2. Imágenes comunes
+let imagenesComunes = 0;
+const assetsWeb = new Set(list(WEB, 'assets'));
+for (const f of list(APP, 'assets')) {
+  if (!assetsWeb.has(f)) continue;
+  if (!fs.readFileSync(path.join(APP, f)).equals(fs.readFileSync(path.join(WEB, f)))) problems.push(`Imagen común con contenido distinto: ${f}`);
+  else imagenesComunes++;
+}
+
+// 3. Separación de la Web
+const modWeb = modulos(WEB, ENTRADA.Web);
+const modApp = modulos(APP, ENTRADA.Android);
+const html = exists(WEB, 'index.html') ? read(WEB, 'index.html') : '';
+if (!/<script[^>]+src="js\/archivo\.js"/.test(html)) problems.push('La Web debe entrar por js/archivo.js');
+const juego = list(APP, 'js').filter(f => !compartidos.includes(f));             // módulos propios del videojuego
+for (const f of juego) if (exists(WEB, f)) problems.push(`La Web contiene un módulo del videojuego: ${f}`);
+if (exists(WEB, 'css/style.css')) problems.push('La Web contiene la hoja de estilos del videojuego (css/style.css)');
+const textoWeb = [...list(WEB, 'js').filter(f => !compartidos.includes(f)), 'index.html'].filter(f => exists(WEB, f)).map(f => [f, read(WEB, f)]);
+for (const [f, t] of textoWeb) {
+  for (const g of juego) if (t.includes(path.posix.basename(g))) problems.push(`La Web referencia el módulo del videojuego ${g} (${f})`);
+  if (/laCosechaSave|laCosechaSettings/.test(t)) problems.push(`La Web usa claves de partidas o ajustes del videojuego (${f})`);
+  if (/\bdata-a=|save-indicator/.test(t)) problems.push(`La Web contiene controles de las pantallas del juego (${f})`);
+}
+
+// 4. Separación de Android
+for (const f of modApp) if (/archivo[\w-]*\.js$/.test(f)) problems.push(`El videojuego carga un módulo del Archivo: ${f}`);
+if (exists(APP, 'index.html') && /archivo\.js|archivo\.css/.test(read(APP, 'index.html'))) problems.push('El videojuego referencia la entrada o el estilo del Archivo');
+
+// 5. Cada producto se sostiene solo
+for (const [nombre, base, mods] of [['Web', WEB, modWeb], ['Android', APP, modApp]]) {
+  for (const f of mods) if (!exists(base, f)) problems.push(`${nombre}: ${f} se importa pero no existe`);
+  for (const f of list(base, '.').filter(f => /\.(html|js|css|webmanifest)$/.test(f) && !/(^|\/)(node_modules|www|android)\//.test(f)))
+    if (/La_Cosecha_(Web_Render|Juego_Android)\//.test(read(base, f))) problems.push(`${nombre}: ${f} apunta a la carpeta del otro producto`);
+}
+
+// 6. Service workers
+const ids = {};
+for (const [nombre, base, mods] of [['Web', WEB, modWeb], ['Android', APP, modApp]]) {
+  if (!exists(base, 'sw.js')) { problems.push(`${nombre}: falta sw.js`); continue; }
   const sw = read(base, 'sw.js');
-  const appJs = read(base, 'js/app.js');
-  caches[name] = sw.match(/const CACHE='([^']+)'/)?.[1];
-  if (!caches[name]) problems.push(`${name}: sw.js sin identificador de caché`);
-  const caching = /addEventListener\('fetch'/.test(sw);
-  // Android lleva sus archivos en el APK: su service worker no debe guardar ni servir nada desde caché
-  // (en 4.9 servía la versión anterior tras actualizar el APK).
-  if (name === 'Android' && caching) problems.push('Android: sw.js no debe interceptar peticiones (los archivos van en el APK)');
-  // En la Web, todo módulo que importa app.js debe precargarse para funcionar sin conexión.
-  if (caching) for (const m of appJs.matchAll(/from '\.\/([\w.-]+\.js)'/g))
-    if (!sw.includes(`./js/${m[1]}`)) problems.push(`${name}: sw.js no precarga js/${m[1]}, que importa app.js`);
-  // Todo lo que precarga sw.js debe existir.
-  for (const m of sw.matchAll(/'\.\/([^']+)'/g))
-    if (m[1] && !fs.existsSync(path.join(base, m[1]))) problems.push(`${name}: sw.js precarga ${m[1]}, que no existe`);
-  if (/\.wav'/i.test(sw)) problems.push(`${name}: sw.js no debe precargar másteres WAV`);
+  ids[nombre] = sw.match(/const CACHE='([^']+)'/)?.[1];
+  if (!ids[nombre]) problems.push(`${nombre}: sw.js sin identificador`);
+  const intercepta = /addEventListener\('fetch'/.test(sw);
+  if (nombre === 'Android' && intercepta) problems.push('Android: sw.js no debe interceptar peticiones (los archivos van en el APK)');
+  if (nombre === 'Web') {
+    if (!intercepta) problems.push('Web: sw.js debe servir el Archivo sin conexión');
+    for (const f of [...mods, 'index.html']) if (!sw.includes(`'./${f}'`)) problems.push(`Web: sw.js no precarga ${f}`);
+  }
+  for (const m of sw.matchAll(/'\.\/([^']+)'/g)) if (m[1] && !exists(base, m[1])) problems.push(`${nombre}: sw.js precarga ${m[1]}, que no existe`);
+  if (/\.wav'/i.test(sw)) problems.push(`${nombre}: sw.js no debe precargar másteres WAV`);
 }
-if (caches.Web && caches.Web === caches.Android)
-  problems.push(`La Web y Android usan el mismo identificador de caché (${caches.Web})`);
+if (ids.Web && ids.Web === ids.Android) problems.push(`La Web y Android usan el mismo identificador de service worker (${ids.Web})`);
 
-// La Web no puede depender de archivos que solo existen en Android.
-const androidOnly = [...app].filter(a => !web.has(a));
-for (const f of [...web].filter(f => /\.(html|js|css|webmanifest)$/.test(f))) {
-  const text = read(WEB, f);
-  for (const a of androidOnly) if (text.includes(path.posix.basename(a))) problems.push(`La Web referencia ${a}, que solo existe en Android (${f})`);
-}
-for (const f of PLATFORM_FILES.web) if (!fs.existsSync(path.join(WEB, f))) problems.push(`Falta en la Web: ${f}`);
-for (const f of PLATFORM_FILES.android) if (!fs.existsSync(path.join(APP, f))) problems.push(`Falta en Android: ${f}`);
-const ry = fs.existsSync(path.join(root, 'render.yaml')) ? fs.readFileSync(path.join(root, 'render.yaml'), 'utf8') : '';
+// Configuración de cada producto
+const ry = exists(root, 'render.yaml') ? read(root, 'render.yaml') : '';
 if (!/rootDir:\s*La_Cosecha_Web_Render/.test(ry)) problems.push('render.yaml (raíz) no apunta a La_Cosecha_Web_Render');
-// Versión de Android: se compara con el CHANGELOG de Android.
-const pkg = JSON.parse(read(APP, 'package.json'));
-const last = read(APP, 'CHANGELOG.md').match(/^## (\d+\.\d+)/m)?.[1];
-if (last && !pkg.version.startsWith(last)) problems.push(`Android: package.json dice ${pkg.version} y su CHANGELOG ${last}`);
+if (exists(APP, 'package.json')) {
+  const pkg = JSON.parse(read(APP, 'package.json'));
+  const last = read(APP, 'CHANGELOG.md').match(/^## (\d+\.\d+(?:\.\d+)?)/m)?.[1];
+  if (last && !pkg.version.startsWith(last)) problems.push(`Android: package.json dice ${pkg.version} y su CHANGELOG ${last}`);
+}
 
 if (process.argv.includes('--explicar')) {
-  const show = (t, rules) => console.log(`\n${t}\n` + rules.map(([re, why]) => `  ${re.source}  →  ${why}`).join('\n'));
-  show('1. Compartido obligatorio (idéntico en los dos):', SHARED_REQUIRED);
-  show('2. Compartido si existe en los dos (idéntico si está en ambos):', SHARED_IF_PRESENT);
-  show('3. Propio de cada plataforma (puede diferir):', PLATFORM_SPECIFIC);
-  show('4. Solo Android (lista cerrada):', ONLY_ANDROID);
-  console.log('');
+  console.log(fs.readFileSync(new URL(import.meta.url), 'utf8').split('\n').filter(l => l.startsWith('//')).slice(0, 18).join('\n'));
+  console.log(`\nDatos compartidos: ${compartidos.join(', ')}\nMódulos del Archivo (Web): ${modWeb.join(', ')}\nMódulos del videojuego (Android): ${modApp.join(', ')}\n`);
 }
 if (problems.length) {
-  console.error(`Paridad: ${problems.length} problemas\n- ` + problems.join('\n- '));
+  console.error(`Contratos Android / Web: ${problems.length} problemas\n- ` + problems.join('\n- '));
   process.exit(1);
 }
-console.log(`Paridad Web / Android: OK (${report.shared} compartidos obligatorios idénticos, ${report.sharedIfPresent} compartidos idénticos, ${report.platform} propios de plataforma, ${report.onlyAndroid} solo Android, ${report.onlyWeb} solo Web)`);
+console.log(`Contratos Android / Web: OK (${compartidos.length} módulo de datos compartido idéntico, ${imagenesComunes} imágenes comunes idénticas, Web con ${modWeb.length} módulos propios sin juego, Android con ${modApp.length} módulos sin el Archivo)`);
