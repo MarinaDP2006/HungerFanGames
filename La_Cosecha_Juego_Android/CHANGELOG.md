@@ -1,5 +1,154 @@
 # Changelog
 
+## 4.21 — Efectos de sonido y diálogos del 74.º
+- **Efectos de interfaz sintetizados (sin archivos):**
+  - confirmar (decisiones y botones principales), volver, seleccionar (acciones, sectores y armas) y clic;
+  - aviso al aparecer un acontecimiento y elevación de la plataforma al entrar en la Arena;
+  - el cañón se mantiene para las muertes.
+- **Diálogos del 74.º:** cada escena muestra sus líneas habladas, con hablante y acotación, como subtítulos de retransmisión (`scripts/dialogos-74.mjs`).
+
+## 4.20 — Música y ambientes originales
+- **8 temas de música y 4 ambientes originales**, sintetizados por código con `scripts/generar-audio.py`. No usan muestras ni audio de las películas.
+  - Música: menú, distrito, Capitolio, Arena, Gira, Rebelión, Guerra y final.
+  - Ambientes: bosque, lago del reloj, base rebelde y ciudad en guerra.
+- **Cada momento tiene su pista:**
+  - el menú y los modos;
+  - la Arena del 74.º con el bosque y la del 75.º con el reloj;
+  - la Gira, la Rebelión y la Guerra con la suya;
+  - los finales con el epílogo.
+
+  Bucles sin corte. Suenan tras el primer toque y se controlan desde Ajustes.
+- Los efectos de interfaz siguen sin sonido propio.
+
+## 4.19 — Rebelión y Guerra: la historia de Katniss hasta el final
+- **Rebelión (8 escenas):** despertar tras la Arena y el Distrito 12 arrasado (escenas 75-16 y 75-17 del documento), Coin, el hospital del Distrito 8, la presa, el bombardeo del 13, el rescate de Peeta y el Hueso.
+- **Guerra (8 escenas):** la unidad Estrella, las vainas, las alcantarillas, la tienda de Tigris, los paracaídas, el invernadero de Snow, la votación de los últimos Juegos y la flecha.
+- **Final de la historia «El Sinsajo»:** cambia según tus relaciones con Peeta, Haymitch y Gale y lo que descubriste sobre los paracaídas.
+- **Al salir vivo del 75.º,** el botón «Continuar: Rebelión» sigue en la misma partida.
+- **Patrocinio e imagen pública llegan a la Arena:** al entrar en la Arena del 74.º o del 75.º, la imagen ante el Capitolio suma apoyo del público (×2, entre −6 y +10) y el interés de los patrocinadores suma patrocinio (×3, hasta +15). Se aplica una sola vez.
+- **Hitos fijos de las películas:** la muerte de Boggs, Finnick y Prim, y la flecha contra Coin no cambian.
+
+## 4.18 — Diseño «Retransmisión del Capitolio» y arreglos para móviles reales
+- **Diseño propio del juego, opuesto al de la web.**
+  - Fondo negro azulado de pantalla, oro del Capitolio y rótulo rojo «EN DIRECTO».
+  - Esquinas de visor de cámara en los paneles y líneas de barrido muy suaves.
+  - Botón principal dorado y marcador de Arena como rótulo de emisión.
+- **Tipografías dentro del APK:** Cinzel e Inter (licencia OFL). Antes se pedían a Google Fonts y, sin internet, el móvil ponía otras.
+- **Barra superior compacta en móvil.**
+- **WebView antiguos:** el JavaScript del APK se adapta a Chrome 61+ (pantalla en negro en móviles sin el WebView actualizado).
+
+## 4.17 — La historia completa: 74.º → Gira → 75.º
+- **Gira de la Victoria (8 escenas) y precampaña del 75.º (6 escenas) jugables.**
+  - Texto del documento narrativo v1.0, completado por Claude (`scripts/gira-75-complemento.mjs`) con:
+    - respuesta y diario de las 42 opciones;
+    - efectos con cifras: +1 en las relaciones con Peeta y Haymitch; flags en lugar de medidores nuevos.
+  - Corrección de canon: en la cosecha del 75.º, Katniss no se ofrece voluntaria; Peeta se ofrece por Haymitch.
+- **Historia encadenada:**
+  - al terminar el 74.º con Katniss y Peeta vivos, «Continuar: Gira de la Victoria» lleva a la Gira, de ahí al 75.º y a su Arena;
+  - las relaciones y la continuidad viajan de una campaña a la siguiente y la partida nueva se guarda en otra ranura;
+  - elegir el 75.º en el selector también empieza por la Gira.
+- **Arena del 75.º:** cada acontecimiento existente se abre con su crónica (escenas 75-07 a 75-15 según la tabla aprobada, con el comienzo en las plataformas). La confianza en Finnick de la precampaña llega a la Arena.
+
+## 4.16 — El 74.º se juega
+- **Fondos propios:** la carpeta `imagenes-propias/juego/` tiene la lista de nombres en `LEEME.md`. Cada pantalla usa su fondo si existe (menú, cosecha, tren, entrenamiento, entrevista, lanzamiento, Arena 74/75, Presidente y finales), y el APK lleva todos los que haya.
+- **Retratos compartidos con la web:** los retratos de `imagenes-propias/personajes/` de la web se copian al APK al compilar y salen en la lista de tributos del modo Historia. Se suben una sola vez.
+- **El 74.º se juega con su precampaña completa.** El modo Historia del 74.º ya no usa la cosecha, el entrenamiento y la entrevista genéricos. Ahora pasa por las 11 escenas (cosecha, despedidas, tren, Capitolio, desfile, entrenamiento, sesión privada, entrevista y lanzamiento) con:
+  - respuesta a cada decisión y diario;
+  - 31 ecos;
+  - transferencia guardada antes de entrar en la Arena.
+- **Aprobación:** el estado pasa a `APPROVED` para tu prueba. La aprobación definitiva es la de Nina en el PR.
+- **Prueba en el emulador:** juega 6 escenas, guarda, fuerza el cierre, vuelve a cargar en la misma escena y termina la precampaña y la Arena.
+
+## 4.15 — Arena rediseñada y Mags según el canon
+- **Arena:**
+  - HUD fijo con día, arena, tributos vivos y barras de salud, hambre, sed y fatiga, que se ponen en rojo cuando hay peligro;
+  - acciones en una rejilla de iconos (el botiquín se desactiva si no tienes uno);
+  - postura en un control segmentado y armas en etiquetas;
+  - los acontecimientos se destacan como tarjeta.
+- **75.º · La niebla:** cargar con Mags ya no la salva, como en las películas. Cuesta salud, mejora la relación con los vencedores y Finnick lo recuerda en el epílogo. Pruebas nuevas en `tests/canon-75.test.mjs`.
+
+## 4.14 — Revisión creativa del 74.º integrada (sigue en borrador)
+- **Ecos del 74.º:** hay 31 con frase, que se importan literalmente del anexo 1.1 y de la revisión de ChatGPT del 27-11-2026 (`docs/paquetes/74_revision_chatgpt/`).
+  - Son solo texto: no aplican efectos.
+  - Tienen ID estable, se deduplican por ID y por grupo (la promesa a Gale se muestra una sola vez) y se calculan con funciones puras.
+  - Nuevo `responseEchoes` para el eco que va tras una respuesta.
+- **`74_private_o3`:** su resultado pasa a `exceptional` (pregunta 2 de la revisión). Los datos conservan el efecto original y el motivo del cambio.
+- **Campos pendientes:** `dialogue`, `player_prompt` y `participant_ids` quedan en `null`; no se extraen de la prosa.
+- **Informe técnico** `docs/REVISION_74_RESPUESTA_TECNICA.md`:
+  - lugares y personajes contra los registros reales;
+  - esquema de `support` y `sponsorTrust`;
+  - `district_memory` y `canon_route`;
+  - propuesta de `dialogue[]`.
+- **Arena del 75.º:** la tabla de ocho acontecimientos queda fijada como aprobada y una prueba la contrasta con los títulos y turnos del código. Están verificados el orden de Wiress y la contradicción de Mags (pendiente de texto) y el comienzo se unifica en las plataformas de agua.
+- El 74.º, la Gira y el 75.º siguen sin poder jugarse.
+
+## 4.13 — 50.º retirado, Gira y 75.º en borrador
+- **50.º Vasallaje retirado del juego activo** (decisión de dirección). Ya no aparece en el selector y el juego no deja empezarlo. Es reversible: se conservan su código, sus pruebas y la carga de partidas antiguas (`RETIRADAS` en `js/campanas/indice.js`). Edición por defecto: 74.º.
+- **Canon:** continuidad de las películas; los libros son complementarios. El 10.º queda fuera.
+- **Gira y 75.º:** las 25 escenas del documento narrativo v1.0 se importan con `scripts/importar-gira-75.mjs` a `js/campanas/campana-gira-75.js`, **en borrador y sin activar** (el juego no carga ese archivo).
+  - Las escenas 75-07 a 75-15 no son escenas nuevas: se asignan a los 8 acontecimientos de Arena del 75.º que ya existen, con sus IDs técnicos.
+  - Los efectos sin cifra quedan en `null`; no se inventa ningún valor.
+  - Correspondencias y lista exacta de pendientes: `docs/GIRA_75_CORRESPONDENCIAS_Y_PENDIENTES.md`.
+- **Pruebas en dispositivo:** el recorrido del emulador y la medición de la ventana de pérdida usan ahora una partida del 74.º. La actualización desde 4.9 sigue cargando una partida antigua del 50.º.
+
+## 4.12 — Motor común de precampañas, registro de decisiones y guardado 5
+- **Motor común de precampañas (fase 2, `js/precampana.js`)**, para el 74.º, la Gira y el 75.º (el 50.º sigue con su módulo aprobado). Funciona con datos y no tiene texto propio:
+  - escenas, opciones, condiciones y efectos (`ADD`, `SET`, `SET_FLAG`…);
+  - efectos transaccionales y diario;
+  - traspaso del estado final a `game.continuity`.
+- **Solo se juegan las campañas `APPROVED`.** Hoy no hay ninguna, así que el juego sigue igual para el jugador.
+- **74.º:** sus datos (`js/campanas/campana-74.js`) se **generan** con `scripts/importar-campana-74.mjs`; una prueba exige que coincidan con las fuentes. Siguen en estado `DRAFT_FOR_REVIEW`. Contenido:
+  - las 11 escenas de la fuente 1.0;
+  - del anexo 1.1, las 33 respuestas inmediatas, los 33 diarios y los 2 ecos que traen su frase. Los otros 28 ecos solo están descritos y no se muestran.
+- **Motor y anexo 1.1:**
+  - la respuesta se muestra antes de avanzar;
+  - una entrada de diario por decisión (`74.diary.<escena>.<opción>`), con el contrato del anexo;
+  - IDs de decisión `campaign_74:<escena>:<opción>:1`;
+  - **transferencia a la Arena** idempotente (`campaign_74:prearena:v1`), guardada antes de entrar: si no se puede guardar, no se entra.
+  - Los valores numéricos de patrocinio e imagen pública **no se aplican** hasta que se confirmen los límites.
+- **Revisión:** documento único para ChatGPT en `docs/REVISION_74_PARA_CHATGPT.md`, generado desde los datos.
+- **Gira y 75.º:** solo están registradas sus escenas (`STRUCTURE_ONLY`), sin texto.
+- **Guardado formato 5:**
+  - registro de decisiones (`game.decisionLog`) con identificador por escena: una decisión ya registrada no vuelve a aplicar efectos (doble pulsación, carga o importación);
+  - `game.timeline` con `timeline_id` y `route_type`;
+  - las partidas de los formatos 1–4 se migran al leerlas, en una copia: si algo falla, se devuelve la original;
+  - antes de sobrescribir una ranura antigua se guarda una copia de seguridad (`laCosechaSaveBackup:<n>`), también en la copia nativa;
+  - las decisiones del 50.º ya tomadas se reconstruyen sin volver a aplicar efectos.
+- **Retirados los enlaces externos** (YouTube y artículos de prensa) del modo Historia.
+
+## 4.11 — Separación del Archivo de Panem y sistema de audio
+- La Web ya no es una copia del videojuego: ahora es el Archivo de Panem, un producto aparte. Android es el único que lleva el motor del juego.
+- Los datos de Panem salen de `compartido/data.js` (raíz del repositorio) y se copian a cada producto con `scripts/sincronizar-compartido.mjs`. El detector de contratos exige que sean idénticos.
+- Sistema de audio por contextos (`js/audio.js`): menú, Historia por edición, Arena, finales, Libre, Presidencia, crisis y escenas especiales. **La música no está activada:** no hay pistas hasta que llegue la dirección musical. El OGG original se conserva sin conectar.
+- Ajustes: «Silenciar todo», «Efectos», «Música» y «Ambiente», cada uno con su volumen. Se guardan con las demás preferencias (copia local y nativa); las preferencias anteriores se completan con valores por defecto.
+- Catálogo de cues de la Entrega Maestra v1 registrado sin archivos: 12 de música, 9 de ambiente y 9 de efectos. La asignación de cues a contextos está vacía: la decide la dirección musical.
+- Datos compartidos: IDs estables (`district_01`…, `katniss_everdeen`…) y campos `canon_status`/`source_ref` sin clasificar.
+- La cabecera dice «EL VIDEOJUEGO DE PANEM» (antes «ARCHIVO DE PANEM», que ahora es el nombre de la Web).
+
+## 4.10.1 — Medición del margen de pérdida
+- El guardado mide cuánto tarda Android en confirmar cada escritura nativa (sin cambiar el formato ni las ranuras).
+- Nueva medición en el emulador (`tests/device/ventana-perdida.mjs`): cierra la app a distintos milisegundos de guardar y comprueba qué se recupera. Resultados en `docs/GUARDADO.md`.
+- Guía y plantilla para validar en un móvil físico.
+
+## 4.10 — Guardado nativo en Android
+- Las partidas y los ajustes se guardan también con el almacenamiento nativo de Android (`@capacitor/preferences`, SharedPreferences), además de en el WebView. Antes, si Android cerraba la app pocos segundos después de guardar, se podía perder lo último.
+- Al arrancar se comparan las dos copias: las partidas de versiones anteriores se copian a la nativa (migración sin borrar nada), lo perdido en el WebView se recupera de la nativa y, si las dos difieren, gana la copia íntegra y, entre íntegras, la más reciente.
+- Cada ranura lleva una huella (`checksum`) para detectar copias dañadas. Es un campo opcional: las partidas sin él se siguen cargando (`saveVersion` sigue en 4). Exportar e importar no cambian.
+- Ranuras, exportación e importación sin cambios. En la Web no cambia nada (no hay Capacitor).
+- Corregido: al actualizar el APK, el service worker de 4.9 seguía sirviendo la versión anterior desde su caché. Android ya no usa caché (los archivos van en el APK) y el nuevo `sw.js` retira el antiguo y recarga la app: en el emulador, de 4.9.0 a 4.10.0 en unos 2 segundos.
+- APK: si existe el secreto `ANDROID_DEBUG_KEYSTORE_B64`, todas las compilaciones se firman con la misma clave y se pueden instalar encima sin perder partidas (`docs/FIRMA_APK.md`).
+- CI: prueba de guardado duradero (12 casos) y, en el emulador, cierre forzado medio segundo después de guardar y actualización real desde el APK 4.9.0 con una partida a medias.
+
+## 4.9 — Fase 1: base técnica (Android)
+- Versión única: `package.json` es la fuente; la app muestra la versión en el pie y en Ajustes, el service worker usa `la-cosecha-android-<versión>` y el APK recibe `versionName`/`versionCode` (criterio en `docs/VERSIONADO.md`).
+- APK limpio: `scripts/build-web.mjs` empaqueta solo lo que la app carga desde `index.html` y los recursos referenciados. Quedan fuera (se conservan en el repositorio) los módulos 5.2, `campaign-50th-dynamic.js`, `canon-50th.js`, `music.js`, el máster WAV y cinco imágenes sin uso.
+- Ajustes: sonido, volumen, reducir movimiento, tamaño de texto y partidas guardadas (borrar con confirmación). Se guardan aparte de las partidas.
+- Guardados: tres ranuras, formato con versión (`saveVersion` 4) y migración automática de la ranura única anterior, que no se borra.
+- CSS: eliminada la regla muerta `.map-frame`, que referenciaba `menu-panem.png`. La imagen se conserva.
+- Corregido: los botones de la cabecera (inicio y ⚙ Ajustes) no respondían; también en la Web.
+- CI: cada suite es un paso propio (16 en total) y el workflow falla si falla cualquiera; se comprueba el contenido y la versión del APK.
+- Prueba en emulador (`tests/device/android-e2e.mjs`, en CI): instala el APK en Android 14 y recorre navegación, ajustes, sonido, guardado, reinicio, carga y el 50.º completo. Deja informe y capturas.
+
 ## 4.8 — Presidencia, APK y pruebas
 - Presidencia (`js/presidency.js`): cada orden muestra su efecto real (antes todas decían lo mismo), en verde, rojo o ámbar según convenga.
 - Presidencia: 9 crisis con decisión obligatoria cada 3 días (sinsajo en los muros, huelga en el 8, hambre en el 11, Vigilante Jefe, señales del 13, vencedor incómodo, abusos en el 12, malestar en el Capitolio, refugiados). Ninguna se repite en un mandato.

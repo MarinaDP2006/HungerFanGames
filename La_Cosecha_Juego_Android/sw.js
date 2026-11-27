@@ -1,5 +1,11 @@
-const CACHE='la-cosecha-v4-8';
-const ASSETS=['./','./index.html','./css/style.css','./js/app.js','./js/data.js','./js/campaigns.js','./js/whatif.js','./js/presidency.js','./manifest.webmanifest','./assets/optimized/capitolio-960.webp','./assets/optimized/arena-bosque-960.webp','./assets/optimized/arena-bosque-1600.webp','./assets/icons/la-cosecha-192.png','./assets/icons/la-cosecha-512.png'];
-self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS))));
-self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))));
-self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{const copy=res.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return res;}).catch(()=>e.request.mode==='navigate'?caches.match('./index.html'):Response.error())));});
+const CACHE='la-cosecha-android-4.21.0';
+// Android (Capacitor): la app ya lleva todos sus archivos dentro del APK, así que no necesita caché.
+// Hasta 4.9 había un service worker con caché que, al actualizar el APK, seguía sirviendo la versión
+// anterior en el primer arranque. Este lo retira: se activa al momento, borra las cachés, se da de baja
+// y recarga la app para que cargue los archivos del APK instalado. No intercepta ninguna petición.
+self.addEventListener('install',()=>self.skipWaiting());
+self.addEventListener('activate',e=>e.waitUntil((async()=>{
+  for(const k of await caches.keys())await caches.delete(k);
+  await self.registration.unregister();
+  for(const c of await self.clients.matchAll({type:'window'}))c.navigate(c.url).catch(()=>{});
+})()));

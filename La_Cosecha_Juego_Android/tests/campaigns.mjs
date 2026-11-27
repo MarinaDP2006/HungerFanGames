@@ -6,11 +6,21 @@ import * as data from '../js/data.js';
 import * as campaigns from '../js/campaigns.js';
 import * as WI from '../js/whatif.js';
 import * as PR from '../js/presidency.js';
+import * as PRE from '../js/campaign-50th-prearena.js';
+import * as ST from '../js/settings.js';
+import * as SV from '../js/saves.js';
+import * as DS from '../js/durable-storage.js';
+import * as AU from '../js/audio.js';
+import * as DEC from '../js/decisiones.js';
+import * as PC from '../js/precampana.js';
+import * as PCI from '../js/campanas/indice.js';
+import {GAME_VERSION} from '../js/version.js';
+import * as AD from '../js/campaign-50th-dynamic-adapter.js';
 
 function engine(){
   const screen={innerHTML:''},indicator={textContent:''};
   const document={querySelector:s=>s==='#screen'?screen:s==='#save-indicator'?indicator:null};
-  const context={...data,...campaigns,WI,PR,document,console,Math,Date,JSON,Number,String,Array,Object,Map,Set,Blob:class{},URL:{},
+  const context={...data,...campaigns,...PRE,ST,SV,DS,AU,DEC,PC,PCI,GAME_VERSION,...AD,WI,PR,Proxy,document,console,Math,Date,JSON,Number,String,Array,Object,Map,Set,Blob:class{},URL:{},
     localStorage:{setItem(){},getItem(){return null}},alert(){},navigator:{},window:{},setTimeout,clearTimeout};
   let src=fs.readFileSync(new URL('../js/app.js',import.meta.url),'utf8').replace(/^import .*\n/gm,'');
   src=src.slice(0,src.indexOf("document.addEventListener('click'"));
@@ -73,9 +83,10 @@ for(const ed of [50,74,75]){const {titles,g}=play(ed);assert.equal(titles.length
  assert.equal(alive(g,'Mags Flanagan'),false,'75 canon: Mags entra en la niebla');
  assert.equal(alive(g,'Wiress'),false,'75 canon: Wiress muere');
  assert.equal(g.endingTitle,'LA ARENA SE ROMPE');}
-// 75.º alternativo: salvar a Mags.
+// 75.º: cargar con Mags no la salva (canon cinematográfico); queda constancia en el epílogo.
 {const {g}=play(75,(t)=>({1:0,2:0,3:0,4:0}[t]??0));
- assert.equal(alive(g,'Mags Flanagan'),true,'75 alt: Mags sobrevive');}
+ assert.equal(alive(g,'Mags Flanagan'),false,'75: Mags muere aunque cargues con ella');
+ assert.ok(!(g.storyEpilogue||[]).some(x=>/Mags sale viva/.test(x)));}
 
 // Protección narrativa: el azar no mata a Rue antes de su capítulo.
 {const g=newGame(74);g.arenaTurn=3;const rue=g.tributes.find(t=>t.name==='Rue');assert.ok(campaigns.isProtected(g,rue));g.arenaTurn=7;assert.ok(!campaigns.isProtected(g,rue));}

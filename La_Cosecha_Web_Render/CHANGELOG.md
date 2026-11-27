@@ -1,5 +1,59 @@
 # Changelog
 
+## Archivo de Panem 1.4 — Navegación inmersiva
+- **Volver:**
+  - cada página tiene un botón «← Volver» que retrocede en el historial si llegaste desde el Archivo y, si no, sube al nivel anterior;
+  - la tecla Escape hace lo mismo.
+- **Memoria de lectura:** al volver atrás, la página recupera la posición en la que estabas.
+- **Transiciones suaves entre páginas:** con View Transitions si el navegador las tiene y, si no, con un fundido. Se respeta «reducir movimiento».
+- **Barra de lectura** en lo alto y **cabecera que se compacta** al bajar.
+- **Papel con grano** y tarjetas que reaccionan al pasar por encima.
+
+## Archivo de Panem 1.3 — sin publicar
+- **Solo la saga de Katniss:** fuera las ediciones 10.º y 50.º de Juegos, de la cronología y de los contadores.
+- **Imágenes propias:** la carpeta `imagenes-propias/` tiene la lista de nombres en `LEEME.md`. Lo que subas aparece solo en su ficha:
+  - retratos en las fichas y miniaturas de personajes;
+  - bandas en distritos, Capitolio y ediciones;
+  - imágenes en las tarjetas de lugares.
+
+  Si falta alguna, no se ve nada roto.
+
+## Archivo de Panem 1.2 — sin publicar (rama `integracion-cosecha-5x`)
+- **Contenido completo, sin avisos de pendiente.** Textos originales del proyecto, basados en la continuidad de las películas (`js/archivo-contenido.js`):
+  - expediente de los 13 distritos: territorio, vida cotidiana, símbolos y nombres destacados;
+  - ficha del Capitolio y ampliación de las ediciones 10.º, 50.º, 74.º y 75.º;
+  - 11 personajes nuevos (Prim, Gale, Effie, Cinna, Caesar, Snow, Seneca Crane, Plutarch, Coin, Mags y Boggs). El filtro de personajes incluye «El Capitolio»;
+  - cronología completa, 14 lugares, Gira de la Victoria (5 etapas), Rebelión y Guerra (6 fases) y 5 documentos.
+- **Etiquetas:** cada ficha indica su estado de canon (hecho de las películas, compatible o interpretación del proyecto) y su fuente.
+- **Imágenes:** solo ilustraciones originales; no se usa ninguna de las películas.
+- Service worker `archivo-panem-1.2.0`.
+
+## Archivo de Panem 1.1 — sin publicar (rama `integracion-cosecha-5x`)
+- **Menú definitivo:** Inicio, Distritos, Capitolio, Personajes, Juegos, Cronología, Gira de la Victoria, Rebelión y Guerra, Lugares, Galería, Documentos y Acerca. Sin Novedades.
+- **Direcciones estables sin «#»:** `/distritos/12`, `/personajes/katniss-everdeen`, `/juegos/74`. Las antiguas `#/…` se convierten solas. Render ya sirve `index.html` en cualquier ruta.
+- **Contenido movido, no inventado:**
+  - el mapa esquemático pasa a Distritos;
+  - la tabla de mentores y vencedores, a Personajes;
+  - las arenas, a Lugares.
+- **Páginas nuevas:**
+  - Gira de la Victoria y Rebelión y Guerra, marcadas como pendientes de guion aprobado;
+  - Acerca, con el aviso de proyecto fan y la leyenda de estados de canon.
+- Pruebas: 14 de páginas y 69 comprobaciones en Chrome (incluidos el menú, el botón Atrás y la página no encontrada).
+
+## Archivo de Panem 1.0 — sin publicar
+- La Web deja de ser una copia del videojuego y pasa a ser el **Archivo de Panem**, un sitio editorial propio:
+  - entrada, navegación, vistas y estilo nuevos;
+  - secciones: portada, mapa (esquema), distritos y Capitolio, personajes con filtros, vencedores, ediciones, cronología, arenas, documentos, galería y novedades.
+- Retirados de la Web el motor y las pantallas del juego (`js/app.js`, `campaigns.js`, `presidency.js`, `whatif.js`, `css/style.css`) y sus pruebas. Siguen en Android, que es el producto del juego; el historial de Git conserva las versiones web.
+- Datos: `js/data.js` es una copia de `compartido/data.js`.
+- Lo que no tiene contenido aprobado aparece como pendiente; no se ha escrito contenido nuevo.
+- Cada ficha de distrito y de personaje muestra su estado de canon y su fuente. Hoy todas aparecen como «Sin clasificar» y «Pendiente de referencia»: los valores los aporta la dirección creativa.
+- Pruebas propias: `tests/archivo.test.mjs` (10 casos) y `tests/navegador.mjs` (Chrome, móvil y escritorio).
+- No se ha desplegado en Render.
+
+## Sin publicar, anterior a la separación
+- Corregido: los botones de la cabecera (inicio y ⚙ Ajustes) no respondían.
+
 ## 4.8 — Presidencia, APK y pruebas
 - Presidencia (`js/presidency.js`): cada orden muestra su efecto real (antes todas decían lo mismo), en verde, rojo o ámbar según convenga.
 - Presidencia: 9 crisis con decisión obligatoria cada 3 días (sinsajo en los muros, huelga en el 8, hambre en el 11, Vigilante Jefe, señales del 13, vencedor incómodo, abusos en el 12, malestar en el Capitolio, refugiados). Ninguna se repite en un mandato.

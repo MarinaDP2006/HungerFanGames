@@ -1,12 +1,21 @@
-# HungerFanGames
+# La Cosecha
 
-Fangame de *Los Juegos del Hambre*: **La Cosecha** (versión 4.4).
+Fangame personal de *Los Juegos del Hambre* (continuidad de las películas de Katniss).
 
-| Carpeta | Qué es | Cómo se publica |
-|---|---|---|
-| `La_Cosecha_Web_Render/` | Versión web (PWA) | Render Static Site mediante `render.yaml` → ver `La_Cosecha_Web_Render/README_RENDER.md` |
-| `La_Cosecha_Juego_Android/` | Juego con envoltorio Android (Capacitor) | GitHub Actions `Build Android APK` → ver `La_Cosecha_Juego_Android/README_ANDROID.md` |
+| Carpeta | Qué es |
+|---|---|
+| `La_Cosecha_Juego_Android/` | El videojuego (Android, Capacitor). Lo compila la acción **Build Android APK**. |
+| `La_Cosecha_Web_Render/` | **Archivo de Panem**, la web enciclopédica. Sitio estático (Render, `render.yaml`). |
+| `compartido/` | Datos comunes de Panem. Se copian a los dos con `node scripts/sincronizar-compartido.mjs`. |
+| `docs/fuentes/` | Textos narrativos de los que se generan las campañas del juego. |
+| `scripts/` | Importadores de campañas y comprobaciones entre juego y web. |
 
-Tareas pendientes y errores corregidos: `PENDIENTES.md`.
+- Imágenes propias: `imagenes-propias/LEEME.md` de cada producto.
+- Estado: `HECHO.md` y `PENDIENTE.md`.
+- Cambios: `CHANGELOG.md` de cada producto.
 
-Los dos proyectos son independientes: los cambios en uno no relanzan la publicación del otro.
+## Probar en local
+```
+cd La_Cosecha_Web_Render && npx serve -s .     # la web
+cd La_Cosecha_Juego_Android && npx serve .     # el juego en el navegador
+```

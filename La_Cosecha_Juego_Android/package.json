@@ -1,19 +1,22 @@
 {
   "name": "la-cosecha-panem",
-  "version": "4.8.0",
+  "version": "4.21.0",
   "private": true,
   "description": "La Cosecha - PWA y wrapper Android",
   "scripts": {
     "build:web": "node scripts/build-web.mjs",
     "android:sync": "npm run build:web && cap sync android",
-    "android:open": "cap open android"
+    "android:open": "cap open android",
+    "android:version": "node scripts/android-version.mjs"
   },
   "dependencies": {
     "@capacitor/android": "^7.4.3",
-    "@capacitor/core": "^7.4.3"
+    "@capacitor/core": "^7.4.3",
+    "@capacitor/preferences": "^7.0.4"
   },
   "devDependencies": {
-    "@capacitor/cli": "^7.4.3"
+    "@capacitor/cli": "^7.4.3",
+    "esbuild": "^0.24.2"
   },
   "type": "module"
 }

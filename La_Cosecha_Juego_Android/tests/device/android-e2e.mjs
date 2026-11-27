@@ -1,0 +1,207 @@
+// Recorrido real del APK en un emulador o dispositivo Android (se ejecuta en GitHub Actions).
+// Controla el WebView de la app con Playwright (protocolo de depuración de Chrome, APK de depuración).
+// Comprueba: arranque y versión, navegación, Ajustes (persisten tras reiniciar la app), sonido,
+// guardado, reinicio, carga desde la ranura y el 74.º completo hasta el final (el 50.º está retirado; sus
+// partidas antiguas se siguen cargando en la prueba de actualización).
+// Deja capturas e informe en device-report/. Sale con código 1 si falla cualquier comprobación.
+import fs from 'node:fs';
+import path from 'node:path';
+import { _android as android } from 'playwright-core';
+
+const PKG = 'com.lacosecha.panem';
+const OUT = path.resolve('device-report');
+fs.mkdirSync(OUT, { recursive: true });
+const version = JSON.parse(fs.readFileSync('La_Cosecha_Juego_Android/package.json', 'utf8')).version;
+const results = [];
+const errors = [];
+const staleBoots = [];
+let shot = 0;
+
+const check = (name, ok, detail = '') => { results.push({ name, ok: !!ok, detail: String(detail) }); console.log(`${ok ? '✓' : '✗'} ${name}${detail ? ' · ' + detail : ''}`); };
+
+const [device] = await android.devices();
+if (!device) { console.error('No hay ningún dispositivo Android conectado'); process.exit(1); }
+const prop = async p => (await device.shell(`getprop ${p}`)).toString().trim();
+const info = { modelo: await prop('ro.product.model'), android: await prop('ro.build.version.release'), api: await prop('ro.build.version.sdk'), abi: await prop('ro.product.cpu.abi') };
+const pkgInfo = (await device.shell(`dumpsys package ${PKG}`)).toString();
+info.versionName = /versionName=([^\s]+)/.exec(pkgInfo)?.[1];
+info.versionCode = /versionCode=(\d+)/.exec(pkgInfo)?.[1];
+info.webview = /versionName=([^\s]+)/.exec((await device.shell('dumpsys package com.google.android.webview')).toString() + (await device.shell('dumpsys package com.android.webview')).toString())?.[1] || 'desconocido';
+info.webviewProveedor = (await device.shell('cmd webviewupdate current-webview-package').catch(() => '')).toString().trim();
+if (/unknown|error/i.test(info.webviewProveedor)) info.webviewProveedor = '';
+console.log('Dispositivo:', info);
+
+async function launch() {
+  await device.shell(`am force-stop ${PKG}`);
+  await device.shell(`monkey -p ${PKG} -c android.intent.category.LAUNCHER 1`);
+  const webview = await device.webView({ pkg: PKG }, { timeout: 120000 });
+  const page = await webview.page();
+  page.setDefaultTimeout(60000);
+  page.on('crash', () => errors.push('crash: el proceso de renderizado del WebView se cayó'));
+  page.on('close', () => console.log('· la página se cerró'));
+  page.on('pageerror', e => errors.push(`pageerror: ${e.message}`));
+  page.on('console', m => { if (m.type() === 'error' && !(m.location()?.url || '').includes('/imagenes-propias/')) errors.push(`console: ${m.text()}`); });
+  page.on('dialog', d => d.accept().catch(() => {}));
+  await page.waitForSelector('#game-version:not(:empty)', { timeout: 120000 });
+  // Tras actualizar desde 4.9, el primer arranque puede mostrar la versión vieja (su service worker con caché)
+  // hasta que el nuevo la retira y recarga. Se anota cuánto tarda en verse la versión instalada.
+  const t0 = Date.now();
+  const first = await page.textContent('#game-version');
+  await page.waitForFunction(v => document.querySelector('#game-version')?.textContent.includes(v), version, { timeout: 60000 }).catch(() => {});
+  if (!first.includes(version)) staleBoots.push(`${first} → ${await page.textContent('#game-version').catch(() => '?')} en ${Date.now() - t0} ms`);
+  await page.waitForSelector('[data-a="story"]', { timeout: 60000 });
+  return page;
+}
+// Copia nativa (SharedPreferences de Capacitor). El APK de depuración permite leerla con run-as.
+const nativePrefs = async () => (await device.shell(`run-as ${PKG} cat shared_prefs/CapacitorStorage.xml`).catch(() => '')).toString();
+const snap = async name => { const f = path.join(OUT, `${String(++shot).padStart(2, '0')}-${name}.png`); await device.screenshot({ path: f }); return f; };
+// Pulsación normal; si Playwright no puede calcular el punto (zoom CSS heredado en WebViews antiguos), se hace clic en el elemento y se anota.
+const directClicks = new Set();
+async function tap(page, sel) {
+  try { await page.click(sel, { timeout: 5000 }); }
+  catch { await page.$eval(sel, el => el.click()); directClicks.add(sel); }
+}
+const home = async page => { await tap(page, '.topbar [data-a="home"]'); await page.waitForSelector('[data-a="story"]'); };
+
+try {
+  check('APK instalado con la versión del juego', info.versionName === version, `versionName ${info.versionName}, versionCode ${info.versionCode}`);
+
+  // 1. Arranque
+  let page = await launch();
+  check('La app arranca y muestra la versión', (await page.textContent('#game-version')).includes(version), await page.textContent('#game-version'));
+  await snap('inicio');
+  await page.waitForFunction(() => document.documentElement.dataset.storage === 'nativo', null, { timeout: 15000 }).catch(() => {});
+  check('Guardado nativo activo (Capacitor Preferences)', await page.evaluate(() => document.documentElement.dataset.storage) === 'nativo');
+
+  // 1b. Actualización desde la versión anterior: la partida sigue, carga y pasa a la copia nativa
+  const prevFile = path.join(OUT, 'anterior.json');
+  if (fs.existsSync(prevFile)) {
+    const prev = JSON.parse(fs.readFileSync(prevFile, 'utf8'));
+    await page.waitForTimeout(1000);
+    const xml = await nativePrefs();
+    check(`Actualización ${prev.version} → ${version}: la partida antigua pasa a la copia nativa`, xml.includes('laCosechaSave:1'), xml ? `${xml.length} bytes en CapacitorStorage.xml` : 'sin archivo');
+    await tap(page, '[data-a="load"]');
+    await page.waitForSelector('[data-slot-load="1"]');
+    await tap(page, '[data-slot-load="1"]');
+    const t = await page.textContent('.story-box h2');
+    check(`Actualización ${prev.version} → ${version}: la partida antigua carga en la misma escena`, t === prev.title, t);
+    // Se borra con confirmación para seguir con la prueba desde cero; debe desaparecer de las dos copias.
+    await tap(page, '.topbar [data-a="settings"]');
+    await tap(page, '[data-slot-delete="1"]');
+    await tap(page, '[data-slot-delete-confirm="1"]');
+    await page.waitForTimeout(1000);
+    const borrada = await page.evaluate(() => localStorage.getItem('laCosechaSave:1') === null) && !(await nativePrefs()).includes('laCosechaSave:1"');
+    check('Borrar partida la quita de la copia local y de la nativa', borrada);
+    await tap(page, '[data-a="settings-back"]');
+    await home(page);
+  } else {
+    results.push({ name: 'Actualización desde la versión anterior', ok: true, detail: 'no se ejecutó (no hay APK anterior en esta ejecución)' });
+  }
+
+  if (staleBoots.length) results.push({ name: 'Primer arranque tras actualizar: la versión vieja se retiró sola', ok: true, detail: staleBoots.join(' · ') });
+
+  // 2. Navegación por los modos y vuelta al inicio
+  for (const [a, expect] of [['story', 'ELIGE TU CAMPAÑA'], ['free', 'CONFIGURA LOS JUEGOS'], ['president', 'PRESIDENTE'], ['codex', 'CÓDICE']]) {
+    await tap(page, `[data-a="${a}"]`);
+    const text = (await page.textContent('#screen')).toUpperCase();
+    check(`Navegación: ${a}`, text.includes(expect), expect);
+    if (a === 'free') await snap('modo-libre');
+    await home(page);
+  }
+
+  // 3. Ajustes
+  await tap(page, '.topbar [data-a="settings"]');
+  await page.waitForSelector('#set-volume');
+  await tap(page, '[data-setting="reducedMotion"]');
+  await tap(page, '[data-text-scale="1.15"]');
+  await page.fill('#set-volume', '40');
+  await page.dispatchEvent('#set-volume', 'change');
+  await page.fill('#set-music-volume', '30');
+  await page.dispatchEvent('#set-music-volume', 'change');
+  await tap(page, '[data-a="test-sound"]');
+  const audio = await page.evaluate(() => ({ lastSound: document.documentElement.dataset.lastSound, hasAudioContext: !!(window.AudioContext || window.webkitAudioContext) }));
+  check('Sonido: el motor de audio del WebView reproduce el efecto de prueba', audio.hasAudioContext && audio.lastSound === 'anthem', JSON.stringify(audio));
+  await snap('ajustes');
+  await tap(page, '[data-setting="sound"]');
+  await tap(page, '[data-setting="sound"]');
+  const prefs = await page.evaluate(() => JSON.parse(localStorage.getItem('laCosechaSettings')));
+  check('Ajustes guardados', prefs && prefs.reducedMotion === true && prefs.textScale === 1.15 && prefs.volume === 0.4 && prefs.sound === true && prefs.musicVolume === 0.3 && prefs.muted === false, JSON.stringify(prefs));
+  check('Música: sin pistas todavía (no suena nada)', await page.evaluate(() => !!document.querySelector('#music-status') && document.documentElement.dataset.music === 'on'));
+  await tap(page, '[data-a="settings-back"]');
+
+  // 4. 74.º (el 50.º está retirado del juego activo): no aparece en el selector. Precampaña de 11 escenas
+  // del motor común: se juegan seis (decisión, respuesta y diario) y se guarda en la ranura 1.
+  await tap(page, '[data-a="story"]');
+  check('El 50.º no aparece en el selector y el 74.º y el 75.º sí', !(await page.$('[data-ed="50"]')) && !!(await page.$('[data-ed="74"]')) && !!(await page.$('[data-ed="75"]')));
+  await tap(page, '[data-ed="74"]');
+  await tap(page, '[data-a="begin"]');
+  check('Audio: el contexto sigue al juego (menú → historia:74)', await page.evaluate(() => document.documentElement.dataset.audioContext) === 'historia:74', await page.evaluate(() => document.documentElement.dataset.audioContext));
+  const escena = async () => { await tap(page, '[data-pc-option]'); if (await page.$('[data-pc-continue]')) await tap(page, '[data-pc-continue]'); };
+  for (let i = 0; i < 6; i++) await escena();
+  await tap(page, '[data-a="save"]');
+  const fase = await page.textContent('h1.display');
+  const slot1 = await page.evaluate(() => JSON.parse(localStorage.getItem('laCosechaSave:1') || 'null'));
+  check('74.º: seis escenas de la precampaña con diario; guardado en la ranura 1 (formato 5)', slot1?.saveVersion === 5 && slot1.game.edition === 74 && slot1.game.phase === 'precampana' && slot1.game.precampana?.index === 6 && slot1.game.precampana.journal.length === 6, `${fase} · saveVersion ${slot1?.saveVersion} · escena ${slot1?.game?.precampana?.index}`);
+  await snap('74-precampana');
+
+  // 5. Cierre forzado medio segundo después de guardar, sin pasar a segundo plano: es el caso en que
+  // la versión 4.9 perdía lo último. La copia nativa debe tenerlo.
+  await page.waitForTimeout(500);
+  const xmlAntes = await nativePrefs();
+  check('La copia nativa tiene la partida antes del cierre', xmlAntes.includes('laCosechaSave:1'), `${xmlAntes.length} bytes`);
+  page = await launch();
+  const after = await page.evaluate(() => ({ prefs: JSON.parse(localStorage.getItem('laCosechaSettings')), reduce: document.documentElement.classList.contains('reduce-motion'), scale: getComputedStyle(document.documentElement).getPropertyValue('--text-scale').trim() }));
+  check('Tras reiniciar: los ajustes persisten y se aplican', after.reduce && after.scale === '1.15' && after.prefs?.volume === 0.4 && after.prefs?.musicVolume === 0.3, JSON.stringify(after));
+  await tap(page, '[data-a="load"]');
+  await page.waitForSelector('[data-slot-load="1"]');
+  await snap('partidas');
+  await tap(page, '[data-slot-load="1"]');
+  const resumed = await page.evaluate(() => ({ h1: document.querySelector('h1.display')?.textContent, opciones: document.querySelectorAll('[data-pc-option]').length }));
+  check('Tras reiniciar: se carga la ranura 1 en la misma escena', resumed.h1 === fase && resumed.opciones === 3, JSON.stringify(resumed));
+
+  // 6. Resto de la precampaña y Arena del 74.º hasta el final
+  for (let i = 0; i < 5; i++) await escena();
+  const enArena = await page.evaluate(() => !!document.querySelector('.hud'));
+  check('74.º: tras la escena 11 se entra en la Arena (transferencia guardada)', enArena && await page.evaluate(() => !!JSON.parse(localStorage.getItem('laCosechaSave:1') || 'null')?.game?.continuity?.campaign_74), '');
+  let arenaEvents = 0;
+  for (let i = 0; i < 80; i++) {
+    if (await page.$('.epilogue')) break;
+    const choice = await page.$('[data-story-choice]');
+    if (choice) { arenaEvents++; if (arenaEvents === 1) await snap('74-arena'); await choice.evaluate(el => el.scrollIntoView({ block: 'center' })); await choice.click({ timeout: 5000 }).catch(() => choice.evaluate(el => el.click())); continue; }
+    const act = (await page.$('[data-act="rest"]')) || (await page.$('[data-act]'));
+    if (!act) break;
+    await act.click({ timeout: 5000 }).catch(() => act.evaluate(el => el.click()));
+  }
+  const ending = (await page.$('.epilogue')) ? await page.textContent('h1.display') : null;
+  check('74.º: acontecimientos de Arena y final', arenaEvents >= 1 && !!ending, `${arenaEvents} acontecimientos · final «${ending}»`);
+  await snap('74-final');
+
+  // 7. Borrar partida con confirmación
+  await tap(page, '.topbar [data-a="settings"]');
+  await tap(page, '[data-slot-delete="1"]');
+  const warned = !!(await page.$('[data-slot-delete-confirm="1"]'));
+  await tap(page, '[data-slot-delete-confirm="1"]');
+  const gone = await page.evaluate(() => localStorage.getItem('laCosechaSave:1') === null);
+  check('Borrar partida pide confirmación y borra solo esa ranura', warned && gone);
+} catch (e) {
+  check('Recorrido sin excepciones', false, e.message);
+  // Para diagnosticar: registro del sistema (cierres de la app o del WebView).
+  try { fs.writeFileSync(path.join(OUT, 'logcat.txt'), (await device.shell('logcat -d -t 1500')).toString()); } catch {}
+  await snap('error').catch(() => {});
+}
+
+fs.writeFileSync(path.join(OUT, 'logcat.txt'), (await device.shell('logcat -d -v time')).toString());
+const crash = (await device.shell('logcat -d -b crash')).toString();
+const gone = (await device.shell('logcat -d -s chromium:E cr_AwContents:* ActivityManager:I')).toString().split('\n').filter(l => !/stop com\.lacosecha\.panem due to/.test(l)).filter(l => /com\.lacosecha\.panem/.test(l) && /Killing|has died|crash/i.test(l) || /Renderer process (crashed|was killed)/i.test(l));
+check('La app y su WebView no se cierran durante la prueba', gone.length === 0, gone.slice(0, 3).join(' | '));
+check('Sin cierres inesperados (logcat crash)', !/FATAL EXCEPTION/.test(crash), crash.trim().split('\n').slice(0, 3).join(' | '));
+check('Sin errores de JavaScript en el WebView', errors.length === 0, errors.slice(0, 5).join(' | '));
+
+if (directClicks.size) results.push({ name: 'Aviso: clic directo en el elemento (sin coordenadas)', ok: true, detail: [...directClicks].join(', ') });
+const failed = results.filter(r => !r.ok);
+const md = [`# Prueba del APK en Android`, ``, `- Dispositivo: ${info.modelo} · Android ${info.android} (API ${info.api}) · ${info.abi}`, `- WebView del sistema: ${info.webview} ${info.webviewProveedor ? '(' + info.webviewProveedor + ')' : ''}`, `- APK: versionName ${info.versionName} · versionCode ${info.versionCode}`, `- Resultado: ${failed.length ? `${failed.length} comprobaciones fallidas` : 'todas las comprobaciones superadas'}`, ``, `| Comprobación | Resultado | Detalle |`, `|---|---|---|`, ...results.map(r => `| ${r.name} | ${r.ok ? '✅' : '❌'} | ${r.detail.replace(/\|/g, '/')} |`)].join('\n');
+fs.writeFileSync(path.join(OUT, 'informe.md'), md + '\n');
+fs.writeFileSync(path.join(OUT, 'informe.json'), JSON.stringify({ device: info, results, errors }, null, 2));
+console.log('\n' + md);
+await device.close();
+process.exit(failed.length ? 1 : 0);
