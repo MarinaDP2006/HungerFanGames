@@ -22,9 +22,9 @@ const server = http.createServer((req, res) => {
 await new Promise(r => server.listen(0, r));
 const base = `http://localhost:${server.address().port}/`;
 
-const rutas = ['', 'distritos', 'distritos/12', 'distritos/13', 'capitolio', 'personajes', 'personajes/katniss-everdeen', 'juegos', 'juegos/74', 'cronologia', 'gira', 'rebelion-y-guerra', 'lugares', 'galeria', 'documentos', 'acerca'];
-const capturas = new Set(['', 'distritos', 'distritos/12', 'capitolio', 'personajes', 'personajes/katniss-everdeen', 'juegos', 'cronologia', 'gira', 'lugares', 'galeria', 'acerca']);
-const MENU = ['Inicio', 'Distritos', 'Capitolio', 'Personajes', 'Juegos', 'Cronología', 'Gira de la Victoria', 'Rebelión y Guerra', 'Lugares', 'Galería', 'Documentos', 'Acerca'];
+const rutas = ['', 'distritos', 'distritos/12', 'distritos/13', 'capitolio', 'personajes', 'personajes/katniss-everdeen', 'juegos', 'juegos/74', 'cronologia', 'gira', 'rebelion-y-guerra', 'lugares', 'galeria', 'documentos'];
+const capturas = new Set(['', 'distritos', 'distritos/12', 'capitolio', 'personajes', 'personajes/katniss-everdeen', 'juegos', 'cronologia', 'gira', 'lugares', 'galeria']);
+const MENU = ['Inicio', 'Distritos', 'Capitolio', 'Personajes', 'Juegos', 'Cronología', 'Gira de la Victoria', 'Rebelión y Guerra', 'Lugares', 'Galería', 'Documentos'];
 const results = [];
 const check = (name, ok, detail = '') => { results.push({ name, ok: !!ok, detail: String(detail) }); console.log(`${ok ? '✓' : '✗'} ${name}${detail ? ' · ' + detail : ''}`); };
 
@@ -48,7 +48,8 @@ try {
     const etiquetas = await page.$$eval('#navegacion a', as => as.map(a => a.textContent.trim()));
     check(`${nombre} · menú definitivo`, JSON.stringify(etiquetas) === JSON.stringify(MENU), etiquetas.join(' · '));
     await page.evaluate(() => { window.__sinRecargar = true; });
-    for (const s of ['distritos', 'capitolio', 'personajes', 'juegos', 'gira', 'rebelion-y-guerra', 'lugares', 'acerca']) {
+    for (const s of ['distritos', 'capitolio', 'personajes', 'juegos', 'gira', 'rebelion-y-guerra', 'lugares', 'documentos']) {
+      if (await page.isVisible('#menu-boton')) { await page.click('#menu-boton'); await page.waitForTimeout(350); }
       await page.click(`#navegacion a[data-seccion="${s}"]`);
       await page.waitForFunction(x => document.documentElement.dataset.ruta === x, s);
       check(`${nombre} · menú → /${s}`, new URL(page.url()).pathname === `/${s}` && await page.getAttribute(`#navegacion a[data-seccion="${s}"]`, 'aria-current') === 'page');

@@ -24,6 +24,16 @@ document.addEventListener('load', e => {
 
 nav.innerHTML = SECCIONES.map(s => `<a href="${enlace(s.id)}" data-seccion="${s.id}">${s.label}</a>`).join('');
 
+// Menú a pantalla completa en el móvil.
+const menuBoton = document.querySelector('#menu-boton');
+const menu = abierto => { document.documentElement.classList.toggle('menu-abierto', abierto); menuBoton?.setAttribute('aria-expanded', String(abierto)); };
+menuBoton?.addEventListener('click', () => menu(!document.documentElement.classList.contains('menu-abierto')));
+nav.addEventListener('click', () => menu(false));
+
+// Aparición suave de los bloques al entrar en pantalla.
+const observador = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observador.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' }) : null;
+const revelar = () => main.querySelectorAll('.revela:not(.visible)').forEach(el => observador ? observador.observe(el) : el.classList.add('visible'));
+
 if (location.hash.startsWith('#/')) history.replaceState(null, '', location.hash.slice(1));
 
 // Navegación inmersiva:
@@ -48,6 +58,7 @@ function pintar(ruta, enfocar, restaurar) {
     if (a.dataset.seccion === ruta.seccion) a.setAttribute('aria-current', 'page');
   }
   document.documentElement.dataset.ruta = ruta.seccion || 'inicio';
+  revelar();
   if (enfocar) main.focus({ preventScroll: true });
   window.scrollTo(0, restaurar ? leerPos() : 0);
   progreso();
@@ -82,6 +93,7 @@ document.addEventListener('click', e => {
 });
 window.addEventListener('popstate', () => mostrar({ restaurar: true }));
 document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.documentElement.classList.contains('menu-abierto')) return menu(false);
   if (e.key === 'Escape' && location.pathname !== '/' && !e.target.closest('input,textarea,select')) volver();
 });
 
@@ -93,6 +105,7 @@ function progreso() {
   const max = document.documentElement.scrollHeight - window.innerHeight;
   barra.style.transform = `scaleX(${max > 0 ? Math.min(1, window.scrollY / max) : 0})`;
   document.documentElement.classList.toggle('compacta', window.scrollY > 80);
+  document.documentElement.classList.toggle('sobre-heroe', location.pathname === '/' && window.scrollY < window.innerHeight * .7);
 }
 let pendiente = false;
 window.addEventListener('scroll', () => { if (!pendiente) { pendiente = true; requestAnimationFrame(() => { pendiente = false; progreso(); }); } }, { passive: true });
@@ -109,6 +122,7 @@ main.addEventListener('input', e => {
   const campo = main.querySelector(`[name="${foco}"]${foco === 'rol' ? ':checked' : ''}`);
   if (campo) { campo.focus(); if (pos != null && campo.setSelectionRange) campo.setSelectionRange(pos, pos); }
 });
+main.addEventListener('click', e => { if (e.target.closest('[data-bajar]')) document.querySelector('#indice-portada')?.scrollIntoView({ behavior: reduce() ? 'auto' : 'smooth' }); });
 main.addEventListener('submit', e => { if (e.target.closest('[data-filtros]')) e.preventDefault(); });
 
 mostrar({ enfocar: false, animar: false });

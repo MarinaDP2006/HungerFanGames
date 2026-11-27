@@ -1,5 +1,18 @@
 # Changelog
 
+## Archivo de Panem 2.0 — Rediseño «revista documental»
+- **Identidad nueva, opuesta a la del juego:**
+  - blanco luminoso, tinta negra y rojo rebelde;
+  - tipografía de revista: Playfair Display para los títulos e IBM Plex Sans para el texto, incluidas en la web;
+  - tarjetas redondeadas con sombra.
+- **Portada a pantalla completa:**
+  - imagen con un acercamiento lento, «Panem recuerda» en grande y botones para explorar;
+  - cifras en una franja translúcida;
+  - índice de secciones con descripciones y franja con el color de cada distrito.
+- **Cabecera:** fina, transparente sobre la portada. En el móvil y en pantallas medianas el menú se abre a pantalla completa con secciones numeradas.
+- **Bloques que aparecen al bajar** (respetando «reducir movimiento»).
+- **Fuera la página Acerca.**
+
 ## Archivo de Panem 1.4 — Navegación inmersiva
 - **Direcciones profundas en Render:** `404.html` es una copia de `index.html`, de modo que abrir o recargar `/distritos/12` muestra el Archivo aunque el servicio no tenga la regla de reescritura.
 - **Volver:**
