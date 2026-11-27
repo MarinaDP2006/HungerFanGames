@@ -30,6 +30,8 @@ export function parseRuta(ruta = '/') {
 export const enlace = (seccion, id) => `/${seccion}${id != null ? '/' + encodeURIComponent(id) : ''}`;
 
 const C = A.CONTENIDO;
+// Imagen propia (imagenes-propias/<ruta>.jpg|png|webp|jpeg). Si no existe, js/archivo.js la quita y se ve lo de siempre.
+const propia = (ruta, alt, cls = '') => `<img class="propia ${cls}" src="/imagenes-propias/${esc(ruta)}.jpg" data-propia="${esc(ruta)}" data-ext="0" alt="${esc(alt)}" loading="lazy" decoding="async">`;
 const parrafos = ps => ps.map(p => `<p>${esc(p)}</p>`).join('');
 const etiquetaCanon = c => `<span class="etiqueta-canon" data-canon="${esc(c)}">${esc(CANON[c] || 'Sin clasificar')}</span>`;
 
@@ -110,6 +112,7 @@ function fichaDistrito(id) {
   return `${migas(['Distritos', enlace('distritos')], [d.name])}
   <article class="ficha" style="--c:${esc(d.color)}">
     ${cabecera(d.id === 13 ? 'Expediente histórico · no participa en las cosechas' : `Expediente D-${String(d.id).padStart(2, '0')}`, d.name, d.description)}
+    ${propia(`distritos/distrito-${String(d.id).padStart(2, '0')}`, d.name, 'banda')}
     <dl class="datos"><div><dt>Industria</dt><dd>${esc(d.industry)}</dd></div>${m ? `<div><dt>Mentores y vencedores registrados</dt><dd>${m.nombres.length ? m.nombres.map(esc).join(', ') : 'Sin identificar'}${m.nombres.length && m.sinIdentificar ? ' y otros sin identificar' : ''}</dd></div>` : ''}${canon(d)}</dl>
     <section class="bloque"><h2>Personajes del distrito</h2>${gente.length ? `<ul class="lista-personajes">${gente.map(tarjetaPersonaje).join('')}</ul>` : '<p class="vacio">No hay fichas de personajes de este distrito.</p>'}</section>
     ${d.geografia ? `<section class="bloque expediente">
@@ -125,7 +128,7 @@ function fichaDistrito(id) {
 function capitolio() {
   return `${migas(['Capitolio'])}
   <article class="ficha capitolio">${cabecera('Sede del gobierno de Panem', 'El Capitolio')}
-    ${imagen(A.GALERIA[0], 'ficha-imagen')}
+    <div class="con-propia">${propia('distritos/capitolio', 'El Capitolio', 'banda')}<div class="si-no-propia">${imagen(A.GALERIA[0], 'ficha-imagen')}</div></div>
     <dl class="datos">${canon({ canon_status: C.CAPITOLIO.canon, source_ref: C.FUENTE_PELICULAS })}</dl>
     <section class="bloque">${parrafos(C.CAPITOLIO.parrafos)}</section>
     <section class="bloque"><h2>Lugares del Capitolio</h2><ul class="lista-simple">${C.CAPITOLIO.lugares.map(l => `<li>${esc(l)}</li>`).join('')}</ul><p><a href="${enlace('lugares')}">Todos los lugares →</a></p></section>
@@ -134,7 +137,7 @@ function capitolio() {
 }
 
 function tarjetaPersonaje(c) { return tarjetaP(c); }
-const tarjetaP = c => `<li><a class="tarjeta-personaje" href="${enlace('personajes', c.slug)}"><span class="sello-distrito" style="--c:${esc(A.distrito(c.district)?.color || '#777')}" aria-hidden="true">${c.district === 0 ? 'C' : c.district}</span><span><b>${esc(c.name)}</b><small>${esc(c.role)} · ${esc(nombreDistrito(c.district))}</small></span></a></li>`;
+const tarjetaP = c => `<li><a class="tarjeta-personaje" href="${enlace('personajes', c.slug)}"><span class="sello-distrito con-propia" style="--c:${esc(A.distrito(c.district)?.color || '#777')}" aria-hidden="true">${c.district === 0 ? 'C' : c.district}${propia('personajes/' + c.slug, c.name, 'miniatura')}</span><span><b>${esc(c.name)}</b><small>${esc(c.role)} · ${esc(nombreDistrito(c.district))}</small></span></a></li>`;
 
 function personajes(id, filtros = {}) {
   if (id != null) return fichaPersonaje(id);
@@ -159,12 +162,12 @@ function fichaPersonaje(s) {
   const d = A.distrito(c.district);
   return `${migas(['Personajes', enlace('personajes')], [c.name])}
   <article class="ficha" style="--c:${esc(d?.color || '#777')}">
-    ${cabecera(`${c.role} · ${d ? d.name : ''}`, c.name, c.bio)}
+    <div class="ficha-cabecera">${propia('personajes/' + c.slug, c.name, 'retrato')}${cabecera(`${c.role} · ${d ? d.name : ''}`, c.name, c.bio)}</div>
     <dl class="datos">
       <div><dt>${c.district === 0 ? 'Procedencia' : 'Distrito'}</dt><dd>${d ? `<a href="${enlaceDistrito(d.id)}">${esc(d.name)}</a>` : '—'}</dd></div>
       <div><dt>Papel</dt><dd>${esc(c.role)}</dd></div>
       <div><dt>Rasgos</dt><dd><ul class="rasgos">${c.traits.map(t => `<li>${esc(t)}</li>`).join('')}</ul></dd></div>
-      <div><dt>Retrato</dt><dd>Sin retrato: el Archivo no usa imágenes de las películas ni de sus intérpretes</dd></div>
+      
       ${canon(c)}
     </dl>
   </article>`;
@@ -185,7 +188,7 @@ function ediciones(id) {
     if (!e) return noEncontrado();
     const i = A.EDICIONES.indexOf(e);
     return `${migas(['Juegos', enlace('juegos')], [e.title])}
-    <article class="ficha">${cabecera(`Edición ${e.year}`, e.title, e.note)}
+    <article class="ficha">${cabecera(`Edición ${e.year}`, e.title, e.note)}${propia(`juegos/edicion-${e.year}`, e.title, 'banda')}
       <dl class="datos"><div><dt>Año de los Juegos</dt><dd>${e.year}.º</dd></div><div><dt>Arena</dt><dd>${esc(e.arena)}</dd></div></dl>
       ${C.EDICIONES[e.year] ? `<dl class="datos">${canon({ canon_status: C.EDICIONES[e.year].canon, source_ref: C.FUENTE_PELICULAS })}</dl><section class="bloque">${parrafos(C.EDICIONES[e.year].parrafos)}</section>${C.EDICIONES[e.year].hitos ? `<section class="bloque"><h2>Momentos clave</h2><ol class="hitos">${C.EDICIONES[e.year].hitos.map(h => `<li>${esc(h)}</li>`).join('')}</ol></section>` : ''}` : ''}
       <nav class="paginacion">${i > 0 ? `<a href="${enlace('juegos', A.EDICIONES[i - 1].year)}">← ${A.EDICIONES[i - 1].year}.º</a>` : '<span></span>'}${i < A.EDICIONES.length - 1 ? `<a href="${enlace('juegos', A.EDICIONES[i + 1].year)}">${A.EDICIONES[i + 1].year}.º →</a>` : ''}</nav>
@@ -204,7 +207,7 @@ function cronologia() {
 function lugares() {
   const grupos = [...new Set(C.LUGARES.map(l => l.grupo))];
   return `${migas(['Lugares'])}${cabecera('Panem', 'Lugares', 'Arenas, Capitolio, distritos y escenarios de los Juegos.')}
-  ${grupos.map(g => `<section class="bloque"><h2>${esc(g)}</h2><ul class="tarjetas-lugares">${C.LUGARES.filter(l => l.grupo === g).map(l => `<li id="${esc(l.id)}"><h3>${esc(l.nombre)}</h3><p>${esc(l.texto)}</p>${l.juego ? `<p><a href="${enlace('juegos', l.juego)}">Ver la edición ${l.juego}.º</a></p>` : ''}${etiquetaCanon(l.canon)}</li>`).join('')}</ul></section>`).join('')}
+  ${grupos.map(g => `<section class="bloque"><h2>${esc(g)}</h2><ul class="tarjetas-lugares">${C.LUGARES.filter(l => l.grupo === g).map(l => `<li id="${esc(l.id)}">${propia('lugares/' + l.id, l.nombre, 'tarjeta-img')}<h3>${esc(l.nombre)}</h3><p>${esc(l.texto)}</p>${l.juego ? `<p><a href="${enlace('juegos', l.juego)}">Ver la edición ${l.juego}.º</a></p>` : ''}${etiquetaCanon(l.canon)}</li>`).join('')}</ul></section>`).join('')}
   <figure class="figura">${imagen(A.GALERIA[1])}<figcaption>Arena del bosque · ilustración del proyecto</figcaption></figure>
   <section class="bloque"><h2>Tipos de arena del videojuego</h2><p class="nota">Plantillas del modo libre del videojuego, no arenas de ediciones concretas.</p>
     <ul class="tarjetas-arenas">${A.TIPOS_ARENA.map(a => `<li><h3>${esc(a.name)}</h3><p>${esc(a.description)}</p><p class="peligros">Peligros: ${a.danger.map(esc).join(', ')}</p></li>`).join('')}</ul>

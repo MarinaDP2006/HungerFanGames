@@ -36,6 +36,8 @@ const include = new Set(['index.html', 'manifest.webmanifest', 'sw.js']);
 // (js/music.js está fuera del bundle). Antes entraba porque la precargaba el service worker.
 const AUDIO_CONSERVADO = ['assets/audio/ambiente-capitolio-original.ogg'];
 for (const f of AUDIO_CONSERVADO) include.add(f);
+// Imágenes propias (fondos y retratos que Nina añade a mano): viajan todas las que haya.
+if (exists('imagenes-propias')) for (const f of walk('imagenes-propias')) if (/\.(jpe?g|png|webp)$/i.test(f)) include.add(f);
 const html = read('index.html');
 
 // 2. Hojas de estilo enlazadas.

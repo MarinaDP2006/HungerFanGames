@@ -85,3 +85,7 @@ body{zoom:var(--text-scale,1)}
 @media(min-width:1000px){.hud{top:8px}}
 
 .top-meta .version{font-size:9px;letter-spacing:.14em;color:#6f6253}
+
+/* Fondos propios (imagenes-propias/juego): capa fija detrás de la interfaz, oscurecida para que se lea el texto */
+html[data-fondo]:not([data-fondo=""]) body::before{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,#090807cc,#090807e6 55%,#090807f5),var(--fondo-propio) center/cover no-repeat;pointer-events:none}
+html[data-fondo]:not([data-fondo=""]) body{background:#090807}

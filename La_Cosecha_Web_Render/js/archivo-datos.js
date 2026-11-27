@@ -44,7 +44,9 @@ export function vencedores() {
   return [...out.values()].sort((a, b) => a.district - b.district || a.name.localeCompare(b.name, 'es'));
 }
 
-export const EDICIONES = [...canonEditions].sort((a, b) => a.year - b.year);
+// Solo la saga de Katniss: el 10.º (Snow joven) y el 50.º no forman parte del proyecto.
+export const EDICIONES_DE_LA_SAGA = [74, 75];
+export const EDICIONES = canonEditions.filter(e => EDICIONES_DE_LA_SAGA.includes(e.year)).sort((a, b) => a.year - b.year);
 export const edicion = y => EDICIONES.find(e => e.year === Number(y)) || null;
 export const TIPOS_ARENA = arenaTypes;
 

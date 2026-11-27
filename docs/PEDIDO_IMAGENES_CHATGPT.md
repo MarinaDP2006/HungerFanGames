@@ -66,8 +66,6 @@ La_Cosecha_Imagenes_v1/
     distrito-13-subterraneo.jpg
     el-hueso.jpg
   juegos/                (16:9, escena clave de cada edición)
-    edicion-10.jpg
-    edicion-50.jpg
     edicion-74.jpg
     edicion-75.jpg
   juego/                 (fondos del videojuego, 16:9)
@@ -79,12 +77,9 @@ La_Cosecha_Imagenes_v1/
     lanzamiento.jpg      (sala de lanzamiento y tubo hacia la arena)
     arena-74.jpg         (bosque y Cornucopia)
     arena-75.jpg         (isla del reloj y lago salado)
-    gira.jpg             (tren de la Gira llegando a un distrito)
-    distrito-12-ruinas.jpg (el Distrito 12 tras el bombardeo)
-    distrito-13.jpg      (pasillos subterráneos del Distrito 13)
     presidente.jpg       (despacho presidencial, para el modo Presidente)
     final-victoria.jpg
     final-derrota.jpg
 ```
 
-Son **27 retratos, 13 distritos y el Capitolio, 14 lugares, 4 ediciones y 14 fondos del juego: 73 imágenes**.
+Son **27 retratos, 13 distritos y el Capitolio, 14 lugares, 2 ediciones y 11 fondos del juego: 68 imágenes**.

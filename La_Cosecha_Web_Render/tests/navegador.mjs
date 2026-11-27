@@ -34,8 +34,8 @@ try {
     const page = await browser.newPage({ viewport, serviceWorkers: 'block', reducedMotion: 'reduce' });
     const errores = [], rotos = [];
     page.on('pageerror', e => errores.push(e.message));
-    page.on('console', m => { if (m.type() === 'error') errores.push(m.text()); });
-    page.on('response', r => { if (r.status() >= 400) rotos.push(`${r.status()} ${r.url()}`); });
+    page.on('console', m => { if (m.type() === 'error' && !(m.location()?.url || '').includes('/imagenes-propias/')) errores.push(m.text()); });
+    page.on('response', r => { if (r.status() >= 400 && !r.url().includes('/imagenes-propias/')) rotos.push(`${r.status()} ${r.url()}`); });
     for (const r of rutas) {
       await page.goto(base + r);
       await page.waitForSelector('#contenido h1');

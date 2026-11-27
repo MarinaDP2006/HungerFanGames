@@ -7,6 +7,21 @@ const main = document.querySelector('#contenido');
 const nav = document.querySelector('#navegacion');
 let filtros = {};
 
+// Imágenes propias: se prueba .jpg, .png, .webp y .jpeg; si no hay ninguna, se quita y se ve lo de siempre.
+const EXT = ['jpg', 'png', 'webp', 'jpeg'];
+document.addEventListener('error', e => {
+  const im = e.target;
+  if (!(im instanceof HTMLImageElement) || !im.dataset.propia) return;
+  const i = Number(im.dataset.ext) + 1;
+  if (i < EXT.length) { im.dataset.ext = i; im.src = `/imagenes-propias/${im.dataset.propia}.${EXT[i]}`; } else im.remove();
+}, true);
+document.addEventListener('load', e => {
+  const im = e.target;
+  if (!(im instanceof HTMLImageElement) || !im.dataset.propia) return;
+  im.classList.add('ok');
+  im.closest('.con-propia')?.classList.add('tiene-propia');
+}, true);
+
 nav.innerHTML = SECCIONES.map(s => `<a href="${enlace(s.id)}" data-seccion="${s.id}">${s.label}</a>`).join('');
 
 if (location.hash.startsWith('#/')) history.replaceState(null, '', location.hash.slice(1));

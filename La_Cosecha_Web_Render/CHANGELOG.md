@@ -1,5 +1,14 @@
 # Changelog
 
+## Archivo de Panem 1.3 — sin publicar
+- **Solo la saga de Katniss:** fuera las ediciones 10.º y 50.º de Juegos, de la cronología y de los contadores.
+- **Imágenes propias:** la carpeta `imagenes-propias/` tiene la lista de nombres en `LEEME.md`. Lo que subas aparece solo en su ficha:
+  - retratos en las fichas y miniaturas de personajes;
+  - bandas en distritos, Capitolio y ediciones;
+  - imágenes en las tarjetas de lugares.
+
+  Si falta alguna, no se ve nada roto.
+
 ## Archivo de Panem 1.2 — sin publicar (rama `integracion-cosecha-5x`)
 - **Contenido completo, sin avisos de pendiente.** Textos originales del proyecto, basados en la continuidad de las películas (`js/archivo-contenido.js`):
   - expediente de los 13 distritos: territorio, vida cotidiana, símbolos y nombres destacados;

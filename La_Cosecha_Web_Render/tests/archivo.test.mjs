@@ -12,7 +12,7 @@ const web = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const read = f => fs.readFileSync(path.join(web, f), 'utf8');
 const todas = () => [
   '', 'distritos', 'capitolio', 'personajes', 'juegos', 'cronologia', 'gira', 'rebelion-y-guerra', 'lugares', 'galeria', 'documentos', 'acerca',
-  ...districts.map(d => `distritos/${d.id}`), ...A.PERSONAJES.map(c => `personajes/${c.slug}`), ...canonEditions.map(e => `juegos/${e.year}`),
+  ...districts.map(d => `distritos/${d.id}`), ...A.PERSONAJES.map(c => `personajes/${c.slug}`), ...A.EDICIONES.map(e => `juegos/${e.year}`),
 ];
 
 test('menú definitivo, en su orden y sin Novedades', () => {
@@ -52,7 +52,9 @@ test('todos los datos compartidos aparecen: 12 distritos, el 13 aparte, 16 perso
   const p = V.render({ seccion: 'personajes' }, {});
   for (const c of characters) assert.ok(p.includes(c.name), c.name);
   const e = V.render({ seccion: 'juegos' });
-  for (const ed of canonEditions) assert.ok(e.includes(ed.title), ed.title);
+  for (const ed of A.EDICIONES) assert.ok(e.includes(ed.title), ed.title);
+  assert.deepEqual(A.EDICIONES.map(x => x.year), [74, 75], 'solo la saga de Katniss: sin el 10.º ni el 50.º');
+  assert.doesNotMatch(e, /10\.º|50\.º/);
 });
 
 test('filtros de personajes: por rol, distrito y texto', () => {

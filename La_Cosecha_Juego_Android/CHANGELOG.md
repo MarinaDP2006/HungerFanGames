@@ -1,6 +1,7 @@
 # Changelog
 
 ## 4.16 — El 74.º se juega
+- **Fondos propios:** la carpeta `imagenes-propias/juego/` tiene la lista de nombres en `LEEME.md`. Cada pantalla usa su fondo si existe (menú, cosecha, tren, entrenamiento, entrevista, lanzamiento, Arena 74/75, Presidente y finales), y el APK lleva todos los que haya.
 - **El 74.º se juega con su precampaña completa.** El modo Historia del 74.º ya no usa la cosecha, el entrenamiento y la entrevista genéricos. Ahora pasa por las 11 escenas (cosecha, despedidas, tren, Capitolio, desfile, entrenamiento, sesión privada, entrevista y lanzamiento) con:
   - respuesta a cada decisión y diario;
   - 31 ecos;
