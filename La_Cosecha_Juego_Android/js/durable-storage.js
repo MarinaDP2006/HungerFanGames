@@ -21,7 +21,7 @@ export function nativePreferences(win) {
 
 // `onAck(ms)` se llama cuando Android confirma una escritura nativa, con lo que ha tardado desde que el juego
 // guardó (puente de Capacitor + SharedPreferences en memoria). A partir de ahí solo falta que Android
-// lo pase a disco (ver docs/GUARDADO.md, «Margen residual»).
+// lo pase a disco.
 export function createDurableStorage(local, native, { keys = [], onError, onAck, now = () => Date.now() } = {}) {
   const tracked = new Set(keys);
   const pending = new Set();

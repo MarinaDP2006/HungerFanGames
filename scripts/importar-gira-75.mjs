@@ -1,8 +1,7 @@
 // Convierte la producción narrativa de la Gira y el 75.º (v1.0, borrador) en datos del motor común,
 // sin tocar ni completar su texto. Todo queda en DRAFT_FOR_REVIEW y no se puede jugar.
-//   Fuente: docs/paquetes/gira_75_v1/La_Cosecha_Gira_75_Produccion_Narrativa_v1.md
+//   Fuente: docs/fuentes/Gira_75_Produccion_Narrativa_v1.md
 //   Salida: La_Cosecha_Juego_Android/js/campanas/campana-gira-75.js (no se edita a mano)
-//   Informe: docs/GIRA_75_CORRESPONDENCIAS_Y_PENDIENTES.md
 //   node scripts/importar-gira-75.mjs              → genera los dos
 //   node scripts/importar-gira-75.mjs --comprobar  → falla si no corresponden a la fuente
 // Decisiones de dirección aplicadas (27-11-2026): canon cinematográfico; las escenas 75-07 a 75-15 no son
@@ -12,9 +11,8 @@ import path from 'node:path';
 import { VALOR_ADD, FLAG_DE_VARIABLE, CORRECCIONES, TEXTOS, CRONICA_ARENA_75 } from './gira-75-complemento.mjs';
 
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
-export const FUENTE = 'docs/paquetes/gira_75_v1/La_Cosecha_Gira_75_Produccion_Narrativa_v1.md';
+export const FUENTE = 'docs/fuentes/Gira_75_Produccion_Narrativa_v1.md';
 export const SALIDA = 'La_Cosecha_Juego_Android/js/campanas/campana-gira-75.js';
-export const INFORME = 'docs/GIRA_75_CORRESPONDENCIAS_Y_PENDIENTES.md';
 
 // Escena del documento → ID del repositorio. Se reutilizan los IDs de la estructura anterior cuando la
 // escena corresponde; las que no tienen equivalente reciben un ID nuevo (marcado «nuevo»).
@@ -36,8 +34,6 @@ export const ESCENAS = {
   '75-16': ['75_extraction_awakening', 'nuevo · después de la Arena'],
   '75-17': ['75_district12_destroyed', 'nuevo · después de la Arena'],
 };
-// IDs de la estructura anterior sin escena en este borrador.
-export const SIN_CONTENIDO = ['tour_capitol_return', '75_aftermath_tour', '75_departure', '75_capitol_arrival', '75_prep', '75_private_session'];
 
 // Escenas de Arena → acontecimientos que ya existen en el 75.º (turno de Arena · ID técnico · título actual).
 export const ARENA_75 = [
@@ -218,84 +214,14 @@ export const CRONICA_ARENA_75 = Object.freeze(${JSON.stringify(cronica(md), null
 `;
 }
 
-export function informe(md) {
-  const { gira, c75, arena, despues, escenas } = construir(md);
-  const todas = [...gira.scenes, ...c75.scenes];
-  const L = [];
-  L.push(`# Gira de la Victoria y 75.º · correspondencias y pendientes
-
-Generado con \`node scripts/importar-gira-75.mjs\` desde \`${FUENTE}\` (v1.0, borrador). **Nada de esto es jugable:** estado \`DRAFT_FOR_REVIEW\`.
-
-Decisiones de dirección aplicadas (27-11-2026):
-- **Canon:** manda la continuidad de las películas.
-- **Arena del 75.º:** las escenas 75-07 a 75-15 se reparten dentro de los acontecimientos de Arena que ya existen.
-- **Sin variables nuevas:** se reutilizan las existentes.
-- **Cifras y frases:** las escribe ChatGPT.
-
-Resumen:
-- ${escenas.length} escenas leídas: ${gira.scenes.length} de la Gira, ${c75.scenes.length} de la precampaña del 75.º, ${arena.reduce((n, a) => n + a.escenas.length, 0) - 1} de Arena (75-08 cubre dos acontecimientos) y ${despues.length} posteriores a la Arena.
-
-## 1. Escenas → IDs del repositorio
-| Documento | Título | ID en el juego | Origen del ID |
-|---|---|---|---|
-${escenas.map(e => `| ${e.narrative_id} | ${e.title} | ${ESCENAS[e.narrative_id] ? `\`${ESCENAS[e.narrative_id][0]}\`` : 'Arena (ver 2)'} | ${ESCENAS[e.narrative_id]?.[1] ?? 'acontecimiento existente'} |`).join('\n')}
-
-**IDs de la estructura anterior que se quedan sin escena:** ${SIN_CONTENIDO.map(x => `\`${x}\``).join(', ')}. Se conservan registrados; ¿se retiran o tendrán escena?
-
-## 2. Arena del 75.º: escenas → acontecimientos existentes
-En el juego, la Arena del 75.º tiene **ocho acontecimientos**: tres capítulos en \`campaigns.js\` y cinco eventos en \`app.js\` (esto resuelve la discrepancia de los «ocho acontecimientos»). Se conservan sus IDs técnicos; las escenas amplían su contenido.
-
-**Correspondencia aprobada por la dirección (27-11-2026):** los ocho acontecimientos existentes, tal como figura en esta tabla. No se añaden turnos ni acontecimientos y cada escena amplía solo el acontecimiento de su fila.
-
-| Turno | Acontecimiento existente | ID técnico | Escenas del documento |
-|---|---|---|---|
-${arena.map(a => `| ${a.turno} | ${a.titulo} | ${a.id} | ${a.escenas.join(', ') || '— (sin escena: se mantiene tal cual)'} |`).join('\n')}
-
-Verificación contra el código (27-11-2026):
-- **Wiress · orden correcto.** El descubrimiento del reloj es el turno 5 («El mecanismo del reloj», \`app.js\`), y Wiress muere en el \`pre\` del capítulo del turno 7 («Los charlajos», \`a.kill('Wiress', …)\`). Antes del turno 7 ningún código la mata: su protección de canon dura hasta el turno 7 (\`campaigns.js\`, \`'Wiress':7\`). Por tanto, 75-11 y 75-12 (turno 5) ocurren con Wiress viva. Pendiente de texto: hoy el evento del turno 5 no la nombra; su participación llegará con el texto de 75-11/75-12.
-- **Mags · contradice el canon. Pendiente de texto.** En «La niebla» (turno 4) la opción \`carry\` la salva si \`relationships.victors >= 2\` y la salud es al menos 60 (flag \`magsSaved\`), y el final del 75.º añade «Mags sale viva del Vasallaje». Su protección de canon termina en el turno 4 (\`'Mags Flanagan':4\`). Para cumplir la decisión hay que cambiar el efecto de \`carry\` (Mags muere siempre) y retirar esa línea del final. Eso necesita la frase nueva de la opción, que escribe ChatGPT: no la invento. Hasta entonces el código actual no se toca, porque el 75.º no es jugable en modo historia con el motor nuevo, pero su Arena sí existe hoy.
-- **75-07 · se unifica en las plataformas de agua.** El capítulo del turno 1 ya ocurre en las plataformas y sus opciones son \`finnick\`, \`peeta\` y \`alone\` (armas). El texto de 75-07 (playa: arma, herramienta o Peeta) debe reescribirse para ese contexto. Se conserva el turno 1 sin duplicarlo.
-- **Variables:** \`relationships.victors\` es un entero sin límites (empieza en 0; ±1, ±2 o +3 según la opción) que mide la relación con los vencedores aliados. \`wire_plan_ready\` no existe, pero hay un flag de evento cercano: \`clockPlan\`, que se activa en «El relámpago y el árbol» (\`prepare\`, «Preparar el cable», o \`coordinate\`) y en «La alianza de los vencedores» (\`trust\`), y decide el final \`breakout\`. Es el plan del reloj, no solo el cable: ChatGPT decide si equivale.
-
-## 3. Variables → sistema real
-| Variable del documento | Equivale a | Dónde | Nota |
-|---|---|---|---|
-${Object.entries(VARIABLES).map(([k, v]) => `| \`${k}\` | ${v.ruta ? `\`${v.ruta}\`` : '**sin equivalente**'} | ${v.donde} | ${v.nota} |`).join('\n')}
-
-Las variables **sin equivalente** necesitan que ChatGPT diga qué hacen (valor inicial, rango y efecto en el juego) antes de crear nada.
-
-## 4. Pendientes exactos por escena
-`);
-  for (const s of [...todas, ...despues, ...arena.flatMap(a => a.contenido.filter(Boolean).map(c => ({ ...c, scene_id: `Arena turno ${a.turno}` })))]) {
-    const p = [];
-    for (const o of s.options) {
-      const id = o.option_id || `${s.narrative_id} ${o.letra}`;
-      for (const e of o.effects) if (e.pendiente) p.push(`\`${id}\` (${o.label}): ${e.fuente} → ${e.pendiente}${e.variable && !VARIABLES[e.variable]?.ruta ? `; \`${e.variable}\` sin equivalente` : ''}`);
-      if (!o.efecto_fuente) p.push(`\`${id}\` (${o.label}): sin efecto escrito`);
-      if (o.echo_note) p.push(`\`${id}\`: eco solo descrito («${limpio(o.echo_note)}»), falta la frase`);
-      p.push(`\`${id}\`: falta la respuesta inmediata`);
-      if (!o.journal_text) p.push(`\`${id}\`: falta su frase de diario (solo hay la base de la escena)`);
-    }
-    if (s.journal_variation_note && !/^Sin variación/.test(s.journal_variation_note)) p.push(`Diario: la variación está descrita («${limpio(s.journal_variation_note)}»), falta la frase`);
-    if (!s.journal_base) p.push('Diario: falta la entrada base');
-    L.push(`### ${s.narrative_id} · ${s.title}${s.scene_id ? ` (\`${s.scene_id}\`)` : ''}\n${p.map(x => `- ${x}`).join('\n') || '- Nada pendiente'}\n`);
-  }
-  L.push(`## 5. Antes de activar
-1. ChatGPT completa todo lo anterior: cifras, condiciones, respuestas, frases del diario y comportamiento de las variables sin equivalente.
-2. Tú apruebas la Gira y el 75.º.
-3. Claude regenera los datos, integra la Arena en los acontecimientos existentes (sin añadir ninguno) y añade las pruebas de continuidad 74 → Gira → 75 y de carga.
-`);
-  return L.join('\n');
-}
-
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname)) {
   const md = fs.readFileSync(path.join(root, FUENTE), 'utf8');
-  const salidas = [[SALIDA, generar(md)], [INFORME, informe(md)]];
+  const salidas = [[SALIDA, generar(md)]];
   if (process.argv.includes('--comprobar')) {
     for (const [f, t] of salidas) if (!fs.existsSync(path.join(root, f)) || fs.readFileSync(path.join(root, f), 'utf8') !== t) { console.error(`${f} no corresponde a la fuente: ejecuta node scripts/importar-gira-75.mjs`); process.exit(1); }
-    console.log('Gira y 75.º: datos e informe idénticos a la fuente');
+    console.log('Gira y 75.º: datos idénticos a la fuente');
   } else {
     for (const [f, t] of salidas) fs.writeFileSync(path.join(root, f), t);
-    console.log(`Generados ${SALIDA} y ${INFORME}`);
+    console.log(`Generado ${SALIDA}`);
   }
 }

@@ -2,7 +2,6 @@
 //   versionName = versión del juego, p. ej. "4.9.0"
 //   versionCode = MAYOR*10000 + MENOR*100 + PARCHE, p. ej. 4.9.0 → 40900
 // Se ejecuta después de `npx cap add android` y antes de compilar con Gradle.
-// Criterio completo: docs/VERSIONADO.md.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

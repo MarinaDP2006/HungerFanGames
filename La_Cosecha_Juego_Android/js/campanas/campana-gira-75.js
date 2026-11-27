@@ -1,11 +1,11 @@
-// GENERADO por scripts/importar-gira-75.mjs desde docs/paquetes/gira_75_v1/La_Cosecha_Gira_75_Produccion_Narrativa_v1.md.
+// GENERADO por scripts/importar-gira-75.mjs desde docs/fuentes/Gira_75_Produccion_Narrativa_v1.md.
 // No editar a mano. *_BORRADOR: el documento tal cual. GIRA y CAMPANA_75: versiones jugables con el complemento.
 export const GIRA_BORRADOR = Object.freeze({
  "campaign_id": "campaign_gira",
  "title": "Gira de la Victoria",
  "status": "DRAFT_FOR_REVIEW",
  "source_version": "gira-75-narrativa-1.0",
- "source_ref": "docs/paquetes/gira_75_v1/La_Cosecha_Gira_75_Produccion_Narrativa_v1.md",
+ "source_ref": "docs/fuentes/Gira_75_Produccion_Narrativa_v1.md",
  "canon": "cinematográfico",
  "scenes": [
   {
@@ -816,7 +816,7 @@ export const CAMPANA_75_BORRADOR = Object.freeze({
  "title": "75.º Vasallaje de los Veinticinco · precampaña",
  "status": "DRAFT_FOR_REVIEW",
  "source_version": "gira-75-narrativa-1.0",
- "source_ref": "docs/paquetes/gira_75_v1/La_Cosecha_Gira_75_Produccion_Narrativa_v1.md",
+ "source_ref": "docs/fuentes/Gira_75_Produccion_Narrativa_v1.md",
  "canon": "cinematográfico",
  "scenes": [
   {
@@ -2514,7 +2514,7 @@ export const GIRA = Object.freeze({ ...{
  "title": "Gira de la Victoria",
  "status": "APPROVED",
  "source_version": "gira-75-narrativa-1.0+complemento-1",
- "source_ref": "docs/paquetes/gira_75_v1/La_Cosecha_Gira_75_Produccion_Narrativa_v1.md",
+ "source_ref": "docs/fuentes/Gira_75_Produccion_Narrativa_v1.md",
  "approval": "Completado por Claude el 27-11-2026; aprobación de Nina en el PR",
  "transfer_id": "campaign_gira:v1",
  "next": "campaign_75",
@@ -3013,7 +3013,7 @@ export const CAMPANA_75 = Object.freeze({ ...{
  "title": "75.º Vasallaje de los Veinticinco · precampaña",
  "status": "APPROVED",
  "source_version": "gira-75-narrativa-1.0+complemento-1",
- "source_ref": "docs/paquetes/gira_75_v1/La_Cosecha_Gira_75_Produccion_Narrativa_v1.md",
+ "source_ref": "docs/fuentes/Gira_75_Produccion_Narrativa_v1.md",
  "approval": "Completado por Claude el 27-11-2026; aprobación de Nina en el PR",
  "transfer_id": "campaign_75:v1",
  "next": null,

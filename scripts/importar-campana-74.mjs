@@ -1,6 +1,6 @@
 // Genera los datos jugables del 74.º a partir de la fuente creativa, sin tocar ni completar su texto.
-//   Fuente (escenas 1.0): docs/paquetes/entrega_maestra_v1/00_FUENTES_APROBADAS/74_v1/narrativa/74_PreArena_11_Escenas_v1.md
-//   Anexo 1.1 (respuestas, diario, ecos): docs/paquetes/74_anexo_1_1/74_Diario_Respuestas_y_Transferencia_Arena_v1_1.md
+//   Fuente (escenas 1.0): docs/fuentes/74_PreArena_11_Escenas_v1.md
+//   Anexo 1.1 (respuestas, diario, ecos): docs/fuentes/74_Diario_Respuestas_y_Transferencia_Arena_v1_1.md
 //   Salida: La_Cosecha_Juego_Android/js/campanas/campana-74.js (no se edita a mano)
 //   node scripts/importar-campana-74.mjs              → genera
 //   node scripts/importar-campana-74.mjs --comprobar  → falla si la salida no corresponde a la fuente
@@ -10,11 +10,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
-export const FUENTE = 'docs/paquetes/entrega_maestra_v1/00_FUENTES_APROBADAS/74_v1/narrativa/74_PreArena_11_Escenas_v1.md';
+export const FUENTE = 'docs/fuentes/74_PreArena_11_Escenas_v1.md';
 export const SALIDA = 'La_Cosecha_Juego_Android/js/campanas/campana-74.js';
-export const ANEXO = 'docs/paquetes/74_anexo_1_1/74_Diario_Respuestas_y_Transferencia_Arena_v1_1.md';
+export const ANEXO = 'docs/fuentes/74_Diario_Respuestas_y_Transferencia_Arena_v1_1.md';
 // Revisión creativa de ChatGPT (27-11-2026): ecos completos y decisiones sobre las nueve preguntas.
-export const REVISION = 'docs/paquetes/74_revision_chatgpt/La_Cosecha_Respuesta_Revision_74_y_Correspondencias_Gira_75_v1.md';
+export const REVISION = 'docs/fuentes/74_Revision_y_Ecos_v1.md';
 // Dónde se muestra cada eco de la revisión. La revisión da el momento en palabras; aquí se fija la escena.
 // confirmado: la revisión nombra la escena o el lugar sin ambigüedad. false: interpretación técnica, a confirmar.
 export const UBICACION_ECOS = {

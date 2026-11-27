@@ -1,6 +1,6 @@
 // Registro de precampañas del motor común. Solo se juegan las que tienen estado APPROVED.
 import { CAMPANA_74 } from './campana-74.js';
-// La Gira y el 75.º jugables se generan con scripts/importar-gira-75.mjs (estructuras.js queda como referencia).
+// La Gira y el 75.º jugables se generan con scripts/importar-gira-75.mjs.
 import { GIRA, CAMPANA_75, CRONICA_ARENA_75 } from './campana-gira-75.js';
 export const cronicaArena75 = turno => CRONICA_ARENA_75[turno] || null;
 import { JUGABLE } from '../precampana.js';

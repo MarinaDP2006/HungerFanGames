@@ -6,7 +6,7 @@ on:
     paths:
       - 'La_Cosecha_Juego_Android/**'
       - 'compartido/**'
-      - 'docs/paquetes/**'
+      - 'docs/fuentes/**'
       - 'scripts/**'
       - '.github/workflows/android-apk.yml'
 
@@ -121,7 +121,7 @@ jobs:
             mkdir -p ~/.android && echo "$KEYSTORE_B64" | base64 -d > ~/.android/debug.keystore
             echo "APK firmado con la clave de depuración estable del repositorio"
           else
-            echo "::warning::Sin ANDROID_DEBUG_KEYSTORE_B64: cada compilación se firma con una clave distinta y no se puede instalar encima de la anterior (hay que desinstalar y se pierden las partidas). Guía: La_Cosecha_Juego_Android/docs/FIRMA_APK.md"
+            echo "::warning::Sin ANDROID_DEBUG_KEYSTORE_B64: cada compilación se firma con una clave distinta y no se puede instalar encima de la anterior (hay que desinstalar y se pierden las partidas)."
           fi
       - run: cd android && chmod +x gradlew && ./gradlew assembleDebug --no-daemon
       - name: Comprobar el APK

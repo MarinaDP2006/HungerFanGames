@@ -6,7 +6,6 @@ import * as PC from '../js/precampana.js';
 import * as PCI from '../js/campanas/indice.js';
 import * as DEC from '../js/decisiones.js';
 import { CAMPANA_74 } from '../js/campanas/campana-74.js';
-import { GIRA, CAMPANA_75 } from '../js/campanas/estructuras.js';
 import { generar, parse, parseAnexo, parseRevision, FUENTE, SALIDA, ANEXO, REVISION, ENMIENDAS } from '../../scripts/importar-campana-74.mjs';
 
 const root = new URL('../../', import.meta.url);
@@ -113,13 +112,8 @@ test('74.º, Gira y 75.º se juegan; el 75.º empieza por la Gira y la Gira enca
   assert.equal(PCI.siguiente(PCI.campanaJugable(75)), null);
   for (const c of [PCI.campanaJugable('gira'), PCI.campanaJugable(75)]) assert.deepEqual(PC.validateCampaign(c), [], c.campaign_id);
   assert.equal(PCI.campanaJugable(50), null, 'el 50.º no pasa por el motor común');
-  for (const c of [GIRA, CAMPANA_75]) {
-    assert.equal(c.status, 'STRUCTURE_ONLY');
-    assert.ok(c.scenes.every(s => s.text === null && s.options.length === 0 && s.status === 'BLOCKED_CREATIVE'), c.campaign_id);
-    assert.deepEqual(PC.validateCampaign(c), []);
-  }
-  assert.equal(GIRA.scenes.length, 7);
-  assert.equal(CAMPANA_75.scenes.length, 10);
+  assert.equal(PCI.campanaJugable('gira').scenes.length, 8);
+  assert.equal(PCI.campanaJugable(75).scenes.length, 6);
 });
 
 test('motor: recorre las once escenas con cada una de las tres opciones y aplica sus efectos', () => {
