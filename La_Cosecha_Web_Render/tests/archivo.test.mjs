@@ -139,3 +139,7 @@ test('la página Acerca muestra el aviso de proyecto fan y la leyenda de estados
 test('todas las imágenes tienen texto alternativo', () => {
   for (const r of todas()) for (const m of V.render(V.parseRuta('/' + r), {}).matchAll(/<img [^>]*>/g)) assert.match(m[0], /alt="[^"]+"/, r);
 });
+
+test('404.html es una copia de index.html: las direcciones profundas (/distritos/12) abren el Archivo aunque el servidor no tenga la regla de reescritura', () => {
+  assert.equal(read('404.html'), read('index.html'));
+});

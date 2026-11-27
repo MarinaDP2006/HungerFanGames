@@ -1,6 +1,7 @@
 # Changelog
 
 ## Archivo de Panem 1.4 — Navegación inmersiva
+- **Direcciones profundas en Render:** `404.html` es una copia de `index.html`, de modo que abrir o recargar `/distritos/12` muestra el Archivo aunque el servicio no tenga la regla de reescritura.
 - **Volver:**
   - cada página tiene un botón «← Volver» que retrocede en el historial si llegaste desde el Archivo y, si no, sube al nivel anterior;
   - la tecla Escape hace lo mismo.
