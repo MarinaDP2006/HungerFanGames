@@ -38,6 +38,9 @@ const AUDIO_CONSERVADO = ['assets/audio/ambiente-capitolio-original.ogg'];
 for (const f of AUDIO_CONSERVADO) include.add(f);
 // Imágenes propias (fondos y retratos que Nina añade a mano): viajan todas las que haya.
 if (exists('imagenes-propias')) for (const f of walk('imagenes-propias')) if (/\.(jpe?g|png|webp)$/i.test(f)) include.add(f);
+// Retratos de personajes: se suben una sola vez, en la carpeta de la web, y se copian también al APK.
+const RETRATOS_WEB = path.join(root, '..', 'La_Cosecha_Web_Render', 'imagenes-propias', 'personajes');
+const retratosWeb = fs.existsSync(RETRATOS_WEB) ? fs.readdirSync(RETRATOS_WEB).filter(f => /\.(jpe?g|png|webp)$/i.test(f)) : [];
 const html = read('index.html');
 
 // 2. Hojas de estilo enlazadas.
@@ -82,6 +85,10 @@ fs.rmSync(out, { recursive: true, force: true });
 for (const f of include) {
   fs.mkdirSync(path.join(out, path.dirname(f)), { recursive: true });
   fs.copyFileSync(path.join(root, f), path.join(out, f));
+}
+if (retratosWeb.length) {
+  fs.mkdirSync(path.join(out, 'imagenes-propias', 'personajes'), { recursive: true });
+  for (const f of retratosWeb) fs.copyFileSync(path.join(RETRATOS_WEB, f), path.join(out, 'imagenes-propias', 'personajes', f));
 }
 
 const left = [...walk('js'), ...walk('assets'), ...walk('css')].filter(f => !include.has(f));

@@ -19,3 +19,6 @@ Sube aquí tus fondos con el **nombre exacto** y saldrán solos en su pantalla, 
 | `presidente.jpg` | Modo Presidente |
 | `final-victoria.jpg` | Final si sobrevives |
 | `final-derrota.jpg` | Final si mueres |
+
+## Retratos de personajes
+No hace falta subirlos aquí: el juego usa los mismos que la web (`La_Cosecha_Web_Render/imagenes-propias/personajes/`). Al compilar el APK se copian solos y salen en la lista de tributos del modo Historia.

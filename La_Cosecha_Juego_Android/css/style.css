@@ -89,3 +89,8 @@ body{zoom:var(--text-scale,1)}
 /* Fondos propios (imagenes-propias/juego): capa fija detrás de la interfaz, oscurecida para que se lea el texto */
 html[data-fondo]:not([data-fondo=""]) body::before{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(180deg,#090807cc,#090807e6 55%,#090807f5),var(--fondo-propio) center/cover no-repeat;pointer-events:none}
 html[data-fondo]:not([data-fondo=""]) body{background:#090807}
+
+/* Retratos propios en la lista de tributos: tapan la marca del distrito si existen */
+.canon-mark.con-propia{position:relative;overflow:hidden}
+.canon-mark img.propia{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s}
+.canon-mark img.propia.ok{opacity:1}
