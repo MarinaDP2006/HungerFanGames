@@ -1,5 +1,17 @@
 # Changelog
 
+## 4.22 — Pantalla de título de videojuego
+- **Menú principal nuevo:** pantalla de título con sello, logo «LA COSECHA» en oro y menú vertical de mando con icono y subtítulo:
+  - Historia;
+  - Libre;
+  - Presidente;
+  - Cargar;
+  - Códice;
+  - Ajustes.
+
+  Nada que ver con la portada de revista de la web.
+- **Rendimiento en WebView:** sin capas de mezcla, desenfoques ni animaciones continuas a pantalla completa. La música no se carga hasta el primer toque.
+
 ## 4.21 — Efectos de sonido y diálogos del 74.º
 - **Efectos de interfaz sintetizados (sin archivos):**
   - confirmar (decisiones y botones principales), volver, seleccionar (acciones, sectores y armas) y clic;

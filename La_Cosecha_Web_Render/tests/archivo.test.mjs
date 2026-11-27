@@ -11,12 +11,12 @@ import { districts, characters, canonEditions } from '../js/data.js';
 const web = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const read = f => fs.readFileSync(path.join(web, f), 'utf8');
 const todas = () => [
-  '', 'distritos', 'capitolio', 'personajes', 'juegos', 'cronologia', 'gira', 'rebelion-y-guerra', 'lugares', 'galeria', 'documentos', 'acerca',
+  '', 'distritos', 'capitolio', 'personajes', 'juegos', 'cronologia', 'gira', 'rebelion-y-guerra', 'lugares', 'galeria', 'documentos',
   ...districts.map(d => `distritos/${d.id}`), ...A.PERSONAJES.map(c => `personajes/${c.slug}`), ...A.EDICIONES.map(e => `juegos/${e.year}`),
 ];
 
 test('menú definitivo, en su orden y sin Novedades', () => {
-  assert.deepEqual(V.SECCIONES.map(s => s.label), ['Inicio', 'Distritos', 'Capitolio', 'Personajes', 'Juegos', 'Cronología', 'Gira de la Victoria', 'Rebelión y Guerra', 'Lugares', 'Galería', 'Documentos', 'Acerca']);
+  assert.deepEqual(V.SECCIONES.map(s => s.label), ['Inicio', 'Distritos', 'Capitolio', 'Personajes', 'Juegos', 'Cronología', 'Gira de la Victoria', 'Rebelión y Guerra', 'Lugares', 'Galería', 'Documentos']);
   assert.match(V.render(V.parseRuta('/novedades')), /Expediente no encontrado/);
 });
 
@@ -78,7 +78,7 @@ test('vencedores: los marcadores genéricos no se muestran como personas', () =>
 });
 
 test('todas las secciones tienen contenido: no queda ningún aviso de pendiente', () => {
-  for (const s of ['', 'distritos', 'capitolio', 'personajes', 'juegos', 'cronologia', 'gira', 'rebelion-y-guerra', 'lugares', 'galeria', 'documentos', 'acerca']) {
+  for (const s of ['', 'distritos', 'capitolio', 'personajes', 'juegos', 'cronologia', 'gira', 'rebelion-y-guerra', 'lugares', 'galeria', 'documentos']) {
     const h = V.render({ seccion: s }, {});
     assert.doesNotMatch(h, /data-pendiente=|[Pp]endiente de contenido|guion aprobado/, s || 'inicio');
   }
@@ -128,12 +128,10 @@ test('cada ficha de distrito y de personaje muestra su estado de canon y su fuen
   assert.deepEqual(districts.map(d => d.district_id), districts.map(d => `district_${String(d.id).padStart(2, '0')}`));
 });
 
-test('la página Acerca muestra el aviso de proyecto fan y la leyenda de estados de canon', () => {
-  const h = V.render({ seccion: 'acerca' });
-  assert.match(h, /proyecto fan no oficial/);
-  assert.match(h, /No está afiliado/);
-  for (const t of ['Hecho canónico', 'Compatible con el canon', 'Interpretación del proyecto', 'Ruta alternativa', 'Sin clasificar']) assert.ok(h.includes(t), t);
-  assert.doesNotMatch(read('index.html'), /<footer/, 'sin pie de página: el aviso queda en Acerca');
+test('sin página Acerca ni pie de página', () => {
+  assert.ok(!V.SECCIONES.some(s => s.id === 'acerca'));
+  assert.match(V.render({ seccion: 'acerca' }), /no existe|no encontrada|No encontr/i);
+  assert.doesNotMatch(read('index.html'), /<footer/);
 });
 
 test('todas las imágenes tienen texto alternativo', () => {

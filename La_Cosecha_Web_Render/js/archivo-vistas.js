@@ -17,7 +17,6 @@ export const SECCIONES = [
   { id: 'lugares', label: 'Lugares' },
   { id: 'galeria', label: 'Galería' },
   { id: 'documentos', label: 'Documentos' },
-  { id: 'acerca', label: 'Acerca' },
 ];
 
 // «#/distritos/12» → { seccion: 'distritos', id: '12' }
@@ -60,26 +59,39 @@ function portada() {
     ['Juegos', A.EDICIONES.length, 'juegos'],
     ['Ilustraciones', A.GALERIA.length, 'galeria'],
   ];
+  const DESC = {
+    distritos: 'Trece expedientes: territorio, vida y símbolos de cada distrito.', capitolio: 'La capital de Panem y su maquinaria de espectáculo.',
+    personajes: 'Tributos, vencedores, mentores y rebeldes.', juegos: 'Los 74.º Juegos y el 75.º Vasallaje.',
+    cronologia: 'De los Días Oscuros al fin de los Juegos.', gira: 'Seis meses después: el país empieza a arder.',
+    'rebelion-y-guerra': 'Del Sinsajo a la caída del Capitolio.', lugares: 'Arenas, plazas, trenes y fortalezas.',
+    galeria: 'Ilustraciones originales del proyecto.', documentos: 'Bandos, comunicados y registros.',
+  };
+  const fondo = A.GALERIA.find(g => /arena/i.test(g.titulo)) || A.GALERIA[0];
   return `
-  <section class="portada">
-    <div class="portada-texto">
-      <p class="antetitulo">Proyecto fan no oficial · Registro del universo de La Cosecha</p>
-      <h1>Archivo de Panem</h1>
-      <p class="entradilla">Consulta los distritos, el Capitolio, los personajes, las ediciones de los Juegos y los lugares que forman el mundo de La Cosecha. Cada ficha indica si lo que cuenta aparece en las películas o es una lectura propia del proyecto.</p>
-      <ul class="cifras">${cifras.map(([t, n, s]) => `<li><a href="${enlace(s)}"><b>${n}</b><span>${esc(t)}</span></a></li>`).join('')}</ul>
+  <section class="heroe" aria-label="Portada">
+    <picture class="heroe-fondo"><source srcset="${esc(fondo.src)}" type="image/webp"><img src="${esc(fondo.fallback)}" alt="${esc(fondo.titulo)} · ilustración del proyecto" fetchpriority="high" decoding="async"></picture>
+    <div class="heroe-texto">
+      <p class="heroe-pre">Archivo de Panem · Registro fan no oficial</p>
+      <h1>Panem<span>recuerda</span></h1>
+      <p class="heroe-entradilla">El mundo de Katniss Everdeen, expediente a expediente: distritos, personajes, Juegos, guerra y los lugares donde todo ocurrió.</p>
+      <div class="heroe-botones"><a class="boton boton-claro" href="${enlace('distritos')}">Explorar los distritos</a><a class="boton boton-linea" href="${enlace('cronologia')}">Ver la cronología</a></div>
     </div>
-    ${imagen(A.GALERIA[0], 'portada-imagen', 'eager')}
+    <button class="heroe-bajar" type="button" data-bajar aria-label="Bajar al índice">↓</button>
+    <ul class="cifras heroe-cifras">${cifras.map(([t, n, s]) => `<li><a href="${enlace(s)}"><b>${n}</b><span>${esc(t)}</span></a></li>`).join('')}</ul>
   </section>
-  <section class="indice" aria-label="Secciones del archivo">
-    ${SECCIONES.slice(1).map((s, i) => `<a class="indice-item" href="${enlace(s.id)}"><span class="indice-num">${String(i + 1).padStart(2, '0')}</span><span>${esc(s.label)}</span></a>`).join('')}
+  <section class="indice-grande revela" id="indice-portada" aria-label="Secciones del archivo">
+    ${SECCIONES.slice(1).map((s, i) => `<a class="indice-item" href="${enlace(s.id)}"><span class="indice-num">${String(i + 1).padStart(2, '0')}</span><span class="indice-titulo">${esc(s.label)}</span><span class="indice-desc">${esc(DESC[s.id] || '')}</span><span class="indice-flecha" aria-hidden="true">→</span></a>`).join('')}
   </section>
-  <section class="bloque">
+  <section class="franja-distritos revela" aria-label="Distritos">
+    ${A.DISTRITOS.map(d => `<a href="${enlace('distritos', d.id)}" style="--c:${esc(d.color)}"><b>${d.id}</b><span>${esc(d.industry)}</span></a>`).join('')}
+  </section>
+  <section class="bloque revela">
     <h2>Juegos registrados</h2>
     <ol class="lista-ediciones">${A.EDICIONES.map(e => `<li><a href="${enlace('juegos', e.year)}"><span class="anio">Año ${e.year}</span><span>${esc(e.title)}</span></a></li>`).join('')}</ol>
   </section>
   <section class="bloque juego">
     <h2>El videojuego</h2>
-    <p>La Cosecha es también un videojuego para Android, en desarrollo. El Archivo es un sitio de consulta: aquí no se juega ni se guardan partidas. <a href="/acerca">Acerca del proyecto</a></p>
+    <p>La Cosecha es también un videojuego para Android, en desarrollo. El Archivo es un sitio de consulta: aquí no se juega ni se guardan partidas.</p>
   </section>`;
 }
 
@@ -226,25 +238,6 @@ function rebelion() {
   <dl class="datos">${canon({ canon_status: C.REBELION.canon, source_ref: C.FUENTE_PELICULAS })}</dl>${relato('rebelion', C.REBELION.fases)}`;
 }
 
-function acerca() {
-  return `${migas(['Acerca'])}${cabecera('Archivo de Panem', 'Acerca del proyecto')}
-  <section class="bloque">
-    <p>El Archivo de Panem es la parte de consulta de <b>La Cosecha</b>, un proyecto fan no oficial y sin ánimo de lucro. Reúne los distritos, personajes, Juegos y lugares que aparecen en el videojuego.</p>
-    <p>No está afiliado a los titulares de los derechos de la saga ni cuenta con su respaldo. Los nombres de la saga se usan como referencia. Las ilustraciones del Archivo son originales del proyecto; no se reproducen imágenes de las películas.</p>
-    <p>El videojuego se desarrolla aparte, para Android. En el Archivo no se juega ni se guardan partidas.</p>
-  </section>
-  <section class="bloque"><h2>Cómo leer las fichas</h2>
-    <dl class="datos">
-      <div><dt>Hecho canónico</dt><dd>Establecido en la saga.</dd></div>
-      <div><dt>Compatible con el canon</dt><dd>Detalle del proyecto que no contradice la saga.</dd></div>
-      <div><dt>Interpretación del proyecto</dt><dd>Lectura propia de La Cosecha.</dd></div>
-      <div><dt>Ruta alternativa</dt><dd>Lo que cambia por las decisiones del videojuego; no forma parte del canon.</dd></div>
-      <div><dt>Sin clasificar</dt><dd>Ficha aún sin revisar.</dd></div>
-    </dl>
-    <p class="nota">Los textos del Archivo son resúmenes originales del proyecto; no reproducen diálogos ni pasajes de las obras. Los documentos marcados como «Interpretación del proyecto» son recreaciones propias.</p>
-  </section>`;
-}
-
 function documentos() {
   return `${migas(['Documentos'])}${cabecera('Archivo documental', 'Documentos y acontecimientos', 'Bandos, comunicados y registros de Panem.')}
   <div class="documentos">${C.DOCUMENTOS.map(d => `<article class="documento" id="${esc(d.id)}"><header><p class="antetitulo">${esc(d.tipo)} · ${esc(d.fecha)}</p><h2>${esc(d.titulo)}</h2></header>${parrafos(d.texto)}${etiquetaCanon(d.canon)}</article>`).join('')}</div>`;
@@ -260,7 +253,7 @@ function noEncontrado() {
   return `${cabecera('Archivo de Panem', 'Expediente no encontrado', 'No hay ninguna ficha en esa dirección.')}<p><a href="/">Volver al inicio</a></p>`;
 }
 
-const VISTAS = { '': portada, distritos, capitolio, personajes, juegos: ediciones, cronologia, gira, 'rebelion-y-guerra': rebelion, lugares, galeria, documentos, acerca };
+const VISTAS = { '': portada, distritos, capitolio, personajes, juegos: ediciones, cronologia, gira, 'rebelion-y-guerra': rebelion, lugares, galeria, documentos };
 
 export function render(ruta, filtros) {
   const v = VISTAS[ruta.seccion];
