@@ -93,7 +93,10 @@ try {
   check('50.º: cuatro escenas jugadas y guardado automático en la ranura 1', scenes.length === 4 && slot1, scenes.join(' → '));
   await snap('50-precampana');
 
-  // 5. Reinicio completo de la app
+  // 5. Reinicio completo de la app. Se manda la app a segundo plano y se espera a que el WebView
+  // escriba localStorage en disco antes de matarla (Chromium lo guarda con unos segundos de retraso).
+  await device.shell('input keyevent KEYCODE_HOME');
+  await new Promise(r => setTimeout(r, 6000));
   page = await launch();
   const after = await page.evaluate(() => ({ prefs: JSON.parse(localStorage.getItem('laCosechaSettings')), reduce: document.documentElement.classList.contains('reduce-motion'), scale: getComputedStyle(document.documentElement).getPropertyValue('--text-scale').trim() }));
   check('Tras reiniciar: los ajustes persisten y se aplican', after.reduce && after.scale === '1.15' && after.prefs?.volume === 0.4, JSON.stringify(after));
