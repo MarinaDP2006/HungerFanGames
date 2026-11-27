@@ -110,6 +110,8 @@ export function createAudioDirector({ asignacion = ASIGNACION, cues = CUES, crea
       const vol = volumenCanal(getPrefs(), c, pista);
       const k = canal[c];
       if (!pista || vol === 0) { parar(c); continue; }
+      // No se crea ni se descarga ningún audio hasta el primer toque del jugador.
+      if (!desbloqueado) { parar(c); continue; }
       if (!k.actual || k.actual.src !== pista.src) {
         parar(c);
         try { k.audio = crearAudio(pista.src); k.audio.loop = pista.bucle !== false; k.actual = pista; } catch { k.audio = null; continue; }

@@ -185,6 +185,8 @@ try {
   check('Borrar partida pide confirmación y borra solo esa ranura', warned && gone);
 } catch (e) {
   check('Recorrido sin excepciones', false, e.message);
+  // Para diagnosticar: registro del sistema (cierres de la app o del WebView).
+  try { fs.writeFileSync(path.join(OUT, 'logcat.txt'), (await device.shell('logcat -d -t 1500')).toString()); } catch {}
   await snap('error').catch(() => {});
 }
 
