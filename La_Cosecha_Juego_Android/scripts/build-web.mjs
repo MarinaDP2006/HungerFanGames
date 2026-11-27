@@ -94,7 +94,7 @@ if (retratosWeb.length) {
 // Compatibilidad con WebView antiguos de Android (Chrome 61+, el mínimo de Capacitor): se traducen ??=, ?. y ??
 // a JavaScript que entienden. El código fuente no cambia; solo la copia del APK.
 let esbuild = null;
-try { esbuild = await import('esbuild'); } catch { if (process.env.CI) throw new Error('Falta esbuild: ejecuta npm install'); console.warn('Aviso: sin esbuild, el JS del APK no se adapta a WebView antiguos'); }
+try { esbuild = await import('esbuild'); } catch { if (process.env.REQUIERE_ESBUILD) throw new Error('Falta esbuild: ejecuta npm install'); console.warn('Aviso: sin esbuild, el JS del APK no se adapta a WebView antiguos'); }
 if (esbuild) for (const f of include) if (/\.js$/.test(f)) {
   const dest = path.join(out, f);
   fs.writeFileSync(dest, esbuild.transformSync(fs.readFileSync(dest, 'utf8'), { target: 'chrome61', format: 'esm', charset: 'utf8', legalComments: 'none' }).code);
