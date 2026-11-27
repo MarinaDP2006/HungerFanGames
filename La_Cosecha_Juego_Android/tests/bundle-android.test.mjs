@@ -65,7 +65,8 @@ test('el bundle contiene la entrada y todos los módulos que importa app.js', ()
 });
 test('service worker de Android: caché propia y precarga de los módulos del 50.º y del OGG', () => {
   const id = sw.match(/const CACHE='([^']+)'/)[1];
-  assert.equal(id, 'la-cosecha-android-v5-0');
+  const version = JSON.parse(fs.readFileSync(path.join(app, 'package.json'), 'utf8')).version;
+  assert.equal(id, `la-cosecha-android-${version}`, 'la caché va ligada a la versión del juego');
   const web = fs.readFileSync(path.join(app, '../La_Cosecha_Web_Render/sw.js'), 'utf8').match(/const CACHE='([^']+)'/)[1];
   assert.notEqual(id, web, 'distinto de la caché de la Web');
   for (const f of ['./js/campaign-50th-prearena.js', './js/campaign-50th-dynamic-adapter.js', `./${OGG}`]) assert.ok(sw.includes(`'${f}'`), f);

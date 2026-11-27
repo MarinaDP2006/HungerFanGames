@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.9 — Fase 1: base técnica (Android)
+- Versión única: `package.json` es la fuente; la app muestra la versión en el pie, el service worker usa `la-cosecha-android-<versión>` y el APK recibe `versionName`/`versionCode` (criterio en `docs/VERSIONADO.md`).
+
 ## 4.8 — Presidencia, APK y pruebas
 - Presidencia (`js/presidency.js`): cada orden muestra su efecto real (antes todas decían lo mismo), en verde, rojo o ámbar según convenga.
 - Presidencia: 9 crisis con decisión obligatoria cada 3 días (sinsajo en los muros, huelga en el 8, hambre en el 11, Vigilante Jefe, señales del 13, vencedor incómodo, abusos en el 12, malestar en el Capitolio, refugiados). Ninguna se repite en un mandato.

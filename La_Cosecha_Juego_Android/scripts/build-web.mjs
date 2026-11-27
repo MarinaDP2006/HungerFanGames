@@ -25,6 +25,12 @@ const walk = d => fs.readdirSync(path.join(root, d)).flatMap(f => {
 });
 const norm = (from, ref) => path.posix.normalize(path.posix.join(path.posix.dirname(from), ref.replace(/^\.\//, '')));
 
+// La versión visible (js/version.js) y la del caché del service worker deben coincidir con package.json.
+const pkgVersion = JSON.parse(read('package.json')).version;
+const jsVersion = read('js/version.js').match(/GAME_VERSION\s*=\s*'([^']+)'/)?.[1];
+if (jsVersion !== pkgVersion) throw new Error(`build-web: js/version.js dice ${jsVersion} y package.json ${pkgVersion}`);
+if (!read('sw.js').includes(`const CACHE='la-cosecha-android-${pkgVersion}'`)) throw new Error(`build-web: el identificador de caché de sw.js no corresponde a la versión ${pkgVersion}`);
+
 const include = new Set(['index.html', 'manifest.webmanifest', 'sw.js']);
 const html = read('index.html');
 
