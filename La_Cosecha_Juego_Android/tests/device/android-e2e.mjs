@@ -13,6 +13,7 @@ fs.mkdirSync(OUT, { recursive: true });
 const version = JSON.parse(fs.readFileSync('La_Cosecha_Juego_Android/package.json', 'utf8')).version;
 const results = [];
 const errors = [];
+const staleBoots = [];
 let shot = 0;
 
 const check = (name, ok, detail = '') => { results.push({ name, ok: !!ok, detail: String(detail) }); console.log(`${ok ? '✓' : '✗'} ${name}${detail ? ' · ' + detail : ''}`); };
@@ -40,6 +41,13 @@ async function launch() {
   page.on('console', m => { if (m.type() === 'error') errors.push(`console: ${m.text()}`); });
   page.on('dialog', d => d.accept().catch(() => {}));
   await page.waitForSelector('#game-version:not(:empty)', { timeout: 120000 });
+  // Tras actualizar desde 4.9, el primer arranque puede mostrar la versión vieja (su service worker con caché)
+  // hasta que el nuevo la retira y recarga. Se anota cuánto tarda en verse la versión instalada.
+  const t0 = Date.now();
+  const first = await page.textContent('#game-version');
+  await page.waitForFunction(v => document.querySelector('#game-version')?.textContent.includes(v), version, { timeout: 60000 }).catch(() => {});
+  if (!first.includes(version)) staleBoots.push(`${first} → ${await page.textContent('#game-version').catch(() => '?')} en ${Date.now() - t0} ms`);
+  await page.waitForSelector('[data-a="story"]', { timeout: 60000 });
   return page;
 }
 // Copia nativa (SharedPreferences de Capacitor). El APK de depuración permite leerla con run-as.
@@ -87,6 +95,8 @@ try {
   } else {
     results.push({ name: 'Actualización desde la versión anterior', ok: true, detail: 'no se ejecutó (no hay APK anterior en esta ejecución)' });
   }
+
+  if (staleBoots.length) results.push({ name: 'Primer arranque tras actualizar: la versión vieja se retiró sola', ok: true, detail: staleBoots.join(' · ') });
 
   // 2. Navegación por los modos y vuelta al inicio
   for (const [a, expect] of [['story', 'ELIGE TU CAMPAÑA'], ['free', 'CONFIGURA LOS JUEGOS'], ['president', 'PRESIDENTE'], ['codex', 'CÓDICE']]) {

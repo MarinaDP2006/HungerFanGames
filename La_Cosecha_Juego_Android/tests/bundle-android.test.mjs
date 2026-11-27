@@ -63,15 +63,20 @@ test('el bundle contiene la entrada y todos los módulos que importa app.js', ()
   assert.ok(imports.includes('campaign-50th-prearena.js') && imports.includes('campaign-50th-dynamic-adapter.js'));
   for (const m of imports) assert.ok(fs.existsSync(path.join(www, 'js', m)), `js/${m}`);
 });
-test('service worker de Android: caché propia y precarga de los módulos del 50.º y del OGG', () => {
+test('service worker de Android: retira el de 4.9 y no guarda nada en caché', () => {
   const id = sw.match(/const CACHE='([^']+)'/)[1];
   const version = JSON.parse(fs.readFileSync(path.join(app, 'package.json'), 'utf8')).version;
-  assert.equal(id, `la-cosecha-android-${version}`, 'la caché va ligada a la versión del juego');
+  assert.equal(id, `la-cosecha-android-${version}`, 'el identificador va ligado a la versión (sw.js cambia en cada versión)');
   const web = fs.readFileSync(path.join(app, '../La_Cosecha_Web_Render/sw.js'), 'utf8').match(/const CACHE='([^']+)'/)[1];
-  assert.notEqual(id, web, 'distinto de la caché de la Web');
-  for (const f of ['./js/campaign-50th-prearena.js', './js/campaign-50th-dynamic-adapter.js', `./${OGG}`]) assert.ok(sw.includes(`'${f}'`), f);
-  assert.doesNotMatch(sw, /\.wav'/i, 'no precarga el WAV');
-  for (const m of sw.matchAll(/'\.\/([^']+)'/g)) if (m[1]) assert.ok(fs.existsSync(path.join(www, m[1])), `precarga ${m[1]} y existe en www/`);
+  assert.notEqual(id, web, 'distinto del de la Web');
+  assert.match(sw, /skipWaiting\(\)/, 'se activa sin esperar a que se cierre la versión anterior');
+  assert.match(sw, /caches\.delete/, 'borra las cachés de versiones anteriores');
+  assert.match(sw, /registration\.unregister\(\)/, 'se da de baja');
+  assert.match(sw, /\.navigate\(/, 'recarga la app con los archivos del APK');
+  assert.doesNotMatch(sw, /addEventListener\('fetch'/, 'no intercepta peticiones');
+  assert.doesNotMatch(sw, /addAll|caches\.open/, 'no precarga nada');
+  assert.doesNotMatch(appJs, /serviceWorker\.register\(/, 'la app Android no registra service worker');
+  assert.match(appJs, /getRegistrations\(\)/, 'y retira los que hubiera');
 });
 test('los botones de la cabecera (inicio y ajustes) usan acciones que el juego atiende', () => {
   const html = fs.readFileSync(path.join(app, 'index.html'), 'utf8');

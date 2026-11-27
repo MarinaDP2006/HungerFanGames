@@ -39,8 +39,10 @@ test('detecta un archivo nuevo sin categoría en un solo producto', () =>
 test('detecta que la Web referencia un archivo exclusivo de Android', () =>
   expectFail(d => edit(d, `${W}/index.html`, s => s.replace('</body>', '<script src="js/campaign-50th-prearena.js"></script></body>')), /La Web referencia .*campaign-50th-prearena\.js/));
 test('detecta un módulo importado por app.js que el service worker no precarga', () =>
-  expectFail(d => edit(d, `${A}/sw.js`, s => s.replace("'./js/campaign-50th-dynamic-adapter.js',", '')), /Android: sw\.js no precarga js\/campaign-50th-dynamic-adapter\.js/));
+  expectFail(d => edit(d, `${W}/sw.js`, s => s.replace("'./js/campaigns.js',", '')), /Web: sw\.js no precarga js\/campaigns\.js/));
+test('detecta que el service worker de Android vuelva a servir archivos desde caché', () =>
+  expectFail(d => edit(d, `${A}/sw.js`, s => s + "\nself.addEventListener('fetch',e=>{});\n"), /Android: sw\.js no debe interceptar peticiones/));
 test('detecta que el service worker precargue el WAV máster', () =>
-  expectFail(d => edit(d, `${A}/sw.js`, s => s.replace("'./manifest.webmanifest'", "'./assets/audio/ambiente-capitolio-master.wav','./manifest.webmanifest'")), /no debe precargar másteres WAV/));
+  expectFail(d => edit(d, `${W}/sw.js`, s => s.replace("'./manifest.webmanifest'", "'./assets/audio/ambiente-capitolio-master.wav','./manifest.webmanifest'")), /no debe precargar másteres WAV/));
 test('detecta que Web y Android compartan identificador de caché', () =>
   expectFail(d => edit(d, `${A}/sw.js`, s => s.replace(/const CACHE='[^']+'/, "const CACHE='la-cosecha-v4-8'")), /mismo identificador de caché/));

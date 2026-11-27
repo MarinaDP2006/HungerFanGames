@@ -117,8 +117,12 @@ for (const [name, base] of [['Web', WEB], ['Android', APP]]) {
   const appJs = read(base, 'js/app.js');
   caches[name] = sw.match(/const CACHE='([^']+)'/)?.[1];
   if (!caches[name]) problems.push(`${name}: sw.js sin identificador de caché`);
-  // Todo módulo que importa app.js debe precargarse para funcionar sin conexión.
-  for (const m of appJs.matchAll(/from '\.\/([\w.-]+\.js)'/g))
+  const caching = /addEventListener\('fetch'/.test(sw);
+  // Android lleva sus archivos en el APK: su service worker no debe guardar ni servir nada desde caché
+  // (en 4.9 servía la versión anterior tras actualizar el APK).
+  if (name === 'Android' && caching) problems.push('Android: sw.js no debe interceptar peticiones (los archivos van en el APK)');
+  // En la Web, todo módulo que importa app.js debe precargarse para funcionar sin conexión.
+  if (caching) for (const m of appJs.matchAll(/from '\.\/([\w.-]+\.js)'/g))
     if (!sw.includes(`./js/${m[1]}`)) problems.push(`${name}: sw.js no precarga js/${m[1]}, que importa app.js`);
   // Todo lo que precarga sw.js debe existir.
   for (const m of sw.matchAll(/'\.\/([^']+)'/g))

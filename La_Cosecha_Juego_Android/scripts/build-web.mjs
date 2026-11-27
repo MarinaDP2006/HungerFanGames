@@ -32,6 +32,10 @@ if (jsVersion !== pkgVersion) throw new Error(`build-web: js/version.js dice ${j
 if (!read('sw.js').includes(`const CACHE='la-cosecha-android-${pkgVersion}'`)) throw new Error(`build-web: el identificador de caché de sw.js no corresponde a la versión ${pkgVersion}`);
 
 const include = new Set(['index.html', 'manifest.webmanifest', 'sw.js']);
+// Música original aprobada: viaja en el APK aunque hoy ningún módulo activo la reproduce
+// (js/music.js está fuera del bundle). Antes entraba porque la precargaba el service worker.
+const AUDIO_CONSERVADO = ['assets/audio/ambiente-capitolio-original.ogg'];
+for (const f of AUDIO_CONSERVADO) include.add(f);
 const html = read('index.html');
 
 // 2. Hojas de estilo enlazadas.
