@@ -60,18 +60,18 @@ Entre «el juego guarda» y «la partida está en el disco del móvil» hay tres
 
 Si el proceso muere (cierre forzado, falta de memoria, un fallo, el ahorro de batería de algunos fabricantes) antes del paso 2, la partida nueva se pierde. Al abrir la app se carga la **anterior**: no se corrompe nada, porque SharedPreferences escribe con archivo de respaldo y cada ranura lleva su huella.
 
-### Medición (CI, emulador Android 14, ejecución 45996263112)
+### Medición (CI, emulador Android 14; ejecuciones 45996263112 y 45997548463, mismos resultados)
 `tests/device/ventana-perdida.mjs`:
-- Cierra la app con `am force-stop` a distintos milisegundos de un guardado, 3 veces cada uno.
+- Cierra la app con `am force-stop` a distintos milisegundos de un guardado, 3 veces cada uno en cada ejecución.
 - Lee la copia nativa del disco y abre la app para ver qué se recupera.
 - La confirmación de Android (pasos 1 y 2 en memoria) tardó **16–20 ms**.
 
 | Orden de cierre tras guardar | Copia nativa ya en disco | Partida recuperada |
 |---|---|---|
-| 0–50 ms | 0/15 | 0/15 (se carga la partida anterior) |
-| 100 ms | 3/3 | 3/3 |
-| 250 ms | 3/3 | 3/3 |
-| 1000 ms | 3/3 | 3/3 |
+| 0–50 ms | 0/30 | 0/30 (se carga la partida anterior) |
+| 100 ms | 6/6 | 6/6 |
+| 250 ms | 6/6 | 6/6 |
+| 1000 ms | 6/6 | 6/6 |
 
 `am force-stop` tarda además entre 56 y 119 ms en matar el proceso. Así que el límite real en este emulador está entre **unos 50 y unos 200 ms** después de guardar. En la 4.9, sin copia nativa, se perdían escenas guardadas varios segundos antes.
 
