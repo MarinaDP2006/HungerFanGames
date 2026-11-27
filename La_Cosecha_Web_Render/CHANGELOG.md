@@ -1,5 +1,14 @@
 # Changelog
 
+## Archivo de Panem 1.4 — Navegación inmersiva
+- **Volver:**
+  - cada página tiene un botón «← Volver» que retrocede en el historial si llegaste desde el Archivo y, si no, sube al nivel anterior;
+  - la tecla Escape hace lo mismo.
+- **Memoria de lectura:** al volver atrás, la página recupera la posición en la que estabas.
+- **Transiciones suaves entre páginas:** con View Transitions si el navegador las tiene y, si no, con un fundido. Se respeta «reducir movimiento».
+- **Barra de lectura** en lo alto y **cabecera que se compacta** al bajar.
+- **Papel con grano** y tarjetas que reaccionan al pasar por encima.
+
 ## Archivo de Panem 1.3 — sin publicar
 - **Solo la saga de Katniss:** fuera las ediciones 10.º y 50.º de Juegos, de la cronología y de los contadores.
 - **Imágenes propias:** la carpeta `imagenes-propias/` tiene la lista de nombres en `LEEME.md`. Lo que subas aparece solo en su ficha:

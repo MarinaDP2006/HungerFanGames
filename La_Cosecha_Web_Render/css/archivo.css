@@ -227,3 +227,26 @@ img.propia.retrato:not(.ok) { width: 0; border: 0; }
 @media (max-width: 34rem) { .ficha-cabecera { flex-direction: column; } img.propia.retrato.ok { width: 100%; max-width: 16rem; } }
 img.propia.tarjeta-img { width: calc(100% + 2.2rem); margin: -1rem -1.1rem .8rem; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
 img.propia.tarjeta-img:not(.ok) { height: 0; margin: 0; aspect-ratio: auto; }
+
+/* 1.4 · navegación inmersiva */
+.progreso-lectura { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--lacre); transform-origin: 0 50%; transform: scaleX(0); z-index: 20; transition: transform .1s linear; }
+.volver-barra { margin: 0 0 .6rem; }
+.volver { display: inline-flex; align-items: center; gap: .3rem; font: 600 .78rem/1 var(--sans); letter-spacing: .1em; text-transform: uppercase; text-decoration: none; color: var(--tinta-2); border: 1px solid var(--linea); padding: .5rem .8rem; background: var(--tarjeta); transition: background .2s, color .2s, transform .2s; }
+.volver:hover, .volver:focus-visible { background: var(--tinta); color: var(--papel); transform: translateX(-2px); }
+.cabecera-sitio { transition: box-shadow .25s; }
+html.compacta .cabecera-sitio { box-shadow: 0 6px 18px -10px #2a1d1499; }
+html.compacta .cabecera-marca .marca-pre { display: none; }
+.contenido.entrando > * { animation: entrar .45s cubic-bezier(.2,.7,.2,1) both; }
+.contenido.entrando > *:nth-child(2) { animation-delay: .05s; } .contenido.entrando > *:nth-child(3) { animation-delay: .1s; } .contenido.entrando > *:nth-child(n+4) { animation-delay: .14s; }
+@keyframes entrar { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+::view-transition-old(root) { animation: .22s ease-out both salirVT; }
+::view-transition-new(root) { animation: .38s cubic-bezier(.2,.7,.2,1) both entrarVT; }
+@keyframes salirVT { to { opacity: 0; } } @keyframes entrarVT { from { opacity: 0; transform: translateY(8px); } }
+/* Papel con grano y portada a sangre */
+body { background-image: radial-gradient(ellipse at 50% 0, #fffaf0 0, transparent 60%), repeating-linear-gradient(0deg, #00000005 0 1px, transparent 1px 4px); }
+.portada { position: relative; }
+.portada-imagen img { transition: transform 1.2s cubic-bezier(.2,.7,.2,1); }
+.portada:hover .portada-imagen img { transform: scale(1.015); }
+.indice-item, .tarjetas-lugares li, .documento, .lista-ediciones a { transition: transform .2s, box-shadow .2s; }
+.indice-item:hover, .tarjetas-lugares li:hover, .documento:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -12px #2a1d1466; }
+@media (prefers-reduced-motion: reduce) { .contenido.entrando > *, .portada-imagen img, .volver { animation: none !important; transition: none !important; } }

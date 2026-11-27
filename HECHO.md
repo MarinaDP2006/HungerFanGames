@@ -1,6 +1,6 @@
 # HECHO
 
-Estado a 27-11-2026 · rama `integracion-cosecha-5x` · Android 4.21.0 · Archivo de Panem 1.3
+Estado a 27-11-2026 · rama `integracion-cosecha-5x` · Android 4.21.0 · Archivo de Panem 1.4
 
 ## Juego Android
 - **App:** APK con Capacitor 7. CI compila, prueba en emulador (Android 14) y comprueba la actualización desde 4.9.
@@ -30,7 +30,7 @@ Estado a 27-11-2026 · rama `integracion-cosecha-5x` · Android 4.21.0 · Archiv
 - **Ajustes:** texto, sonido, música y ambiente.
 
 ## Web · Archivo de Panem
-- **Navegación:** 12 secciones con rutas limpias (`/distritos/12`), menú definitivo y sin enlaces externos.
+- **Navegación:** 12 secciones con rutas limpias (`/distritos/12`), menú definitivo y sin enlaces externos; botón Volver, memoria de lectura, transiciones, barra de lectura y Escape para volver (1.4).
 - **Contenido completo (1.2):** 13 distritos con expediente, Capitolio, 27 personajes, ediciones 74.º y 75.º, cronología, 14 lugares, Gira, Rebelión y Guerra y documentos; cada ficha con su estado de canon y su fuente.
 - **Funcionamiento:** service worker y manifiesto.
 - **Separación:** la web no contiene código del juego, y una prueba lo vigila.

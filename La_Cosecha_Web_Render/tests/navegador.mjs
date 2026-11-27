@@ -69,6 +69,20 @@ try {
     check(`${nombre} · filtro por distrito`, /^5 de/.test(await page.textContent('.recuento')), await page.textContent('.recuento'));
     await page.click('a.tarjeta-personaje');
     check(`${nombre} · ficha desde el listado`, /\/personajes\/.+/.test(new URL(page.url()).pathname));
+    // Volver: regresa al listado sin recargar.
+    await page.click('[data-volver]'); await page.waitForTimeout(500);
+    check(`${nombre} · «Volver» regresa al listado`, new URL(page.url()).pathname === '/personajes', page.url());
+    // Memoria de lectura: al volver atrás desde una ficha, la página recupera su posición.
+    await page.goto(base + 'lugares'); await page.waitForTimeout(400);
+    await page.evaluate(() => window.scrollTo(0, 600)); await page.waitForTimeout(200);
+    const y0 = await page.evaluate(() => window.scrollY);
+    await page.$eval('a[href="/juegos/74"]', a => a.click()); await page.waitForTimeout(500);
+    await page.goBack(); await page.waitForTimeout(600);
+    const y1 = await page.evaluate(() => window.scrollY);
+    check(`${nombre} · atrás recupera la posición de lectura`, y0 > 0 && Math.abs(y1 - y0) < 40, `${y0} → ${y1}`);
+    check(`${nombre} · barra de lectura`, !!(await page.$('.progreso-lectura')));
+    await page.goto(base + 'distritos/12'); await page.waitForTimeout(400); await page.keyboard.press('Escape'); await page.waitForTimeout(500);
+    check(`${nombre} · Escape vuelve al nivel anterior`, new URL(page.url()).pathname === '/distritos', page.url());
     // Separación: nada del videojuego en el documento.
     const juego = await page.evaluate(() => ({ app: [...document.scripts].some(s => /app\.js/.test(s.src)), botones: document.querySelectorAll('[data-a]').length, partidas: Object.keys(localStorage).filter(k => /laCosecha/.test(k)) }));
     check(`${nombre} · sin motor ni partidas del videojuego`, !juego.app && juego.botones === 0 && juego.partidas.length === 0, JSON.stringify(juego));
