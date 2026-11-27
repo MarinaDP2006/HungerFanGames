@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.11 — Separación del Archivo de Panem y sistema de audio
+- La Web ya no es una copia del videojuego: ahora es el Archivo de Panem, un producto aparte. Android es el único que lleva el motor del juego.
+- Los datos de Panem salen de `compartido/data.js` (raíz del repositorio) y se copian a cada producto con `scripts/sincronizar-compartido.mjs`. El detector de contratos exige que sean idénticos.
+- Sistema de audio por contextos (`js/audio.js`): menú, Historia por edición, Arena, finales, Libre, Presidencia, crisis y escenas especiales. **La música no está activada:** no hay pistas hasta que llegue la dirección musical. El OGG original se conserva sin conectar.
+- Ajustes: «Silenciar todo», «Efectos» y «Música», con volumen de música. Se guardan con las demás preferencias (copia local y nativa); las preferencias anteriores se completan con valores por defecto.
+- La cabecera dice «EL VIDEOJUEGO DE PANEM» (antes «ARCHIVO DE PANEM», que ahora es el nombre de la Web).
+
 ## 4.10.1 — Medición del margen de pérdida
 - El guardado mide cuánto tarda Android en confirmar cada escritura nativa (sin cambiar el formato ni las ranuras).
 - Nueva medición en el emulador (`tests/device/ventana-perdida.mjs`): cierra la app a distintos milisegundos de guardar y comprueba qué se recupera. Resultados en `docs/GUARDADO.md`.

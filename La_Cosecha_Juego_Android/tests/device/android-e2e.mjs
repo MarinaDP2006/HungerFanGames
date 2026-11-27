@@ -115,6 +115,8 @@ try {
   await tap(page, '[data-text-scale="1.15"]');
   await page.fill('#set-volume', '40');
   await page.dispatchEvent('#set-volume', 'change');
+  await page.fill('#set-music-volume', '30');
+  await page.dispatchEvent('#set-music-volume', 'change');
   await tap(page, '[data-a="test-sound"]');
   const audio = await page.evaluate(() => ({ lastSound: document.documentElement.dataset.lastSound, hasAudioContext: !!(window.AudioContext || window.webkitAudioContext) }));
   check('Sonido: el motor de audio del WebView reproduce el efecto de prueba', audio.hasAudioContext && audio.lastSound === 'anthem', JSON.stringify(audio));
@@ -122,7 +124,8 @@ try {
   await tap(page, '[data-setting="sound"]');
   await tap(page, '[data-setting="sound"]');
   const prefs = await page.evaluate(() => JSON.parse(localStorage.getItem('laCosechaSettings')));
-  check('Ajustes guardados', prefs && prefs.reducedMotion === true && prefs.textScale === 1.15 && prefs.volume === 0.4 && prefs.sound === true, JSON.stringify(prefs));
+  check('Ajustes guardados', prefs && prefs.reducedMotion === true && prefs.textScale === 1.15 && prefs.volume === 0.4 && prefs.sound === true && prefs.musicVolume === 0.3 && prefs.muted === false, JSON.stringify(prefs));
+  check('Música: sin pistas todavía (no suena nada)', await page.evaluate(() => !!document.querySelector('#music-status') && document.documentElement.dataset.music === 'on'));
   await tap(page, '[data-a="settings-back"]');
 
   // 4. 50.º Vasallaje: cuatro escenas (guardado automático en la ranura 1)
@@ -132,6 +135,7 @@ try {
   const scenes = [];
   for (let i = 0; i < 4; i++) { scenes.push(await page.textContent('.story-box h2')); await tap(page, '[data-pre50-choice]'); }
   const nextTitle = await page.textContent('.story-box h2');
+  check('Audio: el contexto sigue al juego (menú → historia:50)', await page.evaluate(() => document.documentElement.dataset.audioContext) === 'historia:50', await page.evaluate(() => document.documentElement.dataset.audioContext));
   const slot1 = await page.evaluate(() => !!localStorage.getItem('laCosechaSave:1'));
   check('50.º: cuatro escenas jugadas y guardado automático en la ranura 1', scenes.length === 4 && slot1, scenes.join(' → '));
   await snap('50-precampana');
@@ -143,7 +147,7 @@ try {
   check('La copia nativa tiene la partida antes del cierre', xmlAntes.includes('laCosechaSave:1'), `${xmlAntes.length} bytes`);
   page = await launch();
   const after = await page.evaluate(() => ({ prefs: JSON.parse(localStorage.getItem('laCosechaSettings')), reduce: document.documentElement.classList.contains('reduce-motion'), scale: getComputedStyle(document.documentElement).getPropertyValue('--text-scale').trim() }));
-  check('Tras reiniciar: los ajustes persisten y se aplican', after.reduce && after.scale === '1.15' && after.prefs?.volume === 0.4, JSON.stringify(after));
+  check('Tras reiniciar: los ajustes persisten y se aplican', after.reduce && after.scale === '1.15' && after.prefs?.volume === 0.4 && after.prefs?.musicVolume === 0.3, JSON.stringify(after));
   await tap(page, '[data-a="load"]');
   await page.waitForSelector('[data-slot-load="1"]');
   await snap('partidas');

@@ -14,12 +14,13 @@ import * as PRE from '../js/campaign-50th-prearena.js';
 import * as ST from '../js/settings.js';
 import * as SV from '../js/saves.js';
 import * as DS from '../js/durable-storage.js';
+import * as AU from '../js/audio.js';
 import {GAME_VERSION} from '../js/version.js';
 const _real=adaptDynamic50Event;
 
 function engine(){
   const el={textContent:'',innerHTML:''};
-  const ctx={...data,...campaigns,...PRE,ST,SV,DS,GAME_VERSION,adaptDynamic50Event:(g,ev)=>ev,WI,PR,Proxy,document:{querySelector:()=>el},console,Math,Date,JSON,Number,String,Array,Object,Map,Set,
+  const ctx={...data,...campaigns,...PRE,ST,SV,DS,AU,GAME_VERSION,adaptDynamic50Event:(g,ev)=>ev,WI,PR,Proxy,document:{querySelector:()=>el},console,Math,Date,JSON,Number,String,Array,Object,Map,Set,
     localStorage:{setItem(){},getItem(){return null}},alert(){},navigator:{},window:{},setTimeout};
   let src=fs.readFileSync(new URL('../js/app.js',import.meta.url),'utf8').replace(/^import .*\n/gm,'');
   src=src.slice(0,src.indexOf("document.addEventListener('click'"));

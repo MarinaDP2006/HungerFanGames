@@ -1,6 +1,6 @@
 {
   "name": "la-cosecha-panem",
-  "version": "4.10.1",
+  "version": "4.11.0",
   "private": true,
   "description": "La Cosecha - PWA y wrapper Android",
   "scripts": {

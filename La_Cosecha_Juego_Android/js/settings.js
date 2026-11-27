@@ -2,7 +2,9 @@
 // para que borrar o cargar una partida no las cambie.
 export const SETTINGS_KEY = 'laCosechaSettings';
 export const TEXT_SCALES = [0.9, 1, 1.15, 1.3];
-export const DEFAULT_SETTINGS = Object.freeze({ sound: true, volume: 0.7, reducedMotion: false, textScale: 1 });
+// sound/volume: efectos. music/musicVolume: música (aún sin pistas). muted: silencia todo.
+// Las preferencias guardadas antes de 4.11 no tienen los campos de música: toman estos valores.
+export const DEFAULT_SETTINGS = Object.freeze({ sound: true, volume: 0.7, music: true, musicVolume: 0.6, muted: false, reducedMotion: false, textScale: 1 });
 
 const isObj = v => v && typeof v === 'object' && !Array.isArray(v);
 
@@ -11,9 +13,11 @@ export function normalizeSettings(raw) {
   const s = { ...DEFAULT_SETTINGS };
   if (!isObj(raw)) return s;
   if (typeof raw.sound === 'boolean') s.sound = raw.sound;
-  if (typeof raw.reducedMotion === 'boolean') s.reducedMotion = raw.reducedMotion;
-  const v = Number(raw.volume);
-  if (Number.isFinite(v)) s.volume = Math.round(Math.max(0, Math.min(1, v)) * 100) / 100;
+  for (const k of ['reducedMotion', 'music', 'muted']) if (typeof raw[k] === 'boolean') s[k] = raw[k];
+  for (const k of ['volume', 'musicVolume']) {
+    const v = raw[k] == null ? NaN : Number(raw[k]);
+    if (Number.isFinite(v)) s[k] = Math.round(Math.max(0, Math.min(1, v)) * 100) / 100;
+  }
   const t = Number(raw.textScale);
   if (TEXT_SCALES.includes(t)) s.textScale = t;
   return s;
@@ -38,6 +42,7 @@ export function applySettings(settings, doc) {
   root.style?.setProperty?.('--text-scale', String(settings.textScale));
   if (root.dataset) {
     root.dataset.textScale = String(settings.textScale);
-    root.dataset.sound = settings.sound ? 'on' : 'off';
+    root.dataset.sound = settings.sound && !settings.muted ? 'on' : 'off';
+    root.dataset.music = settings.music && !settings.muted ? 'on' : 'off';
   }
 }

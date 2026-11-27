@@ -12,6 +12,7 @@ import * as AD from '../js/campaign-50th-dynamic-adapter.js';
 import * as ST from '../js/settings.js';
 import * as SV from '../js/saves.js';
 import * as DS from '../js/durable-storage.js';
+import * as AU from '../js/audio.js';
 import { GAME_VERSION } from '../js/version.js';
 
 // Almacenamiento compartido entre «arranques»: simula que el dispositivo conserva localStorage.
@@ -27,7 +28,7 @@ function boot(storage) {
   let click = null, change = null;
   const document = { documentElement: root, querySelector: s => nodes[s] || null, createElement: () => ({ click() {} }), addEventListener: (t, fn) => { if (t === 'click') click = fn; if (t === 'change') change = fn; } };
   class AudioContext { constructor() { this.currentTime = 0; this.destination = {}; } createOscillator() { return { connect() {}, type: '', frequency: { setValueAtTime() {}, exponentialRampToValueAtTime() {} }, start() {}, stop() {} }; } createGain() { return { connect() {}, gain: { setValueAtTime: v => gains.push(v), exponentialRampToValueAtTime() {} } }; } }
-  const ctx = { ...data, ...campaigns, ...PRE, ...AD, ST, SV, DS, GAME_VERSION, WI, PR, Proxy, document, console, Math, Date, JSON, Number, String, Array, Object, Map, Set,
+  const ctx = { ...data, ...campaigns, ...PRE, ...AD, ST, SV, DS, AU, GAME_VERSION, WI, PR, Proxy, document, console, Math, Date, JSON, Number, String, Array, Object, Map, Set,
     localStorage: storage, alert() {}, navigator: {}, window: { AudioContext, addEventListener() {} }, setTimeout, clearTimeout };
   let src = fs.readFileSync(new URL('../js/app.js', import.meta.url), 'utf8').replace(/^import .*\n/gm, '');
   src += `\nglobalThis.api={g:()=>game,set:v=>{game=v},prefs:()=>prefs,settings,sound,setMode:(m,e)=>{mode=m;edition=e},begin,save,load};`;
@@ -57,11 +58,11 @@ test('cada ajuste se aplica y persiste tras reiniciar la app', () => {
   let a = boot(storage);
   a.press({ a: 'settings' });
   a.press({ setting: 'reducedMotion' }); a.press({ textScale: '1.3' }); a.slide(35); a.press({ setting: 'sound' });
-  assert.deepEqual(a.api.prefs(), { sound: false, volume: 0.35, reducedMotion: true, textScale: 1.3 });
+  assert.deepEqual(a.api.prefs(), { sound: false, volume: 0.35, music: true, musicVolume: 0.6, muted: false, reducedMotion: true, textScale: 1.3 });
   assert.ok(a.classes.has('reduce-motion')); assert.equal(a.styleVars['--text-scale'], '1.3');
   // Reinicio: nueva instancia de la app sobre el mismo almacenamiento.
   a = boot(storage);
-  assert.deepEqual(a.api.prefs(), { sound: false, volume: 0.35, reducedMotion: true, textScale: 1.3 }, 'se recuperan');
+  assert.deepEqual(a.api.prefs(), { sound: false, volume: 0.35, music: true, musicVolume: 0.6, muted: false, reducedMotion: true, textScale: 1.3 }, 'se recuperan');
   assert.ok(a.classes.has('reduce-motion'), 'se aplican al arrancar'); assert.equal(a.styleVars['--text-scale'], '1.3');
   a.press({ a: 'settings' }); assert.ok(a.html().includes('aria-checked="true"'), 'la pantalla refleja el estado');
 });
@@ -83,4 +84,15 @@ test('los ajustes no se tocan al guardar, cargar o borrar partidas', () => {
   a.press({ a: 'settings' }); a.press({ textScale: '1.15' });
   a.api.setMode('story', 74); a.api.begin(); a.api.save(); a.press({ slotDelete: '1' }); a.press({ slotDeleteConfirm: '1' });
   assert.equal(boot(storage).api.prefs().textScale, 1.15);
+});
+
+test('preferencias de música y silencio: valores por defecto, migración y persistencia', () => {
+  // Ajustes guardados por la 4.10 (sin campos de música): se conservan y se completan.
+  const viejos = { sound: false, volume: 0.35, reducedMotion: true, textScale: 1.3 };
+  const s = memoryStorage(); s.setItem(ST.SETTINGS_KEY, JSON.stringify(viejos));
+  assert.deepEqual(ST.loadSettings(s), { ...viejos, music: true, musicVolume: 0.6, muted: false });
+  const g = ST.saveSettings(s, { ...ST.loadSettings(s), music: false, musicVolume: 0.25, muted: true });
+  assert.deepEqual(ST.loadSettings(s), g);
+  assert.equal(ST.normalizeSettings({ musicVolume: 3 }).musicVolume, 1);
+  assert.equal(ST.normalizeSettings({ muted: 'sí' }).muted, false);
 });
