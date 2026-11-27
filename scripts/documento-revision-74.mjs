@@ -17,12 +17,14 @@ const L = [];
 L.push(`# 74.º Juegos del Hambre · documento único de revisión
 
 **Para:** ChatGPT (dirección creativa). **Aprueba:** la directora del proyecto.
-**Estado:** \`DRAFT_FOR_REVIEW\`. Fuente: \`${CAMPANA_74.source_ref}\` (${CAMPANA_74.source_version}).
+**Estado:** \`DRAFT_FOR_REVIEW\`. Versión de contenido: \`${CAMPANA_74.source_version}\`.
+- Escenas: \`${CAMPANA_74.source_ref}\` (fuente 1.0).
+- Respuestas, diario, ecos y transferencia: \`${CAMPANA_74.annex_ref}\` (anexo 1.1).
 
 ## Cómo usar este documento
-- **Escenas y opciones:** el título, el lugar, los personajes, el texto, las opciones, los efectos y los hitos están copiados **literalmente** de la fuente, sin una palabra añadida. Sale de los datos del juego con \`node scripts/documento-revision-74.mjs\`.
-- **Huecos ${P}:** es lo que la fuente no trae y exige la especificación de guion (\`02_NARRATIVA/01_Especificacion_de_guion.md\`). Claude no los escribe.
-- **Sección «Transferencia a la Arena»:** es una **propuesta técnica** para que la apruebes o la cambies. No está activa en el juego.
+- **Escenas, opciones y efectos:** copiados **literalmente** de la fuente 1.0. Las respuestas, los diarios y los ecos, **literalmente** del anexo 1.1. Claude no ha añadido ni cambiado una palabra; el documento se genera desde los datos del juego con \`node scripts/documento-revision-74.mjs\`.
+- **Huecos ${P}:** lo que todavía no está escrito. Claude no los rellena.
+- **Transferencia a la Arena:** implementada según el anexo (instantánea idempotente, guardada antes de la Arena). Los valores numéricos quedan **sin aplicar** hasta que se confirmen los límites (ver preguntas).
 - **Para cerrar el bloque:**
   - rellenar los huecos;
   - responder las preguntas del final;
@@ -31,9 +33,9 @@ L.push(`# 74.º Juegos del Hambre · documento único de revisión
   Con eso, Claude vuelve a generar los datos y el 74.º pasa a ser jugable.
 
 ## Resumen
-| # | Escena | Opciones | Respuestas escritas | Diario escrito |
-|---|---|---|---|---|
-${CAMPANA_74.scenes.map(s => `| ${s.sequence} | \`${s.scene_id}\` · ${s.title} | ${s.options.length} | 0 de ${s.options.length} | No |`).join('\n')}
+| # | Escena | Opciones | Respuestas | Diario | Ecos con frase |
+|---|---|---|---|---|---|
+${CAMPANA_74.scenes.map(s => `| ${s.sequence} | \`${s.scene_id}\` · ${s.title} | ${s.options.length} | ${s.options.filter(o => o.response_text).length} de ${s.options.length} | ${s.options.filter(o => o.journal_text).length} de ${s.options.length} | ${s.options.filter(o => o.echo).length} |`).join('\n')}
 `);
 CAMPANA_74.scenes.forEach((s, i) => {
   L.push(`---
@@ -57,54 +59,55 @@ CAMPANA_74.scenes.forEach((s, i) => {
 
 **\`player_prompt\`** (la pregunta antes de decidir): ${P}
 
-**\`journal_entry\` de la escena:** ${P}
-
 ### Opciones
-| ID | Texto del botón (fuente) | Efecto (fuente) | Efecto en el contrato maestro | \`response_text\` | \`journal_tag\` | Texto del diario |
-|---|---|---|---|---|---|---|
-${s.options.map(o => `| \`${o.option_id}\` | ${o.label} | \`${o.source_effect}\` | ${o.effects.map(efecto).join('; ')} | ${P} | ${P} | ${P} |`).join('\n')}
+${s.options.map(o => `#### \`${o.option_id}\` — ${o.label}
+- **Efecto (fuente):** \`${o.source_effect}\` → ${o.effects.map(efecto).join('; ')}
+- **Respuesta inmediata (anexo):** ${o.response_text ? `«${o.response_text}»` : P}
+- **Diario** (\`${o.journal_entry_id || '—'}\`): ${o.journal_text ? `«${o.journal_text}»` : P}
+- **Eco:** ${o.echo ? `en \`${o.echo.scene_id}\` si \`${o.echo.flag}\`: «${o.echo.text}» (se muestra)` : o.echo_note ? `${o.echo_note} — **sin frase escrita: no se muestra** ${P}` : o.transfer_note ? `${o.transfer_note}` : '—'}`).join('\n')}
 `);
 });
 L.push(`---
-
-## Diario de continuidad
-La fuente pide generar el diario desde los flags, sin duplicar entradas al cargar (el motor ya lo garantiza: cada escena registra una sola decisión). Falta el texto de cada entrada:
-
-| Flag | Lo fija | Escena | Texto del diario |
-|---|---|---|---|
-${flags.map(f => `| \`${f.flag}\` | \`${f.option}\` | \`${f.scene}\` | ${P} |`).join('\n')}
 
 ## Variables
 | Variable en el guion | Variable en el contrato maestro | Tipo | Inicial | Valores |
 |---|---|---|---|---|
 ${VARIABLES_74.map(v => `| \`${Object.keys(ADAPTADOR_74).find(k => ADAPTADOR_74[k] === v.path)}\` | \`${v.path}\` | ${v.type} | \`${v.default}\` | ${v.values ? v.values.map(x => `\`${x}\``).join(', ') : 'entero'} |`).join('\n')}
 
-## Transferencia a la Arena — PROPUESTA TÉCNICA (no activa)
-Al terminar \`74_launch\`, el motor guarda todo el estado en \`game.continuity['74']\` y la partida entra en la Arena del 74.º existente (cuatro capítulos, sin acontecimientos nuevos).
+## Transferencia a la Arena (anexo 1.1, implementada)
+Al terminar \`74_launch\` (y leer su respuesta), el juego:
+1. crea la instantánea \`${CAMPANA_74.transfer_id}\`, con:
+   - versión de contenido, \`timeline_id\` y \`route_type\`;
+   - las once escenas completadas, las variables y los flags;
+   - los \`decision_ids\` y los \`diary_entry_ids\`;
+2. la **guarda antes** de entrar en la Arena. Si no se puede guardar, no se entra;
+3. si se reintenta, devuelve la misma instantánea **sin sumar nada otra vez**;
+4. abre únicamente la Arena del 74.º existente.
 
-Hoy la Arena **no lee** ese estado. Esta es la traducción que propongo a las estadísticas que la Arena ya usa. Solo se activará cuando la aprobéis o la cambiéis:
-
-| Variable | Propuesta | Estadística de la Arena | Motivo |
-|---|---|---|---|
-| \`public.image_capitol\` | +2 por punto (máx. +10) | \`support\` (apoyo del público) | La imagen pública ya alimenta el apoyo |
-| \`sponsor.interest\` | +1 por punto | \`sponsorTrust\` (envíos de patrocinadores) | Correspondencia directa |
-| \`campaign.private_session_result\` | \`exceptional\` +3 · \`strong\` +1 | \`sponsorTrust\` | La puntuación atrae patrocinadores |
-| \`skill.archery\` | +1 si ≥ 1 | \`skill\` (combate) | |
-| \`skill.observation\` | +2 si ≥ 1 | \`stealth\` | |
-| \`skill.survival\` | −5 al empezar, si ≥ 1 | \`thirst\` y \`hunger\` | |
-| \`campaign.interview_tone\` | \`warm\` apoyo +5 · \`guarded\` apoyo +2 · \`defiant\` rebelión +3 | \`support\` / \`rebellion\` | Igual que la entrevista genérica actual |
-| \`campaign.launch_plan\` | \`observation\`: tributos visibles en el mapa · \`survival\`: fatiga −5 · \`family\`: ${P} | Mapa / \`fatigue\` | \`family\` no tiene equivalente mecánico: ¿efecto narrativo solo? |
-| \`rel.katniss_peeta\`, \`rel.katniss_prim\`, \`rel.katniss_haymitch\` | Sin efecto mecánico propuesto | — | Cualquier efecto sobre alianzas o escenas de la Arena es narrativo: decidid si lo tiene |
-| \`campaign.training_focus\` | Sin efecto propuesto (ya se refleja en \`skill.*\`) | — | |
-| Flags | Se conservan para la Gira y el 75.º | — | Continuidad |
+| Dato | Uso según el anexo | Estado en el juego |
+|---|---|---|
+| \`training_focus\` | Contexto descriptivo | Guardado en la instantánea; sin efecto mecánico |
+| Habilidades (arco, supervivencia, observación) | Solo atributos existentes | El juego solo tiene una habilidad genérica (\`skill\`), sin arco, supervivencia ni observación por separado. **Sin aplicar** (pregunta 6) |
+| \`private_session_result\` | Registro narrativo; no concede objetos | Guardado; sin efecto mecánico |
+| \`image_capitol\` | Perfil público inicial | **Sin aplicar** hasta confirmar límites (pregunta 5). Candidato: \`support\` (0–100, empieza en 12) |
+| \`sponsor_interest\` | Valor inicial del patrocinio existente, con sus límites | **Sin aplicar** hasta confirmar límites (pregunta 5). Candidato: \`sponsorTrust\` (empieza en 0) |
+| Relaciones | Contexto; no fuerza alianzas | Guardadas; sin efecto mecánico |
+| \`launch_plan\` | Texto o prioridad narrativa; no crea turno | Guardado; sin efecto mecánico |
+| Flags familiares | Recuerdos del diario | Guardados; ninguno se convierte en ventaja |
 
 ## Preguntas abiertas (para cerrar el bloque)
-1. ¿Se aprueban los textos de la fuente **tal como están**? Si cambia alguna palabra, cambiad la fuente: los datos se regeneran desde ella.
-2. **Variables declaradas sin uso:** \`district_memory\` y \`canon_route\` aparecen en la lista del guion, pero ninguna opción las usa. ¿Faltan efectos o se quitan?
-3. **\`74_private_o3\`:** deja \`private_session_result = strong\`, pero el hito dice que la puntuación es «extraordinariamente alta». ¿Se mantiene \`strong\` o el hito cambia en esta ruta?
-4. **Diálogos:** ¿se mantienen dentro de la prosa o se entregan separados como \`dialogue[]\`?
-5. **Transferencia a la Arena:** ¿se aprueba la propuesta técnica? ¿Qué hace \`launch_plan = family\`?
-6. **\`location_id\` y \`participants[]\`:** ¿se confirman los IDs propuestos?
+1. **Aprobación:** ¿se aprueban las escenas 1.0 y el anexo 1.1 **tal como están**? Si cambia alguna palabra, cambiad la fuente o el anexo: los datos se regeneran desde ellos.
+2. **\`74_private_o3\`:**
+   - el efecto de la fuente deja \`private_session_result = strong\`;
+   - el hito y el anexo dicen que la puntuación sigue siendo «extraordinariamente alta» en las tres opciones;
+   - ¿se cambia el efecto a \`exceptional\` o se mantiene \`strong\` como matiz?
+3. **Ecos descritos sin frase:** 28 ecos del anexo describen lo que debería decir el eco, pero no traen la frase (p. ej. «reflexión breve sobre…», «recuerdo silencioso»). Tampoco está escrita la frase de \`74_launch_o2\` sobre la promesa a Gale. El juego **no muestra** ninguno. ¿Se escriben, o se quedan solo como guía?
+4. **Variables declaradas sin uso:** \`district_memory\` y \`canon_route\` aparecen en la lista del guion, pero ninguna opción las usa. ¿Faltan efectos o se quitan?
+5. **Límites del patrocinio:** ¿cuánto suma cada punto de \`sponsor_interest\` a \`sponsorTrust\` y cada punto de \`image_capitol\` a \`support\`? Con eso se activan los valores.
+6. **Habilidades:** el juego no tiene atributos separados de arco, supervivencia y observación. ¿Se quedan solo en la instantánea, o \`skill\` sube al tener alguna?
+7. **Diálogos:** ¿se mantienen dentro de la prosa o se entregan separados como \`dialogue[]\`?
+8. **\`location_id\` y \`participants[]\`:** ¿se confirman los IDs propuestos?
+9. **Identificadores:** el juego ya usa los del anexo (\`campaign_74\`, \`campaign_74:<escena>:<opción>:1\`, \`74.diary.<escena>.<opción>\`). Confirmad que son los definitivos.
 `);
 fs.writeFileSync(path.join(root, 'docs/REVISION_74_PARA_CHATGPT.md'), L.join('\n'));
 console.log('Generado docs/REVISION_74_PARA_CHATGPT.md');

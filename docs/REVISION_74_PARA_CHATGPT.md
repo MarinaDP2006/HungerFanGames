@@ -1,12 +1,14 @@
 # 74.º Juegos del Hambre · documento único de revisión
 
 **Para:** ChatGPT (dirección creativa). **Aprueba:** la directora del proyecto.
-**Estado:** `DRAFT_FOR_REVIEW`. Fuente: `docs/paquetes/entrega_maestra_v1/00_FUENTES_APROBADAS/74_v1/narrativa/74_PreArena_11_Escenas_v1.md` (Producción creativa 74 v1 · Versión creativa 1.0).
+**Estado:** `DRAFT_FOR_REVIEW`. Versión de contenido: `74-prearena-1.1`.
+- Escenas: `docs/paquetes/entrega_maestra_v1/00_FUENTES_APROBADAS/74_v1/narrativa/74_PreArena_11_Escenas_v1.md` (fuente 1.0).
+- Respuestas, diario, ecos y transferencia: `docs/paquetes/74_anexo_1_1/74_Diario_Respuestas_y_Transferencia_Arena_v1_1.md` (anexo 1.1).
 
 ## Cómo usar este documento
-- **Escenas y opciones:** el título, el lugar, los personajes, el texto, las opciones, los efectos y los hitos están copiados **literalmente** de la fuente, sin una palabra añadida. Sale de los datos del juego con `node scripts/documento-revision-74.mjs`.
-- **Huecos [PENDIENTE · ChatGPT]:** es lo que la fuente no trae y exige la especificación de guion (`02_NARRATIVA/01_Especificacion_de_guion.md`). Claude no los escribe.
-- **Sección «Transferencia a la Arena»:** es una **propuesta técnica** para que la apruebes o la cambies. No está activa en el juego.
+- **Escenas, opciones y efectos:** copiados **literalmente** de la fuente 1.0. Las respuestas, los diarios y los ecos, **literalmente** del anexo 1.1. Claude no ha añadido ni cambiado una palabra; el documento se genera desde los datos del juego con `node scripts/documento-revision-74.mjs`.
+- **Huecos [PENDIENTE · ChatGPT]:** lo que todavía no está escrito. Claude no los rellena.
+- **Transferencia a la Arena:** implementada según el anexo (instantánea idempotente, guardada antes de la Arena). Los valores numéricos quedan **sin aplicar** hasta que se confirmen los límites (ver preguntas).
 - **Para cerrar el bloque:**
   - rellenar los huecos;
   - responder las preguntas del final;
@@ -15,19 +17,19 @@
   Con eso, Claude vuelve a generar los datos y el 74.º pasa a ser jugable.
 
 ## Resumen
-| # | Escena | Opciones | Respuestas escritas | Diario escrito |
-|---|---|---|---|---|
-| 1 | `74_reaping` · La cosecha | 3 | 0 de 3 | No |
-| 2 | `74_goodbyes` · Lo que queda atrás | 3 | 0 de 3 | No |
-| 3 | `74_departure` · El último umbral | 3 | 0 de 3 | No |
-| 4 | `74_train` · Un vagón hacia el Capitolio | 3 | 0 de 3 | No |
-| 5 | `74_arrival` · La ciudad que mira | 3 | 0 de 3 | No |
-| 6 | `74_prep` · La imagen que fabrican | 3 | 0 de 3 | No |
-| 7 | `74_parade` · Bajo las luces | 3 | 0 de 3 | No |
-| 8 | `74_training` · Aprender delante de todos | 3 | 0 de 3 | No |
-| 9 | `74_private_session` · La sala de los Vigilantes | 3 | 0 de 3 | No |
-| 10 | `74_interview` · Una historia ante millones | 3 | 0 de 3 | No |
-| 11 | `74_launch` · El último ascensor | 3 | 0 de 3 | No |
+| # | Escena | Opciones | Respuestas | Diario | Ecos con frase |
+|---|---|---|---|---|---|
+| 1 | `74_reaping` · La cosecha | 3 | 3 de 3 | 3 de 3 | 2 |
+| 2 | `74_goodbyes` · Lo que queda atrás | 3 | 3 de 3 | 3 de 3 | 0 |
+| 3 | `74_departure` · El último umbral | 3 | 3 de 3 | 3 de 3 | 0 |
+| 4 | `74_train` · Un vagón hacia el Capitolio | 3 | 3 de 3 | 3 de 3 | 0 |
+| 5 | `74_arrival` · La ciudad que mira | 3 | 3 de 3 | 3 de 3 | 0 |
+| 6 | `74_prep` · La imagen que fabrican | 3 | 3 de 3 | 3 de 3 | 0 |
+| 7 | `74_parade` · Bajo las luces | 3 | 3 de 3 | 3 de 3 | 0 |
+| 8 | `74_training` · Aprender delante de todos | 3 | 3 de 3 | 3 de 3 | 0 |
+| 9 | `74_private_session` · La sala de los Vigilantes | 3 | 3 de 3 | 3 de 3 | 0 |
+| 10 | `74_interview` · Una historia ante millones | 3 | 3 de 3 | 3 de 3 | 0 |
+| 11 | `74_launch` · El último ascensor | 3 | 3 de 3 | 3 de 3 | 0 |
 
 ---
 
@@ -50,14 +52,22 @@
 
 **`player_prompt`** (la pregunta antes de decidir): [PENDIENTE · ChatGPT]
 
-**`journal_entry` de la escena:** [PENDIENTE · ChatGPT]
-
 ### Opciones
-| ID | Texto del botón (fuente) | Efecto (fuente) | Efecto en el contrato maestro | `response_text` | `journal_tag` | Texto del diario |
-|---|---|---|---|---|---|---|
-| `74_reaping_o1` | No apartarte de Prim. | `rel_katniss_prim +2; flag prim_saw_katniss_protect` | `rel.katniss_prim` +2; flag `prim_saw_katniss_protect` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
-| `74_reaping_o2` | Observar cada detalle de la ceremonia. | `flag katniss_observed_ceremony` | flag `katniss_observed_ceremony` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
-| `74_reaping_o3` | Buscar a Peeta entre la multitud. | `rel_katniss_peeta +1; flag first_recognition_peeta` | `rel.katniss_peeta` +1; flag `first_recognition_peeta` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
+#### `74_reaping_o1` — No apartarte de Prim.
+- **Efecto (fuente):** `rel_katniss_prim +2; flag prim_saw_katniss_protect` → `rel.katniss_prim` +2; flag `prim_saw_katniss_protect`
+- **Respuesta inmediata (anexo):** «No voy a dejar que atraviese esto sin verme a su lado. Si tiene miedo, al menos sabrá que no está sola.»
+- **Diario** (`74.diary.74_reaping.74_reaping_o1`): «Cuando pronunciaron el nombre de Prim, todo lo demás desapareció. Me mantuve pendiente de ella hasta el instante en que di un paso al frente. No recuerdo haber pensado en las consecuencias. Solo en impedir que se la llevaran.»
+- **Eco:** en `74_goodbyes` si `prim_saw_katniss_protect`: «Prim todavía intenta entender por qué lo hice. No tengo una explicación que pueda aliviarla.» (se muestra)
+#### `74_reaping_o2` — Observar cada detalle de la ceremonia.
+- **Efecto (fuente):** `flag katniss_observed_ceremony` → flag `katniss_observed_ceremony`
+- **Respuesta inmediata (anexo):** «Mira las salidas. Recuerda quién está en el escenario y cómo se desarrolla el sorteo. No puedes permitirte perder el control.»
+- **Diario** (`74.diary.74_reaping.74_reaping_o2`): «Me obligué a mirar la ceremonia como si observarla pudiera mantenerme a salvo. La plaza, el escenario, los agentes, las papeletas. Nada cambió lo que ocurrió, pero recordar los detalles era algo que todavía podía controlar.»
+- **Eco:** al llegar al Capitolio: reflexión breve sobre la diferencia entre la plaza del Distrito 12 y los espacios vigilados. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
+#### `74_reaping_o3` — Buscar a Peeta entre la multitud.
+- **Efecto (fuente):** `rel_katniss_peeta +1; flag first_recognition_peeta` → `rel.katniss_peeta` +1; flag `first_recognition_peeta`
+- **Respuesta inmediata (anexo):** «Vi a Peeta entre la gente. Su nombre todavía no había sido pronunciado, pero ya no pude dejar de pensar en él.»
+- **Diario** (`74.diary.74_reaping.74_reaping_o3`): «Después de ofrecerme voluntaria, busqué rostros conocidos entre la multitud. Encontré a Peeta. No hablamos. Aún no sabía qué significaría que su nombre saliera del otro recipiente.»
+- **Eco:** en `74_train` si `first_recognition_peeta`: «No era la primera vez que lo veía aquel día. Eso no significa que sepa qué piensa.» (se muestra)
 
 ---
 
@@ -80,14 +90,22 @@
 
 **`player_prompt`** (la pregunta antes de decidir): [PENDIENTE · ChatGPT]
 
-**`journal_entry` de la escena:** [PENDIENTE · ChatGPT]
-
 ### Opciones
-| ID | Texto del botón (fuente) | Efecto (fuente) | Efecto en el contrato maestro | `response_text` | `journal_tag` | Texto del diario |
-|---|---|---|---|---|---|---|
-| `74_goodbyes_o1` | Pedir a Gale que cuide de Prim y de tu madre. | `flag gale_promise_explicit` | flag `gale_promise_explicit` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
-| `74_goodbyes_o2` | Pedir a tu madre que vuelva a cuidar de Prim. | `flag mother_responsibility_named` | flag `mother_responsibility_named` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
-| `74_goodbyes_o3` | Abrazar a Prim sin decir nada. | `rel_katniss_prim +2; flag goodbye_without_words` | `rel.katniss_prim` +2; flag `goodbye_without_words` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
+#### `74_goodbyes_o1` — Pedir a Gale que cuide de Prim y de tu madre.
+- **Efecto (fuente):** `flag gale_promise_explicit` → flag `gale_promise_explicit`
+- **Respuesta inmediata (anexo):** «No puedo pedirte que arregles todo. Solo que no las dejes solas.»
+- **Diario** (`74.diary.74_goodbyes.74_goodbyes_o1`): «Le pedí a Gale que cuidara de Prim y de mi madre. No era justo dejarle una responsabilidad así, pero era la única persona a quien podía pedírselo sin explicar cada detalle.»
+- **Eco:** en el lanzamiento, si `gale_promise_explicit`: recuerdo de la promesa, sin afirmar que Katniss sabe si se está cumpliendo. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
+#### `74_goodbyes_o2` — Pedir a tu madre que vuelva a cuidar de Prim.
+- **Efecto (fuente):** `flag mother_responsibility_named` → flag `mother_responsibility_named`
+- **Respuesta inmediata (anexo):** «Necesito que estés aquí para ella. No tienes que prometerme nada más ahora.»
+- **Diario** (`74.diary.74_goodbyes.74_goodbyes_o2`): «Intenté que mi madre entendiera que Prim la necesitaría. No podía resolver su miedo ni el mío. Solo podía pedirle que permaneciera junto a mi hermana.»
+- **Eco:** en el lanzamiento, si `mother_responsibility_named`: recuerdo breve de la petición. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
+#### `74_goodbyes_o3` — Abrazar a Prim sin decir nada.
+- **Efecto (fuente):** `rel_katniss_prim +2; flag goodbye_without_words` → `rel.katniss_prim` +2; flag `goodbye_without_words`
+- **Respuesta inmediata (anexo):** «No encontré palabras que pudieran servirle. La abracé y traté de memorizar aquel momento.»
+- **Diario** (`74.diary.74_goodbyes.74_goodbyes_o3`): «No dije nada. Cualquier promesa habría sonado pequeña frente a lo que estaba ocurriendo. Me limité a abrazarla todo el tiempo que me permitieron.»
+- **Eco:** en el lanzamiento, si `goodbye_without_words`: recuerdo silencioso. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
 
 ---
 
@@ -110,14 +128,22 @@
 
 **`player_prompt`** (la pregunta antes de decidir): [PENDIENTE · ChatGPT]
 
-**`journal_entry` de la escena:** [PENDIENTE · ChatGPT]
-
 ### Opciones
-| ID | Texto del botón (fuente) | Efecto (fuente) | Efecto en el contrato maestro | `response_text` | `journal_tag` | Texto del diario |
-|---|---|---|---|---|---|---|
-| `74_departure_o1` | Memorizar el camino y los rostros. | `training_focus = observation; flag departure_observant` | `campaign.training_focus` = `observation`; flag `departure_observant` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
-| `74_departure_o2` | Controlar la respiración. | `training_focus = balanced; flag departure_composure` | `campaign.training_focus` = `balanced`; flag `departure_composure` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
-| `74_departure_o3` | Observar a Peeta sin hablar. | `rel_katniss_peeta +1; flag departure_noticed_peeta` | `rel.katniss_peeta` +1; flag `departure_noticed_peeta` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
+#### `74_departure_o1` — Memorizar el camino y los rostros.
+- **Efecto (fuente):** `training_focus = observation; flag departure_observant` → `campaign.training_focus` = `observation`; flag `departure_observant`
+- **Respuesta inmediata (anexo):** «Guarda cada detalle. Los lugares y las personas pueden decirte más de lo que dicen en voz alta.»
+- **Diario** (`74.diary.74_departure.74_departure_o1`): «Antes de subir al tren memoricé el camino, las posiciones de los agentes y los rostros que pude reconocer. No sabía si esos detalles servirían de algo, pero observar era mejor que dejar que el miedo ocupara todo el espacio.»
+- **Eco:** inclinación descriptiva a observar el entorno; no concede conocimiento automático del mapa. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
+#### `74_departure_o2` — Controlar la respiración.
+- **Efecto (fuente):** `training_focus = balanced; flag departure_composure` → `campaign.training_focus` = `balanced`; flag `departure_composure`
+- **Respuesta inmediata (anexo):** «Inspira. Cuenta. Vuelve a hacerlo. No tienes que resolver el futuro en este instante.»
+- **Diario** (`74.diary.74_departure.74_departure_o2`): «Me concentré en respirar mientras me conducían a la estación. El miedo seguía allí, pero al menos podía impedir que decidiera cada uno de mis movimientos.»
+- **Eco:** recuerdo de autocontrol; no concede inmunidad al miedo ni bonificaciones ocultas. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
+#### `74_departure_o3` — Observar a Peeta sin hablar.
+- **Efecto (fuente):** `rel_katniss_peeta +1; flag departure_noticed_peeta` → `rel.katniss_peeta` +1; flag `departure_noticed_peeta`
+- **Respuesta inmediata (anexo):** «Lo vi a cierta distancia. Ninguno de los dos se acercó.»
+- **Diario** (`74.diary.74_departure.74_departure_o3`): «Peeta caminaba acompañado por su escolta. Quise saber qué estaba pensando, pero no tenía forma de preguntárselo. Seguimos caminos separados hacia el mismo tren.»
+- **Eco:** familiaridad visual, sin asumir confianza. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
 
 ---
 
@@ -140,14 +166,22 @@
 
 **`player_prompt`** (la pregunta antes de decidir): [PENDIENTE · ChatGPT]
 
-**`journal_entry` de la escena:** [PENDIENTE · ChatGPT]
-
 ### Opciones
-| ID | Texto del botón (fuente) | Efecto (fuente) | Efecto en el contrato maestro | `response_text` | `journal_tag` | Texto del diario |
-|---|---|---|---|---|---|---|
-| `74_train_o1` | Exigir instrucciones concretas a Haymitch. | `rel_katniss_haymitch +2; flag haymitch_practical_questions` | `rel.katniss_haymitch` +2; flag `haymitch_practical_questions` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
-| `74_train_o2` | Preguntar a Peeta por su estrategia. | `rel_katniss_peeta +2; flag train_peeta_opening` | `rel.katniss_peeta` +2; flag `train_peeta_opening` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
-| `74_train_o3` | Escuchar sin revelar tus habilidades. | `training_focus = observation; flag katniss_keeps_advantage_private` | `campaign.training_focus` = `observation`; flag `katniss_keeps_advantage_private` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
+#### `74_train_o1` — Exigir instrucciones concretas a Haymitch.
+- **Efecto (fuente):** `rel_katniss_haymitch +2; flag haymitch_practical_questions` → `rel.katniss_haymitch` +2; flag `haymitch_practical_questions`
+- **Respuesta inmediata (anexo):** «No necesito que me tranquilices. Necesito saber qué esperan de nosotros y qué podemos hacer para seguir vivos.»
+- **Diario** (`74.diary.74_train.74_train_o1`): «Le pedí a Haymitch respuestas prácticas. No sabía cuánto podía confiar en él, pero era nuestro mentor y necesitaba entender qué podía enseñarnos antes de llegar.»
+- **Eco:** Haymitch puede ofrecer explicaciones más directas; no se crea una alianza automática. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
+#### `74_train_o2` — Preguntar a Peeta por su estrategia.
+- **Efecto (fuente):** `rel_katniss_peeta +2; flag train_peeta_opening` → `rel.katniss_peeta` +2; flag `train_peeta_opening`
+- **Respuesta inmediata (anexo):** «Quería saber cómo pensaba afrontar los Juegos. Su respuesta no resolvió todas mis dudas, pero abrió una conversación.»
+- **Diario** (`74.diary.74_train.74_train_o2`): «Le pregunté a Peeta por su estrategia. Hablar con él no borró el hecho de que ambos éramos tributos del mismo distrito, pero me permitió conocer un poco mejor cómo afrontaba la situación.»
+- **Eco:** referencia a esa conversación durante el entrenamiento. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
+#### `74_train_o3` — Escuchar sin revelar tus habilidades.
+- **Efecto (fuente):** `training_focus = observation; flag katniss_keeps_advantage_private` → `campaign.training_focus` = `observation`; flag `katniss_keeps_advantage_private`
+- **Respuesta inmediata (anexo):** «Escucha primero. No tienes por qué entregar toda la información que tienes.»
+- **Diario** (`74.diary.74_train.74_train_o3`): «Dejé que Haymitch y Peeta hablaran. No expliqué qué sabía hacer ni qué pensaba intentar. Todavía no tenía motivos para mostrar todas mis cartas.»
+- **Eco:** reflexión de entrenamiento más reservada; no oculta habilidades ya conocidas por el sistema. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
 
 ---
 
@@ -170,14 +204,22 @@
 
 **`player_prompt`** (la pregunta antes de decidir): [PENDIENTE · ChatGPT]
 
-**`journal_entry` de la escena:** [PENDIENTE · ChatGPT]
-
 ### Opciones
-| ID | Texto del botón (fuente) | Efecto (fuente) | Efecto en el contrato maestro | `response_text` | `journal_tag` | Texto del diario |
-|---|---|---|---|---|---|---|
-| `74_arrival_o1` | Observar arquitectura y rutas. | `training_focus = observation; flag capitol_layout_observed` | `campaign.training_focus` = `observation`; flag `capitol_layout_observed` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
-| `74_arrival_o2` | Permanecer cerca de Peeta. | `rel_katniss_peeta +1; flag arrival_stayed_near_peeta` | `rel.katniss_peeta` +1; flag `arrival_stayed_near_peeta` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
-| `74_arrival_o3` | Responder con cortesía breve. | `flag arrival_guarded` | flag `arrival_guarded` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
+#### `74_arrival_o1` — Observar arquitectura y rutas.
+- **Efecto (fuente):** `training_focus = observation; flag capitol_layout_observed` → `campaign.training_focus` = `observation`; flag `capitol_layout_observed`
+- **Respuesta inmediata (anexo):** «Las fachadas, los accesos y los pasillos. Intenta recordar cómo está organizado el lugar.»
+- **Diario** (`74.diary.74_arrival.74_arrival_o1`): «Al llegar al Capitolio presté atención a la distribución del complejo. Todo parecía diseñado para impresionar y controlar el movimiento de quienes entraban.»
+- **Eco:** descripción de orientación; no concede rutas secretas ni ventajas de navegación. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
+#### `74_arrival_o2` — Permanecer cerca de Peeta.
+- **Efecto (fuente):** `rel_katniss_peeta +1; flag arrival_stayed_near_peeta` → `rel.katniss_peeta` +1; flag `arrival_stayed_near_peeta`
+- **Respuesta inmediata (anexo):** «Su presencia hacía que el lugar resultara un poco menos desconocido.»
+- **Diario** (`74.diary.74_arrival.74_arrival_o2`): «Me mantuve cerca de Peeta mientras nos conducían por el complejo. No sabía si aquello era confianza o simplemente la necesidad de reconocer a alguien del Distrito 12.»
+- **Eco:** referencia de familiaridad, sin alianza incondicional. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
+#### `74_arrival_o3` — Responder con cortesía breve.
+- **Efecto (fuente):** `flag arrival_guarded` → flag `arrival_guarded`
+- **Respuesta inmediata (anexo):** «Contesté lo necesario y no ofrecí más de lo que me habían preguntado.»
+- **Diario** (`74.diary.74_arrival.74_arrival_o3`): «Decidí ser correcta sin mostrar demasiado. En el Capitolio incluso una respuesta sencilla podía convertirse en parte de la imagen que otros construyeran de mí.»
+- **Eco:** primera impresión más reservada. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
 
 ---
 
@@ -200,14 +242,22 @@
 
 **`player_prompt`** (la pregunta antes de decidir): [PENDIENTE · ChatGPT]
 
-**`journal_entry` de la escena:** [PENDIENTE · ChatGPT]
-
 ### Opciones
-| ID | Texto del botón (fuente) | Efecto (fuente) | Efecto en el contrato maestro | `response_text` | `journal_tag` | Texto del diario |
-|---|---|---|---|---|---|---|
-| `74_prep_o1` | Confiar en la propuesta de Cinna. | `image_capitol +2; sponsor_interest +1; flag cinna_trust` | `public.image_capitol` +2; `sponsor.interest` +1; flag `cinna_trust` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
-| `74_prep_o2` | Conservar una referencia visible al Distrito 12. | `flag district_identity_visible` | flag `district_identity_visible` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
-| `74_prep_o3` | Aceptar el trabajo sin mostrar entusiasmo. | `image_capitol +1; flag prep_controlled` | `public.image_capitol` +1; flag `prep_controlled` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
+#### `74_prep_o1` — Confiar en la propuesta de Cinna.
+- **Efecto (fuente):** `image_capitol +2; sponsor_interest +1; flag cinna_trust` → `public.image_capitol` +2; `sponsor.interest` +1; flag `cinna_trust`
+- **Respuesta inmediata (anexo):** «No tienes que convertirte en otra persona. Si el público va a mirarte, al menos que recuerde quién eres.»
+- **Diario** (`74.diary.74_prep.74_prep_o1`): «Cinna no me pidió que fingiera ser alguien distinta. Su propuesta consistía en hacer visible algo que ya formaba parte de mí. Decidí confiar en su criterio.»
+- **Eco:** coordinación con Cinna durante el desfile. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
+#### `74_prep_o2` — Conservar una referencia visible al Distrito 12.
+- **Efecto (fuente):** `flag district_identity_visible` → flag `district_identity_visible`
+- **Respuesta inmediata (anexo):** «No quiero que el Capitolio borre de dónde vengo.»
+- **Diario** (`74.diary.74_prep.74_prep_o2`): «Acepté la preparación, pero quise conservar una señal de mi procedencia. No sabía cómo interpretaría el público aquel detalle; para mí era importante no desaparecer dentro del espectáculo.»
+- **Eco:** el diario conserva la intención. Solo se refleja en el atuendo si el diseño aprobado lo permite; no altera por sí solo el atuendo canónico. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
+#### `74_prep_o3` — Aceptar el trabajo sin mostrar entusiasmo.
+- **Efecto (fuente):** `image_capitol +1; flag prep_controlled` → `public.image_capitol` +1; flag `prep_controlled`
+- **Respuesta inmediata (anexo):** «Deja que hagan su trabajo. No tienes que regalarles también tus reacciones.»
+- **Diario** (`74.diary.74_prep.74_prep_o3`): «Permití que el equipo terminara la preparación sin fingir entusiasmo. Podía colaborar sin olvidar que aquello era una presentación organizada para el Capitolio.»
+- **Eco:** descripción contenida antes del desfile. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
 
 ---
 
@@ -230,14 +280,22 @@
 
 **`player_prompt`** (la pregunta antes de decidir): [PENDIENTE · ChatGPT]
 
-**`journal_entry` de la escena:** [PENDIENTE · ChatGPT]
-
 ### Opciones
-| ID | Texto del botón (fuente) | Efecto (fuente) | Efecto en el contrato maestro | `response_text` | `journal_tag` | Texto del diario |
-|---|---|---|---|---|---|---|
-| `74_parade_o1` | Sostener la mirada del público. | `image_capitol +2; sponsor_interest +2; flag parade_confident` | `public.image_capitol` +2; `sponsor.interest` +2; flag `parade_confident` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
-| `74_parade_o2` | Compartir el momento con Peeta. | `rel_katniss_peeta +2; image_capitol +1; flag parade_pair_identity` | `rel.katniss_peeta` +2; `public.image_capitol` +1; flag `parade_pair_identity` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
-| `74_parade_o3` | Seguir las indicaciones de Cinna. | `flag parade_trust_team` | flag `parade_trust_team` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
+#### `74_parade_o1` — Sostener la mirada del público.
+- **Efecto (fuente):** `image_capitol +2; sponsor_interest +2; flag parade_confident` → `public.image_capitol` +2; `sponsor.interest` +2; flag `parade_confident`
+- **Respuesta inmediata (anexo):** «No aparté la mirada. Durante unos segundos, decidí que no serían ellos quienes me hicieran bajar la cabeza.»
+- **Diario** (`74.diary.74_parade.74_parade_o1`): «La avenida estaba llena de voces y luces. Sostuve la mirada del público y sentí cómo cambiaba su atención. No podía controlar lo que pensaban, pero sí cómo me presentaba ante ellos.»
+- **Eco:** refuerza la descripción de reacción pública ya contemplada por el juego. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
+#### `74_parade_o2` — Compartir el momento con Peeta.
+- **Efecto (fuente):** `rel_katniss_peeta +2; image_capitol +1; flag parade_pair_identity` → `rel.katniss_peeta` +2; `public.image_capitol` +1; flag `parade_pair_identity`
+- **Respuesta inmediata (anexo):** «No estábamos allí por las mismas razones, pero en aquel instante compartimos el centro de todas las miradas.»
+- **Diario** (`74.diary.74_parade.74_parade_o2`): «Compartí el momento con Peeta. El gesto nos presentó juntos ante el público y convirtió a los dos tributos del Distrito 12 en una imagen que el Capitolio podía recordar.»
+- **Eco:** imagen pública conjunta y contexto para el sistema de patrocinadores existente. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
+#### `74_parade_o3` — Seguir las indicaciones de Cinna.
+- **Efecto (fuente):** `flag parade_trust_team` → flag `parade_trust_team`
+- **Respuesta inmediata (anexo):** «Confié en las indicaciones de Cinna y me concentré en mantener la compostura.»
+- **Diario** (`74.diary.74_parade.74_parade_o3`): «Seguí las indicaciones de Cinna durante el desfile. Él conocía el espectáculo mejor que yo. Mi tarea era sostener la presentación sin perder de vista quién era.»
+- **Eco:** reconocimiento del trabajo del equipo al terminar el desfile. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
 
 ---
 
@@ -260,14 +318,22 @@
 
 **`player_prompt`** (la pregunta antes de decidir): [PENDIENTE · ChatGPT]
 
-**`journal_entry` de la escena:** [PENDIENTE · ChatGPT]
-
 ### Opciones
-| ID | Texto del botón (fuente) | Efecto (fuente) | Efecto en el contrato maestro | `response_text` | `journal_tag` | Texto del diario |
-|---|---|---|---|---|---|---|
-| `74_training_o1` | Practicar tiro con arco. | `skill_archery +1; training_focus = archery; flag trained_archery` | `skill.archery` +1; `campaign.training_focus` = `archery`; flag `trained_archery` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
-| `74_training_o2` | Practicar supervivencia y rastreo. | `skill_survival +1; training_focus = survival; flag trained_survival` | `skill.survival` +1; `campaign.training_focus` = `survival`; flag `trained_survival` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
-| `74_training_o3` | Observar estaciones y comportamientos. | `skill_observation +1; training_focus = observation; flag training_observed_others` | `skill.observation` +1; `campaign.training_focus` = `observation`; flag `training_observed_others` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
+#### `74_training_o1` — Practicar tiro con arco.
+- **Efecto (fuente):** `skill_archery +1; training_focus = archery; flag trained_archery` → `skill.archery` +1; `campaign.training_focus` = `archery`; flag `trained_archery`
+- **Respuesta inmediata (anexo):** «El arco era una habilidad que conocía. Practicar delante de todos significaba decidir cuánto quería mostrar.»
+- **Diario** (`74.diary.74_training.74_training_o1`): «Elegí practicar tiro con arco. La familiaridad con el arma me dio cierta seguridad, aunque sabía que cada movimiento podía ser observado por otros tributos y por los Vigilantes.»
+- **Eco:** referencia a la práctica y atributo de arco solo si ya existe en el sistema. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
+#### `74_training_o2` — Practicar supervivencia y rastreo.
+- **Efecto (fuente):** `skill_survival +1; training_focus = survival; flag trained_survival` → `skill.survival` +1; `campaign.training_focus` = `survival`; flag `trained_survival`
+- **Respuesta inmediata (anexo):** «Quería concentrarme en lo que podía mantenerme viva fuera de una pelea.»
+- **Diario** (`74.diary.74_training.74_training_o2`): «Dediqué la sesión a supervivencia y rastreo. En la Arena no todo dependería de enfrentarse a alguien. Encontrar recursos y leer el entorno también podía marcar la diferencia.»
+- **Eco:** atributo de supervivencia solo si ya existe; no crear mecánica nueva. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
+#### `74_training_o3` — Observar estaciones y comportamientos.
+- **Efecto (fuente):** `skill_observation +1; training_focus = observation; flag training_observed_others` → `skill.observation` +1; `campaign.training_focus` = `observation`; flag `training_observed_others`
+- **Respuesta inmediata (anexo):** «Antes de decidir qué mostrar, preferí entender cómo se movían los demás.»
+- **Diario** (`74.diary.74_training.74_training_o3`): «Observé las estaciones y los comportamientos de los otros tributos. No inicié encuentros ni saqué conclusiones definitivas. Solo intenté aprender cómo funcionaba aquel espacio.»
+- **Eco:** inclinación de observación descriptiva; no revela estadísticas privadas de otros tributos. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
 
 ---
 
@@ -290,14 +356,22 @@
 
 **`player_prompt`** (la pregunta antes de decidir): [PENDIENTE · ChatGPT]
 
-**`journal_entry` de la escena:** [PENDIENTE · ChatGPT]
-
 ### Opciones
-| ID | Texto del botón (fuente) | Efecto (fuente) | Efecto en el contrato maestro | `response_text` | `journal_tag` | Texto del diario |
-|---|---|---|---|---|---|---|
-| `74_private_o1` | Demostrar precisión con el arco. | `private_session_result = exceptional; flag private_archery_display` | `campaign.private_session_result` = `exceptional`; flag `private_archery_display` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
-| `74_private_o2` | Combinar precisión y lectura táctica. | `private_session_result = exceptional; flag private_tactical_display` | `campaign.private_session_result` = `exceptional`; flag `private_tactical_display` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
-| `74_private_o3` | Mantener la calma y reservar capacidades. | `private_session_result = strong; flag private_controlled_display` | `campaign.private_session_result` = `strong`; flag `private_controlled_display` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
+#### `74_private_o1` — Demostrar precisión con el arco.
+- **Efecto (fuente):** `private_session_result = exceptional; flag private_archery_display` → `campaign.private_session_result` = `exceptional`; flag `private_archery_display`
+- **Respuesta inmediata (anexo):** «Elegí mostrar una habilidad que dominaba. El resultado sería de ellos, pero la demostración era mía.»
+- **Diario** (`74.diary.74_private_session.74_private_o1`): «En la sesión privada utilicé el arco para demostrar precisión. Los Vigilantes no reaccionaron como un público normal. Anotaron el resultado y me dejaron sin saber qué habían decidido.»
+- **Eco:** conserva el método de demostración. La puntuación canónica extraordinariamente alta se mantiene. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
+#### `74_private_o2` — Combinar precisión y lectura táctica.
+- **Efecto (fuente):** `private_session_result = exceptional; flag private_tactical_display` → `campaign.private_session_result` = `exceptional`; flag `private_tactical_display`
+- **Respuesta inmediata (anexo):** «No bastaba con acertar. Quería demostrar que también sabía evaluar una situación.»
+- **Diario** (`74.diary.74_private_session.74_private_o2`): «Combiné precisión y lectura táctica durante la sesión. Intenté mostrar que podía tomar decisiones y no limitarme a ejecutar un movimiento.»
+- **Eco:** modifica la descripción, no el valor canónico de la puntuación. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
+#### `74_private_o3` — Mantener la calma y reservar capacidades.
+- **Efecto (fuente):** `private_session_result = strong; flag private_controlled_display` → `campaign.private_session_result` = `strong`; flag `private_controlled_display`
+- **Respuesta inmediata (anexo):** «Mostré lo suficiente para que entendieran que no era una presa fácil, pero no todo lo que podía hacer.»
+- **Diario** (`74.diary.74_private_session.74_private_o3`): «Mantuve la calma y reservé parte de mis capacidades. Los Vigilantes tendrían que evaluar lo que habían visto. Yo no podía controlar su interpretación.»
+- **Eco:** matiza el recuerdo. La puntuación sigue siendo extraordinariamente alta en la ruta canónica. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
 
 ---
 
@@ -320,14 +394,22 @@
 
 **`player_prompt`** (la pregunta antes de decidir): [PENDIENTE · ChatGPT]
 
-**`journal_entry` de la escena:** [PENDIENTE · ChatGPT]
-
 ### Opciones
-| ID | Texto del botón (fuente) | Efecto (fuente) | Efecto en el contrato maestro | `response_text` | `journal_tag` | Texto del diario |
-|---|---|---|---|---|---|---|
-| `74_interview_o1` | Responder con sinceridad contenida. | `interview_tone = guarded; image_capitol +1; flag interview_honest` | `campaign.interview_tone` = `guarded`; `public.image_capitol` +1; flag `interview_honest` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
-| `74_interview_o2` | Mostrar calidez. | `interview_tone = warm; sponsor_interest +2; flag interview_warm` | `campaign.interview_tone` = `warm`; `sponsor.interest` +2; flag `interview_warm` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
-| `74_interview_o3` | Responder con firmeza. | `interview_tone = defiant; image_capitol +1; flag interview_defiant` | `campaign.interview_tone` = `defiant`; `public.image_capitol` +1; flag `interview_defiant` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
+#### `74_interview_o1` — Responder con sinceridad contenida.
+- **Efecto (fuente):** `interview_tone = guarded; image_capitol +1; flag interview_honest` → `campaign.interview_tone` = `guarded`; `public.image_capitol` +1; flag `interview_honest`
+- **Respuesta inmediata (anexo):** «Contesté sin adornar demasiado mis palabras. No quería que la entrevista hablara por mí.»
+- **Diario** (`74.diary.74_interview.74_interview_o1`): «Intenté responder con sinceridad sin entregar más de lo que estaba dispuesta a contar. Cada pregunta parecía sencilla hasta que recordaba cuántas personas estaban escuchando.»
+- **Eco:** tono público `guarded`. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
+#### `74_interview_o2` — Mostrar calidez.
+- **Efecto (fuente):** `interview_tone = warm; sponsor_interest +2; flag interview_warm` → `campaign.interview_tone` = `warm`; `sponsor.interest` +2; flag `interview_warm`
+- **Respuesta inmediata (anexo):** «Permití que el público viera algo más que mi miedo y mi desconfianza.»
+- **Diario** (`74.diary.74_interview.74_interview_o2`): «Mostré calidez durante la entrevista. No significaba que confiara en el Capitolio, pero sí que podía decidir qué parte de mí quería presentar ante la audiencia.»
+- **Eco:** puede reflejarse en el interés de patrocinadores ya existente. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
+#### `74_interview_o3` — Responder con firmeza.
+- **Efecto (fuente):** `interview_tone = defiant; image_capitol +1; flag interview_defiant` → `campaign.interview_tone` = `defiant`; `public.image_capitol` +1; flag `interview_defiant`
+- **Respuesta inmediata (anexo):** «No iba a permitir que cada pregunta me colocara en el papel que otros habían elegido.»
+- **Diario** (`74.diary.74_interview.74_interview_o3`): «Respondí con firmeza. Sabía que podían interpretar mis palabras como desafío, pero preferí no fingir una docilidad que no sentía.»
+- **Eco:** tono público `defiant`; no inicia una confrontación ni una consecuencia política nueva. — **sin frase escrita: no se muestra** [PENDIENTE · ChatGPT]
 
 ---
 
@@ -350,55 +432,24 @@
 
 **`player_prompt`** (la pregunta antes de decidir): [PENDIENTE · ChatGPT]
 
-**`journal_entry` de la escena:** [PENDIENTE · ChatGPT]
-
 ### Opciones
-| ID | Texto del botón (fuente) | Efecto (fuente) | Efecto en el contrato maestro | `response_text` | `journal_tag` | Texto del diario |
-|---|---|---|---|---|---|---|
-| `74_launch_o1` | Repasar prioridades de supervivencia. | `launch_plan = survival; flag launch_survival_focus` | `campaign.launch_plan` = `survival`; flag `launch_survival_focus` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
-| `74_launch_o2` | Recordar la promesa a tu familia. | `launch_plan = family; flag launch_family_focus` | `campaign.launch_plan` = `family`; flag `launch_family_focus` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
-| `74_launch_o3` | Prepararte para observar el terreno. | `launch_plan = observation; flag launch_observation_focus` | `campaign.launch_plan` = `observation`; flag `launch_observation_focus` | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] | [PENDIENTE · ChatGPT] |
+#### `74_launch_o1` — Repasar prioridades de supervivencia.
+- **Efecto (fuente):** `launch_plan = survival; flag launch_survival_focus` → `campaign.launch_plan` = `survival`; flag `launch_survival_focus`
+- **Respuesta inmediata (anexo):** «Piensa en lo esencial. Mantenerte viva es lo primero; todo lo demás tendrá que esperar.»
+- **Diario** (`74.diary.74_launch.74_launch_o1`): «Mientras la plataforma se preparaba, repasé mis prioridades de supervivencia. No podía anticipar todo lo que encontraría, así que intenté concentrarme en las decisiones inmediatas.»
+- **Eco:** `launch_plan=survival`.
+#### `74_launch_o2` — Recordar la promesa a tu familia.
+- **Efecto (fuente):** `launch_plan = family; flag launch_family_focus` → `campaign.launch_plan` = `family`; flag `launch_family_focus`
+- **Respuesta inmediata (anexo):** «Primero pensé en Prim y en mi madre. La promesa que había dejado atrás seguía conmigo.»
+- **Diario** (`74.diary.74_launch.74_launch_o2`): «Recordé a mi familia y las promesas que había hecho. No sabía qué podría cumplir desde la Arena, pero necesitaba conservar una razón para seguir adelante.»
+- **Eco:** `launch_plan=family`. Si existe `gale_promise_explicit`, añadir una sola frase sobre esa promesa.
+#### `74_launch_o3` — Prepararte para observar el terreno.
+- **Efecto (fuente):** `launch_plan = observation; flag launch_observation_focus` → `campaign.launch_plan` = `observation`; flag `launch_observation_focus`
+- **Respuesta inmediata (anexo):** «Mira antes de moverte. El terreno puede decidir tanto como cualquier adversario.»
+- **Diario** (`74.diary.74_launch.74_launch_o3`): «Me preparé para observar el terreno en cuanto la plataforma terminara de elevarse. No sabía qué encontraría, pero quería evitar actuar sin mirar.»
+- **Eco:** `launch_plan=observation`.
 
 ---
-
-## Diario de continuidad
-La fuente pide generar el diario desde los flags, sin duplicar entradas al cargar (el motor ya lo garantiza: cada escena registra una sola decisión). Falta el texto de cada entrada:
-
-| Flag | Lo fija | Escena | Texto del diario |
-|---|---|---|---|
-| `prim_saw_katniss_protect` | `74_reaping_o1` | `74_reaping` | [PENDIENTE · ChatGPT] |
-| `katniss_observed_ceremony` | `74_reaping_o2` | `74_reaping` | [PENDIENTE · ChatGPT] |
-| `first_recognition_peeta` | `74_reaping_o3` | `74_reaping` | [PENDIENTE · ChatGPT] |
-| `gale_promise_explicit` | `74_goodbyes_o1` | `74_goodbyes` | [PENDIENTE · ChatGPT] |
-| `mother_responsibility_named` | `74_goodbyes_o2` | `74_goodbyes` | [PENDIENTE · ChatGPT] |
-| `goodbye_without_words` | `74_goodbyes_o3` | `74_goodbyes` | [PENDIENTE · ChatGPT] |
-| `departure_observant` | `74_departure_o1` | `74_departure` | [PENDIENTE · ChatGPT] |
-| `departure_composure` | `74_departure_o2` | `74_departure` | [PENDIENTE · ChatGPT] |
-| `departure_noticed_peeta` | `74_departure_o3` | `74_departure` | [PENDIENTE · ChatGPT] |
-| `haymitch_practical_questions` | `74_train_o1` | `74_train` | [PENDIENTE · ChatGPT] |
-| `train_peeta_opening` | `74_train_o2` | `74_train` | [PENDIENTE · ChatGPT] |
-| `katniss_keeps_advantage_private` | `74_train_o3` | `74_train` | [PENDIENTE · ChatGPT] |
-| `capitol_layout_observed` | `74_arrival_o1` | `74_arrival` | [PENDIENTE · ChatGPT] |
-| `arrival_stayed_near_peeta` | `74_arrival_o2` | `74_arrival` | [PENDIENTE · ChatGPT] |
-| `arrival_guarded` | `74_arrival_o3` | `74_arrival` | [PENDIENTE · ChatGPT] |
-| `cinna_trust` | `74_prep_o1` | `74_prep` | [PENDIENTE · ChatGPT] |
-| `district_identity_visible` | `74_prep_o2` | `74_prep` | [PENDIENTE · ChatGPT] |
-| `prep_controlled` | `74_prep_o3` | `74_prep` | [PENDIENTE · ChatGPT] |
-| `parade_confident` | `74_parade_o1` | `74_parade` | [PENDIENTE · ChatGPT] |
-| `parade_pair_identity` | `74_parade_o2` | `74_parade` | [PENDIENTE · ChatGPT] |
-| `parade_trust_team` | `74_parade_o3` | `74_parade` | [PENDIENTE · ChatGPT] |
-| `trained_archery` | `74_training_o1` | `74_training` | [PENDIENTE · ChatGPT] |
-| `trained_survival` | `74_training_o2` | `74_training` | [PENDIENTE · ChatGPT] |
-| `training_observed_others` | `74_training_o3` | `74_training` | [PENDIENTE · ChatGPT] |
-| `private_archery_display` | `74_private_o1` | `74_private_session` | [PENDIENTE · ChatGPT] |
-| `private_tactical_display` | `74_private_o2` | `74_private_session` | [PENDIENTE · ChatGPT] |
-| `private_controlled_display` | `74_private_o3` | `74_private_session` | [PENDIENTE · ChatGPT] |
-| `interview_honest` | `74_interview_o1` | `74_interview` | [PENDIENTE · ChatGPT] |
-| `interview_warm` | `74_interview_o2` | `74_interview` | [PENDIENTE · ChatGPT] |
-| `interview_defiant` | `74_interview_o3` | `74_interview` | [PENDIENTE · ChatGPT] |
-| `launch_survival_focus` | `74_launch_o1` | `74_launch` | [PENDIENTE · ChatGPT] |
-| `launch_family_focus` | `74_launch_o2` | `74_launch` | [PENDIENTE · ChatGPT] |
-| `launch_observation_focus` | `74_launch_o3` | `74_launch` | [PENDIENTE · ChatGPT] |
 
 ## Variables
 | Variable en el guion | Variable en el contrato maestro | Tipo | Inicial | Valores |
@@ -416,29 +467,37 @@ La fuente pide generar el diario desde los flags, sin duplicar entradas al carga
 | `interview_tone` | `campaign.interview_tone` | enum | `unknown` | `unknown`, `guarded`, `warm`, `defiant` |
 | `launch_plan` | `campaign.launch_plan` | enum | `unknown` | `unknown`, `survival`, `family`, `observation` |
 
-## Transferencia a la Arena — PROPUESTA TÉCNICA (no activa)
-Al terminar `74_launch`, el motor guarda todo el estado en `game.continuity['74']` y la partida entra en la Arena del 74.º existente (cuatro capítulos, sin acontecimientos nuevos).
+## Transferencia a la Arena (anexo 1.1, implementada)
+Al terminar `74_launch` (y leer su respuesta), el juego:
+1. crea la instantánea `campaign_74:prearena:v1`, con:
+   - versión de contenido, `timeline_id` y `route_type`;
+   - las once escenas completadas, las variables y los flags;
+   - los `decision_ids` y los `diary_entry_ids`;
+2. la **guarda antes** de entrar en la Arena. Si no se puede guardar, no se entra;
+3. si se reintenta, devuelve la misma instantánea **sin sumar nada otra vez**;
+4. abre únicamente la Arena del 74.º existente.
 
-Hoy la Arena **no lee** ese estado. Esta es la traducción que propongo a las estadísticas que la Arena ya usa. Solo se activará cuando la aprobéis o la cambiéis:
-
-| Variable | Propuesta | Estadística de la Arena | Motivo |
-|---|---|---|---|
-| `public.image_capitol` | +2 por punto (máx. +10) | `support` (apoyo del público) | La imagen pública ya alimenta el apoyo |
-| `sponsor.interest` | +1 por punto | `sponsorTrust` (envíos de patrocinadores) | Correspondencia directa |
-| `campaign.private_session_result` | `exceptional` +3 · `strong` +1 | `sponsorTrust` | La puntuación atrae patrocinadores |
-| `skill.archery` | +1 si ≥ 1 | `skill` (combate) | |
-| `skill.observation` | +2 si ≥ 1 | `stealth` | |
-| `skill.survival` | −5 al empezar, si ≥ 1 | `thirst` y `hunger` | |
-| `campaign.interview_tone` | `warm` apoyo +5 · `guarded` apoyo +2 · `defiant` rebelión +3 | `support` / `rebellion` | Igual que la entrevista genérica actual |
-| `campaign.launch_plan` | `observation`: tributos visibles en el mapa · `survival`: fatiga −5 · `family`: [PENDIENTE · ChatGPT] | Mapa / `fatigue` | `family` no tiene equivalente mecánico: ¿efecto narrativo solo? |
-| `rel.katniss_peeta`, `rel.katniss_prim`, `rel.katniss_haymitch` | Sin efecto mecánico propuesto | — | Cualquier efecto sobre alianzas o escenas de la Arena es narrativo: decidid si lo tiene |
-| `campaign.training_focus` | Sin efecto propuesto (ya se refleja en `skill.*`) | — | |
-| Flags | Se conservan para la Gira y el 75.º | — | Continuidad |
+| Dato | Uso según el anexo | Estado en el juego |
+|---|---|---|
+| `training_focus` | Contexto descriptivo | Guardado en la instantánea; sin efecto mecánico |
+| Habilidades (arco, supervivencia, observación) | Solo atributos existentes | El juego solo tiene una habilidad genérica (`skill`), sin arco, supervivencia ni observación por separado. **Sin aplicar** (pregunta 6) |
+| `private_session_result` | Registro narrativo; no concede objetos | Guardado; sin efecto mecánico |
+| `image_capitol` | Perfil público inicial | **Sin aplicar** hasta confirmar límites (pregunta 5). Candidato: `support` (0–100, empieza en 12) |
+| `sponsor_interest` | Valor inicial del patrocinio existente, con sus límites | **Sin aplicar** hasta confirmar límites (pregunta 5). Candidato: `sponsorTrust` (empieza en 0) |
+| Relaciones | Contexto; no fuerza alianzas | Guardadas; sin efecto mecánico |
+| `launch_plan` | Texto o prioridad narrativa; no crea turno | Guardado; sin efecto mecánico |
+| Flags familiares | Recuerdos del diario | Guardados; ninguno se convierte en ventaja |
 
 ## Preguntas abiertas (para cerrar el bloque)
-1. ¿Se aprueban los textos de la fuente **tal como están**? Si cambia alguna palabra, cambiad la fuente: los datos se regeneran desde ella.
-2. **Variables declaradas sin uso:** `district_memory` y `canon_route` aparecen en la lista del guion, pero ninguna opción las usa. ¿Faltan efectos o se quitan?
-3. **`74_private_o3`:** deja `private_session_result = strong`, pero el hito dice que la puntuación es «extraordinariamente alta». ¿Se mantiene `strong` o el hito cambia en esta ruta?
-4. **Diálogos:** ¿se mantienen dentro de la prosa o se entregan separados como `dialogue[]`?
-5. **Transferencia a la Arena:** ¿se aprueba la propuesta técnica? ¿Qué hace `launch_plan = family`?
-6. **`location_id` y `participants[]`:** ¿se confirman los IDs propuestos?
+1. **Aprobación:** ¿se aprueban las escenas 1.0 y el anexo 1.1 **tal como están**? Si cambia alguna palabra, cambiad la fuente o el anexo: los datos se regeneran desde ellos.
+2. **`74_private_o3`:**
+   - el efecto de la fuente deja `private_session_result = strong`;
+   - el hito y el anexo dicen que la puntuación sigue siendo «extraordinariamente alta» en las tres opciones;
+   - ¿se cambia el efecto a `exceptional` o se mantiene `strong` como matiz?
+3. **Ecos descritos sin frase:** 28 ecos del anexo describen lo que debería decir el eco, pero no traen la frase (p. ej. «reflexión breve sobre…», «recuerdo silencioso»). Tampoco está escrita la frase de `74_launch_o2` sobre la promesa a Gale. El juego **no muestra** ninguno. ¿Se escriben, o se quedan solo como guía?
+4. **Variables declaradas sin uso:** `district_memory` y `canon_route` aparecen en la lista del guion, pero ninguna opción las usa. ¿Faltan efectos o se quitan?
+5. **Límites del patrocinio:** ¿cuánto suma cada punto de `sponsor_interest` a `sponsorTrust` y cada punto de `image_capitol` a `support`? Con eso se activan los valores.
+6. **Habilidades:** el juego no tiene atributos separados de arco, supervivencia y observación. ¿Se quedan solo en la instantánea, o `skill` sube al tener alguna?
+7. **Diálogos:** ¿se mantienen dentro de la prosa o se entregan separados como `dialogue[]`?
+8. **`location_id` y `participants[]`:** ¿se confirman los IDs propuestos?
+9. **Identificadores:** el juego ya usa los del anexo (`campaign_74`, `campaign_74:<escena>:<opción>:1`, `74.diary.<escena>.<opción>`). Confirmad que son los definitivos.

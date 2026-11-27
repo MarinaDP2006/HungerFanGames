@@ -6,7 +6,16 @@
   - efectos transaccionales y diario;
   - traspaso del estado final a `game.continuity`.
 - **Solo se juegan las campañas `APPROVED`.** Hoy no hay ninguna, así que el juego sigue igual para el jugador.
-- **74.º:** sus datos (`js/campanas/campana-74.js`) se **generan** desde la fuente creativa con `scripts/importar-campana-74.mjs`; una prueba exige que coincidan. Están en estado `DRAFT_FOR_REVIEW`. Las respuestas a las opciones y los textos del diario quedan vacíos porque la fuente no los trae.
+- **74.º:** sus datos (`js/campanas/campana-74.js`) se **generan** con `scripts/importar-campana-74.mjs`; una prueba exige que coincidan con las fuentes. Siguen en estado `DRAFT_FOR_REVIEW`. Contenido:
+  - las 11 escenas de la fuente 1.0;
+  - del anexo 1.1, las 33 respuestas inmediatas, los 33 diarios y los 2 ecos que traen su frase. Los otros 28 ecos solo están descritos y no se muestran.
+- **Motor y anexo 1.1:**
+  - la respuesta se muestra antes de avanzar;
+  - una entrada de diario por decisión (`74.diary.<escena>.<opción>`), con el contrato del anexo;
+  - IDs de decisión `campaign_74:<escena>:<opción>:1`;
+  - **transferencia a la Arena** idempotente (`campaign_74:prearena:v1`), guardada antes de entrar: si no se puede guardar, no se entra.
+  - Los valores numéricos de patrocinio e imagen pública **no se aplican** hasta que se confirmen los límites.
+- **Revisión:** documento único para ChatGPT en `docs/REVISION_74_PARA_CHATGPT.md`, generado desde los datos.
 - **Gira y 75.º:** solo están registradas sus escenas (`STRUCTURE_ONLY`), sin texto.
 - **Guardado formato 5:**
   - registro de decisiones (`game.decisionLog`) con identificador por escena: una decisión ya registrada no vuelve a aplicar efectos (doble pulsación, carga o importación);
