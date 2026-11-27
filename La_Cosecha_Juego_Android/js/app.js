@@ -15,7 +15,7 @@ const pic=(webp,fallback,alt='',cls='',w='',h='')=>`<picture><source srcset="${w
 const portraitPic=(n,alt='',cls='')=>pic(`assets/optimized/tribute-${portraitId(n)}.webp`,portrait(n),alt,cls,300,437);
 let mode=null,game=null,selectedDistrict=12,edition=74,soundOn=true,audioCtx=null;
 // Ajustes y ranura activa (fase 1).
-const DURABLE_KEYS=[...SV.DURABLE_SAVE_KEYS,ST.SETTINGS_KEY];const store=DS.createDurableStorage(localStorage,DS.nativePreferences(typeof window==='undefined'?null:window),{keys:DURABLE_KEYS,onError:e=>console.warn('Copia nativa del guardado:',e)});let storeReport=null;
+const DURABLE_KEYS=[...SV.DURABLE_SAVE_KEYS,ST.SETTINGS_KEY];const store=DS.createDurableStorage(localStorage,DS.nativePreferences(typeof window==='undefined'?null:window),{keys:DURABLE_KEYS,onError:e=>console.warn('Copia nativa del guardado:',e),onAck:ms=>{const r=document.documentElement;if(r&&r.dataset){r.dataset.nativeAckMs=String(ms);r.dataset.nativeAcks=String(store.stats.acked);}}});let storeReport=null;
 let prefs=(()=>{try{return ST.loadSettings(store);}catch{return {...ST.DEFAULT_SETTINGS};}})();soundOn=prefs.sound;
 let currentSlot=1,pendingDelete=null,slotsReturn=null;
 const originalNames=['Aren Voss','Mira Sol','Tavian Rusk','Nera Vale','Daro Flint','Sela Marr','Iven Holt','Lysa Korr','Renn Vale','Tessa Orin','Kelan Dusk','Veya Thorn','Oren Pike','Nima Venn','Cato Rell','Suri Ash','Joren Hale','Mika Voss','Eren Sable','Tala Grey','Riven Moss','Kira Vale','Bram Cole','Yara Fen'];

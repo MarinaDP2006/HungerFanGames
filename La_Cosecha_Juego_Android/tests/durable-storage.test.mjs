@@ -169,3 +169,18 @@ test('exportar e importar no cambian: la huella no estorba al importar', () => {
   assert.equal(SV.unwrapSave(JSON.parse(JSON.stringify(exportada))).preArena50.index, 5);
   assert.equal(SV.unwrapSave({ format: SV.SAVE_FORMAT, version: 3, game: game(2) }).preArena50.index, 2, 'exportaciones antiguas');
 });
+
+test('mide cuánto tarda Android en confirmar cada escritura nativa', async () => {
+  let t = 1000; const acks = [];
+  const lento = { ...fakeNative(), async set() { await null; t += 7; } };
+  const store = DS.createDurableStorage(memLocal(), lento, { keys: KEYS, now: () => t, onAck: ms => acks.push(ms) });
+  SV.writeSlot(store, 1, game(1), '4.10.1');
+  await store.flush();
+  assert.deepEqual(acks, [7]);
+  assert.equal(store.stats.writes, 1);
+  assert.equal(store.stats.acked, 1);
+  assert.equal(store.stats.maxAckMs, 7);
+  const fallo = DS.createDurableStorage(memLocal(), fakeNative({}, { failSet: true }), { keys: KEYS });
+  fallo.setItem(SV.slotKey(1), 'x'); await fallo.flush();
+  assert.equal(fallo.stats.failed, 1);
+});

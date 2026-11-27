@@ -19,11 +19,20 @@ export function nativePreferences(win) {
   return p && typeof p.get === 'function' && typeof p.set === 'function' ? p : null;
 }
 
-export function createDurableStorage(local, native, { keys = [], onError } = {}) {
+// `onAck(ms)` se llama cuando Android confirma una escritura nativa, con lo que ha tardado desde que el juego
+// guardó (puente de Capacitor + SharedPreferences en memoria). A partir de ahí solo falta que Android
+// lo pase a disco (ver docs/GUARDADO.md, «Margen residual»).
+export function createDurableStorage(local, native, { keys = [], onError, onAck, now = () => Date.now() } = {}) {
   const tracked = new Set(keys);
   const pending = new Set();
+  const stats = { writes: 0, acked: 0, failed: 0, lastAckMs: null, maxAckMs: null };
   const track = promise => {
-    const p = Promise.resolve(promise).catch(e => { onError && onError(e); }).finally(() => pending.delete(p));
+    const t0 = now();
+    stats.writes++;
+    const p = Promise.resolve(promise)
+      .then(() => { const ms = now() - t0; stats.acked++; stats.lastAckMs = ms; stats.maxAckMs = Math.max(stats.maxAckMs ?? 0, ms); onAck && onAck(ms, stats); })
+      .catch(e => { stats.failed++; onError && onError(e); })
+      .finally(() => pending.delete(p));
     pending.add(p);
   };
   return {
@@ -42,6 +51,7 @@ export function createDurableStorage(local, native, { keys = [], onError } = {})
     },
     flush: () => Promise.all([...pending]),
     pendingCount: () => pending.size,
+    stats,
   };
 }
 

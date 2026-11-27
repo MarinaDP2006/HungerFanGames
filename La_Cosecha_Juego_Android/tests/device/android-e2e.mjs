@@ -27,6 +27,7 @@ info.versionName = /versionName=([^\s]+)/.exec(pkgInfo)?.[1];
 info.versionCode = /versionCode=(\d+)/.exec(pkgInfo)?.[1];
 info.webview = /versionName=([^\s]+)/.exec((await device.shell('dumpsys package com.google.android.webview')).toString() + (await device.shell('dumpsys package com.android.webview')).toString())?.[1] || 'desconocido';
 info.webviewProveedor = (await device.shell('cmd webviewupdate current-webview-package').catch(() => '')).toString().trim();
+if (/unknown|error/i.test(info.webviewProveedor)) info.webviewProveedor = '';
 console.log('Dispositivo:', info);
 
 async function launch() {

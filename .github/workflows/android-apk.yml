@@ -144,7 +144,7 @@ jobs:
     permissions:
       contents: read
       actions: read
-    timeout-minutes: 40
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -193,6 +193,7 @@ jobs:
             mkdir -p device-report
             if [ -f apk-anterior/app-debug-prueba.apk ]; then adb install apk-anterior/app-debug-prueba.apk && node La_Cosecha_Juego_Android/tests/device/upgrade-prepare.mjs && adb install -r apk/app-debug-prueba.apk; else adb install -r apk/app-debug.apk; fi
             node La_Cosecha_Juego_Android/tests/device/android-e2e.mjs
+            node La_Cosecha_Juego_Android/tests/device/ventana-perdida.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:

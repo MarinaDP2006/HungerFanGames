@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.10.1 — Medición del margen de pérdida
+- El guardado mide cuánto tarda Android en confirmar cada escritura nativa (sin cambiar el formato ni las ranuras).
+- Nueva medición en el emulador (`tests/device/ventana-perdida.mjs`): cierra la app a distintos milisegundos de guardar y comprueba qué se recupera. Resultados en `docs/GUARDADO.md`.
+- Guía y plantilla para validar en un móvil físico.
+
 ## 4.10 — Guardado nativo en Android
 - Las partidas y los ajustes se guardan también con el almacenamiento nativo de Android (`@capacitor/preferences`, SharedPreferences), además de en el WebView. Antes, si Android cerraba la app pocos segundos después de guardar, se podía perder lo último.
 - Al arrancar se comparan las dos copias: las partidas de versiones anteriores se copian a la nativa (migración sin borrar nada), lo perdido en el WebView se recupera de la nativa y, si las dos difieren, gana la copia íntegra y, entre íntegras, la más reciente.
