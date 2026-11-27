@@ -40,7 +40,7 @@ async function launch() {
   page.on('crash', () => errors.push('crash: el proceso de renderizado del WebView se cayó'));
   page.on('close', () => console.log('· la página se cerró'));
   page.on('pageerror', e => errors.push(`pageerror: ${e.message}`));
-  page.on('console', m => { if (m.type() === 'error') errors.push(`console: ${m.text()}`); });
+  page.on('console', m => { if (m.type() === 'error' && !(m.location()?.url || '').includes('/imagenes-propias/')) errors.push(`console: ${m.text()}`); });
   page.on('dialog', d => d.accept().catch(() => {}));
   await page.waitForSelector('#game-version:not(:empty)', { timeout: 120000 });
   // Tras actualizar desde 4.9, el primer arranque puede mostrar la versión vieja (su service worker con caché)

@@ -28,7 +28,7 @@ Estado a 27-11-2026 · rama `integracion-cosecha-5x` · Android 4.17.0 · Archiv
 
 ## Web · Archivo de Panem
 - **Navegación:** 12 secciones con rutas limpias (`/distritos/12`), menú definitivo y sin enlaces externos.
-- **Contenido completo (1.2):** 13 distritos con expediente, Capitolio, 27 personajes, 4 ediciones, cronología, 14 lugares, Gira, Rebelión y Guerra y documentos; cada ficha con su estado de canon y su fuente.
+- **Contenido completo (1.2):** 13 distritos con expediente, Capitolio, 27 personajes, ediciones 74.º y 75.º, cronología, 14 lugares, Gira, Rebelión y Guerra y documentos; cada ficha con su estado de canon y su fuente.
 - **Funcionamiento:** service worker y manifiesto.
 - **Separación:** la web no contiene código del juego, y una prueba lo vigila.
 
