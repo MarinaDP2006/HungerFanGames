@@ -14,6 +14,9 @@ import * as ST from '../js/settings.js';
 import * as SV from '../js/saves.js';
 import * as DS from '../js/durable-storage.js';
 import * as AU from '../js/audio.js';
+import * as DEC from '../js/decisiones.js';
+import * as PC from '../js/precampana.js';
+import * as PCI from '../js/campanas/indice.js';
 import {GAME_VERSION} from '../js/version.js';
 import * as AD from '../js/campaign-50th-dynamic-adapter.js';
 
@@ -29,7 +32,7 @@ function engine(opts={}){
     addEventListener:(type,fn)=>{if(type==='click')clickHandler=fn;},
   };
   class Blob{constructor(parts){lastBlob=parts.join('');}}
-  const ctx={...data,...campaigns,...PRE,ST,SV,DS,AU,GAME_VERSION,...AD,WI,PR,Proxy,document,console,Math,Date,JSON,Number,String,Array,Object,Map,Set,Blob,
+  const ctx={...data,...campaigns,...PRE,ST,SV,DS,AU,DEC,PC,PCI,GAME_VERSION,...AD,WI,PR,Proxy,document,console,Math,Date,JSON,Number,String,Array,Object,Map,Set,Blob,
     URL:{createObjectURL:()=>'blob:x',revokeObjectURL(){}},
     localStorage:{setItem:(k,v)=>{store[k]=String(v)},getItem:k=>store[k]??null},
     alert:m=>alerts.push(m),navigator:{},window:{addEventListener(){}},setTimeout,clearTimeout,AudioContext:undefined,...(opts.overrides||{})};

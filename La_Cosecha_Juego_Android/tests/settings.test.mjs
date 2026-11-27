@@ -13,6 +13,9 @@ import * as ST from '../js/settings.js';
 import * as SV from '../js/saves.js';
 import * as DS from '../js/durable-storage.js';
 import * as AU from '../js/audio.js';
+import * as DEC from '../js/decisiones.js';
+import * as PC from '../js/precampana.js';
+import * as PCI from '../js/campanas/indice.js';
 import { GAME_VERSION } from '../js/version.js';
 
 // Almacenamiento compartido entre «arranques»: simula que el dispositivo conserva localStorage.
@@ -28,7 +31,7 @@ function boot(storage) {
   let click = null, change = null;
   const document = { documentElement: root, querySelector: s => nodes[s] || null, createElement: () => ({ click() {} }), addEventListener: (t, fn) => { if (t === 'click') click = fn; if (t === 'change') change = fn; } };
   class AudioContext { constructor() { this.currentTime = 0; this.destination = {}; } createOscillator() { return { connect() {}, type: '', frequency: { setValueAtTime() {}, exponentialRampToValueAtTime() {} }, start() {}, stop() {} }; } createGain() { return { connect() {}, gain: { setValueAtTime: v => gains.push(v), exponentialRampToValueAtTime() {} } }; } }
-  const ctx = { ...data, ...campaigns, ...PRE, ...AD, ST, SV, DS, AU, GAME_VERSION, WI, PR, Proxy, document, console, Math, Date, JSON, Number, String, Array, Object, Map, Set,
+  const ctx = { ...data, ...campaigns, ...PRE, ...AD, ST, SV, DS, AU, DEC, PC, PCI, GAME_VERSION, WI, PR, Proxy, document, console, Math, Date, JSON, Number, String, Array, Object, Map, Set,
     localStorage: storage, alert() {}, navigator: {}, window: { AudioContext, addEventListener() {} }, setTimeout, clearTimeout };
   let src = fs.readFileSync(new URL('../js/app.js', import.meta.url), 'utf8').replace(/^import .*\n/gm, '');
   src += `\nglobalThis.api={g:()=>game,set:v=>{game=v},prefs:()=>prefs,settings,sound,setMode:(m,e)=>{mode=m;edition=e},begin,save,load};`;

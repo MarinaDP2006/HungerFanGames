@@ -31,9 +31,16 @@ test('las imágenes sin uso no viajan en el bundle', () => {
   }
 });
 test('solo viajan los módulos que se cargan desde index.html', () => {
-  const inBundle = fs.readdirSync(path.join(www, 'js')).sort();
-  const imports = ['app.js', ...[...appJs.matchAll(/from '\.\/([\w.-]+\.js)'/g)].map(m => m[1])].sort();
-  assert.deepEqual(inBundle, [...new Set(imports)].sort());
+  const walk = d => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]);
+  const inBundle = walk(path.join(www, 'js')).map(f => path.relative(path.join(www, 'js'), f)).sort();
+  // Grafo de módulos desde app.js (incluye subcarpetas como js/campanas/).
+  const seen = new Set(), stack = ['app.js'];
+  while (stack.length) {
+    const f = stack.pop(); if (seen.has(f)) continue; seen.add(f);
+    const src = fs.readFileSync(path.join(app, 'js', f), 'utf8');
+    for (const m of src.matchAll(/from '(\.{1,2}\/[^']+\.js)'/g)) stack.push(path.posix.normalize(path.posix.join(path.posix.dirname(f), m[1])));
+  }
+  assert.deepEqual(inBundle, [...seen].sort());
 });
 test('el build falla si index.html carga un módulo que no existe', () => {
   const bad = fs.mkdtempSync(path.join(os.tmpdir(), 'bundle-bad-'));

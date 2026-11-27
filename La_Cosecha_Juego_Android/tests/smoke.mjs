@@ -10,11 +10,14 @@ import * as ST from '../js/settings.js';
 import * as SV from '../js/saves.js';
 import * as DS from '../js/durable-storage.js';
 import * as AU from '../js/audio.js';
+import * as DEC from '../js/decisiones.js';
+import * as PC from '../js/precampana.js';
+import * as PCI from '../js/campanas/indice.js';
 import {GAME_VERSION} from '../js/version.js';
 import * as AD from '../js/campaign-50th-dynamic-adapter.js';
 let screen={innerHTML:''},indicator={textContent:''};
 const document={querySelector:(s)=>s==='#screen'?screen:s==='#save-indicator'?indicator:null};
-const context={...campaigns,...PRE,ST,SV,DS,AU,GAME_VERSION,...AD,WI,PR,Proxy,districts,characters,canonEditions,arenaTypes,mentors,document,console,Math,Date,JSON,Number,String,Array,Object,Map,Set,Blob:class{},URL:{},localStorage:{setItem(){},getItem(){return null}},alert(){},navigator:{},window:{},
+const context={...campaigns,...PRE,ST,SV,DS,AU,DEC,PC,PCI,GAME_VERSION,...AD,WI,PR,Proxy,districts,characters,canonEditions,arenaTypes,mentors,document,console,Math,Date,JSON,Number,String,Array,Object,Map,Set,Blob:class{},URL:{},localStorage:{setItem(){},getItem(){return null}},alert(){},navigator:{},window:{},
   setTimeout,clearTimeout};
 let src=fs.readFileSync(new URL('../js/app.js',import.meta.url),'utf8');
 src=src.replace(/^import .*\n/gm,'');

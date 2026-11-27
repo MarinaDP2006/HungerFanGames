@@ -1,5 +1,21 @@
 # Changelog
 
+## 4.12 — Motor común de precampañas, registro de decisiones y guardado 5
+- **Motor común de precampañas (fase 2, `js/precampana.js`)**, para el 74.º, la Gira y el 75.º (el 50.º sigue con su módulo aprobado). Funciona con datos y no tiene texto propio:
+  - escenas, opciones, condiciones y efectos (`ADD`, `SET`, `SET_FLAG`…);
+  - efectos transaccionales y diario;
+  - traspaso del estado final a `game.continuity`.
+- **Solo se juegan las campañas `APPROVED`.** Hoy no hay ninguna, así que el juego sigue igual para el jugador.
+- **74.º:** sus datos (`js/campanas/campana-74.js`) se **generan** desde la fuente creativa con `scripts/importar-campana-74.mjs`; una prueba exige que coincidan. Están en estado `DRAFT_FOR_REVIEW`. Las respuestas a las opciones y los textos del diario quedan vacíos porque la fuente no los trae.
+- **Gira y 75.º:** solo están registradas sus escenas (`STRUCTURE_ONLY`), sin texto.
+- **Guardado formato 5:**
+  - registro de decisiones (`game.decisionLog`) con identificador por escena: una decisión ya registrada no vuelve a aplicar efectos (doble pulsación, carga o importación);
+  - `game.timeline` con `timeline_id` y `route_type`;
+  - las partidas de los formatos 1–4 se migran al leerlas, en una copia: si algo falla, se devuelve la original;
+  - antes de sobrescribir una ranura antigua se guarda una copia de seguridad (`laCosechaSaveBackup:<n>`), también en la copia nativa;
+  - las decisiones del 50.º ya tomadas se reconstruyen sin volver a aplicar efectos.
+- **Retirados los enlaces externos** (YouTube y artículos de prensa) del modo Historia.
+
 ## 4.11 — Separación del Archivo de Panem y sistema de audio
 - La Web ya no es una copia del videojuego: ahora es el Archivo de Panem, un producto aparte. Android es el único que lleva el motor del juego.
 - Los datos de Panem salen de `compartido/data.js` (raíz del repositorio) y se copian a cada producto con `scripts/sincronizar-compartido.mjs`. El detector de contratos exige que sean idénticos.
