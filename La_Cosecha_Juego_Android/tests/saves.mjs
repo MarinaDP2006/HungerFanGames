@@ -9,6 +9,7 @@ import * as PR from '../js/presidency.js';
 import * as PRE from '../js/campaign-50th-prearena.js';
 import * as ST from '../js/settings.js';
 import * as SV from '../js/saves.js';
+import * as DS from '../js/durable-storage.js';
 import {GAME_VERSION} from '../js/version.js';
 import * as AD from '../js/campaign-50th-dynamic-adapter.js';
 
@@ -19,7 +20,7 @@ function engine(){
   const document={querySelector:s=>nodes[s]||null,createElement:()=>({click(){downloads.push(this.href)},set href(v){this._h=v},get href(){return this._h}})};
   let lastBlob=null;
   class Blob{constructor(parts){this.text=parts.join('');lastBlob=this.text;}}
-  const ctx={...data,...campaigns,...PRE,ST,SV,GAME_VERSION,...AD,WI,PR,Proxy,document,console,Math,Date,JSON,Number,String,Array,Object,Map,Set,Blob,
+  const ctx={...data,...campaigns,...PRE,ST,SV,DS,GAME_VERSION,...AD,WI,PR,Proxy,document,console,Math,Date,JSON,Number,String,Array,Object,Map,Set,Blob,
     URL:{createObjectURL:()=>'blob:prueba',revokeObjectURL(){}},
     localStorage:{setItem:(k,v)=>{store[k]=String(v)},getItem:k=>store[k]??null},
     alert:m=>alerts.push(m),navigator:{},window:{},setTimeout,clearTimeout};

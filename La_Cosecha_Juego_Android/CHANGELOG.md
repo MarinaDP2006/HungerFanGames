@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.10 — Guardado nativo en Android
+- Las partidas y los ajustes se guardan también con el almacenamiento nativo de Android (`@capacitor/preferences`, SharedPreferences), además de en el WebView. Antes, si Android cerraba la app pocos segundos después de guardar, se podía perder lo último.
+- Al arrancar se comparan las dos copias: las partidas de versiones anteriores se copian a la nativa (migración sin borrar nada), lo perdido en el WebView se recupera de la nativa y, si las dos difieren, gana la copia íntegra y, entre íntegras, la más reciente.
+- Cada ranura lleva una huella (`checksum`) para detectar copias dañadas. Es un campo opcional: las partidas sin él se siguen cargando (`saveVersion` sigue en 4). Exportar e importar no cambian.
+- Ranuras, exportación e importación sin cambios. En la Web no cambia nada (no hay Capacitor).
+
 ## 4.9 — Fase 1: base técnica (Android)
 - Versión única: `package.json` es la fuente; la app muestra la versión en el pie y en Ajustes, el service worker usa `la-cosecha-android-<versión>` y el APK recibe `versionName`/`versionCode` (criterio en `docs/VERSIONADO.md`).
 - APK limpio: `scripts/build-web.mjs` empaqueta solo lo que la app carga desde `index.html` y los recursos referenciados. Quedan fuera (se conservan en el repositorio) los módulos 5.2, `campaign-50th-dynamic.js`, `canon-50th.js`, `music.js`, el máster WAV y cinco imágenes sin uso.

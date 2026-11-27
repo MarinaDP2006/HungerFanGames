@@ -53,11 +53,11 @@ const ONLY_ANDROID = [
   [/^js\/campaign-50th-(prearena|dynamic-adapter|dynamic|arena)\.js$/, 'Campaña del 50.º Vasallaje (5.1, 5.5 y módulos de referencia 5.x).'],
   [/^js\/canon-50th\.js$/, 'Datos canónicos de la campaña del 50.º.'],
   [/^js\/music\.js$/, 'Módulo de música del juego (todavía sin conectar).'],
-  [/^js\/(version|settings|saves)\.js$/, 'Versión del juego, Ajustes y ranuras de guardado (fase 1). La Web no los usa.'],
+  [/^js\/(version|settings|saves|durable-storage)\.js$/, 'Versión del juego, Ajustes, ranuras y guardado duradero nativo (fase 1). La Web no los usa.'],
   [/^assets\/audio\/[^/]+\.(ogg|wav)$/, 'Audio original del juego. El WAV es el máster y no viaja en el APK.'],
   [/^tests\/campaign-50th-[a-z-]+(\.test)?\.mjs$/, 'Pruebas de la campaña del 50.º.'],
   [/^tests\/bundle-android\.test\.mjs$/, 'Prueba del empaquetado del APK (www/): exclusión del WAV y caché de Android.'],
-  [/^tests\/(version|settings|saves-slots)\.test\.mjs$/, 'Pruebas de la versión, los Ajustes y las ranuras de guardado de Android.'],
+  [/^tests\/(version|settings|saves-slots|durable-storage)\.test\.mjs$/, 'Pruebas de la versión, los Ajustes, las ranuras y el guardado duradero de Android.'],
   [/^tests\/device\/[\w.-]+\.mjs$/, 'Prueba del APK en un emulador o dispositivo Android.'],
 ];
 const ONLY_WEB = [];
@@ -65,7 +65,7 @@ const ONLY_WEB = [];
 // Configuración y documentación de cada plataforma (fuera del alcance comparado).
 const PLATFORM_FILES = {
   web: ['README_RENDER.md'],
-  android: ['package.json', 'capacitor.config.json', 'scripts/build-web.mjs', 'scripts/android-version.mjs', 'README_ANDROID.md', 'CHANGELOG.md', 'docs/VERSIONADO.md'],
+  android: ['package.json', 'capacitor.config.json', 'scripts/build-web.mjs', 'scripts/android-version.mjs', 'README_ANDROID.md', 'CHANGELOG.md', 'docs/VERSIONADO.md', 'docs/GUARDADO.md', 'docs/PRUEBA_MOVIL_FISICO.md'],
 };
 
 const list = (base, rel) => {

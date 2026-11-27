@@ -1,7 +1,8 @@
 // Ranuras de guardado de La Cosecha.
 //
 // Formato de cada ranura (saveVersion 4):
-//   { format: 'la-cosecha-save', saveVersion: 4, slot, savedAt, gameVersion, game }
+//   { format: 'la-cosecha-save', saveVersion: 4, slot, savedAt, gameVersion, checksum, game }
+//   `checksum` (desde 4.9.1, opcional) detecta una copia dañada; las ranuras sin él se siguen leyendo.
 // Versiones anteriores que se siguen leyendo:
 //   - Ranura única antigua: clave 'laCosechaSave' con el objeto de partida sin envoltorio.
 //     Se migra a la ranura 1 la primera vez; la clave antigua NO se borra.
@@ -16,8 +17,24 @@ export const slotKey = n => `laCosechaSave:${n}`;
 const MODES = ['story', 'free', 'president'];
 const isGame = g => !!g && typeof g === 'object' && MODES.includes(g.mode);
 
+// Huella FNV-1a de la partida serializada: si no coincide al leer, la copia está dañada.
+export function checksum(text) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < text.length; i++) { h ^= text.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h.toString(16).padStart(8, '0');
+}
+
 export function wrapSave(game, slot, gameVersion) {
-  return { format: SAVE_FORMAT, saveVersion: SAVE_VERSION, slot, savedAt: new Date().toISOString(), gameVersion: gameVersion || null, game };
+  return { format: SAVE_FORMAT, saveVersion: SAVE_VERSION, slot, savedAt: new Date().toISOString(), gameVersion: gameVersion || null, checksum: checksum(JSON.stringify(game)), game };
+}
+
+// ¿El texto guardado en una clave de ranura es una partida íntegra?
+export function isValidSlotText(text) {
+  try {
+    const raw = JSON.parse(text);
+    if (!unwrapSave(raw)) return false;
+    return !(raw.format === SAVE_FORMAT && raw.checksum && raw.checksum !== checksum(JSON.stringify(raw.game)));
+  } catch { return false; }
 }
 
 // Acepta un registro nuevo, una exportación antigua o una partida sin envoltorio.
@@ -54,6 +71,7 @@ export function readSlot(storage, slot) {
     const raw = JSON.parse(text);
     const game = unwrapSave(raw);
     if (!game) return { status: 'corrupt', slot };
+    if (raw.format === SAVE_FORMAT && raw.checksum && raw.checksum !== checksum(JSON.stringify(raw.game))) return { status: 'corrupt', slot };
     const record = raw.format === SAVE_FORMAT ? { ...raw, saveVersion: raw.saveVersion ?? raw.version ?? 1, game } : wrapSave(game, slot, null);
     return { status: 'ok', slot, record };
   } catch { return { status: 'corrupt', slot }; }
@@ -86,3 +104,6 @@ export function slotSummary(record) {
   const where = g.mode === 'president' ? `Día ${g.day ?? 1}` : g.phase === 'arena' ? `Arena · día ${g.day ?? 1}` : g.phase === 'ending' ? 'Final' : 'Antes de la Arena';
   return { mode, edition, where, name: g.president?.name || g.name || '', savedAt: record?.savedAt || null };
 }
+
+// Claves que deben sobrevivir a un cierre de la app (las copia el almacenamiento duradero).
+export const DURABLE_SAVE_KEYS = [...SLOTS.map(slotKey), LEGACY_KEY, MIGRATED_KEY];
