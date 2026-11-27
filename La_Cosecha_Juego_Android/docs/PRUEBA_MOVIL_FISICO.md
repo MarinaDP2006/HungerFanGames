@@ -15,7 +15,7 @@ La compatibilidad móvil **no está validada** hasta completar esta prueba en al
 ## A. Instalación
 1. Pasa `app-debug.apk` al móvil (por cable, Drive o correo).
 2. Ábrelo. Si Android lo pide, permite «Instalar apps desconocidas» para esa app (Archivos, Chrome…).
-3. Si había una versión anterior instalada, instala encima: **no desinstales**, o se pierden las partidas.
+3. Si había una versión anterior instalada, instala encima. Si Android dice que el paquete no es compatible (firma distinta), lee `FIRMA_APK.md` antes de desinstalar: desinstalar borra las partidas.
 
 ## B. Prueba manual (unos 15 minutos)
 Apunta en cada casilla ✅ o ❌ y lo que veas raro.

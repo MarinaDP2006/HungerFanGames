@@ -99,6 +99,16 @@ jobs:
       - run: npx cap sync android
       - name: Versión del APK desde package.json
         run: node scripts/android-version.mjs
+      - name: Firma de depuración estable (si existe el secreto ANDROID_DEBUG_KEYSTORE_B64)
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_DEBUG_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            mkdir -p ~/.android && echo "$KEYSTORE_B64" | base64 -d > ~/.android/debug.keystore
+            echo "APK firmado con la clave de depuración estable del repositorio"
+          else
+            echo "::warning::Sin ANDROID_DEBUG_KEYSTORE_B64: cada compilación se firma con una clave distinta y no se puede instalar encima de la anterior (hay que desinstalar y se pierden las partidas). Guía: La_Cosecha_Juego_Android/docs/FIRMA_APK.md"
+          fi
       - run: cd android && chmod +x gradlew && ./gradlew assembleDebug --no-daemon
       - name: Comprobar el APK
         run: |
@@ -153,6 +163,16 @@ jobs:
           else
             echo "::warning::No se pudo descargar el APK anterior; la prueba de actualización no se ejecutará"
           fi
+      - name: Misma firma para el APK anterior y el nuevo (solo para la prueba de actualización)
+        run: |
+          if [ -f apk-anterior/app-debug.apk ]; then
+            BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+            keytool -genkeypair -keystore prueba.keystore -storepass android -alias prueba -keypass android -keyalg RSA -keysize 2048 -validity 1 -dname "CN=Prueba CI" >/dev/null
+            for f in apk-anterior/app-debug.apk apk/app-debug.apk; do
+              "$BT/apksigner" sign --ks prueba.keystore --ks-pass pass:android --key-pass pass:android --out "${f%.apk}-prueba.apk" "$f"
+            done
+            ls -la apk-anterior apk
+          fi
       - name: Activar KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -171,8 +191,7 @@ jobs:
           disable-animations: true
           script: |
             mkdir -p device-report
-            if [ -f apk-anterior/app-debug.apk ]; then adb install apk-anterior/app-debug.apk && node La_Cosecha_Juego_Android/tests/device/upgrade-prepare.mjs; fi
-            adb install -r apk/app-debug.apk
+            if [ -f apk-anterior/app-debug-prueba.apk ]; then adb install apk-anterior/app-debug-prueba.apk && node La_Cosecha_Juego_Android/tests/device/upgrade-prepare.mjs && adb install -r apk/app-debug-prueba.apk; else adb install -r apk/app-debug.apk; fi
             node La_Cosecha_Juego_Android/tests/device/android-e2e.mjs
       - uses: actions/upload-artifact@v4
         if: always()
