@@ -115,3 +115,23 @@ body{background:radial-gradient(ellipse 120% 60% at 50% -10%,#1d2230 0,#0b0d12 4
 .dialogo b{display:block;font:600 10px Inter,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
 .dialogo i{font:400 11px Inter,sans-serif;color:#7f8796}
 .dialogo span{display:block;color:#f1ede5;font-size:16px}
+
+/* Pantalla de título del videojuego (4.22): logo centrado, menú vertical de mando y fondo cinematográfico */
+.titulo-juego{position:relative;min-height:calc(100svh - 110px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:28px 6px 18px;text-align:center;overflow:hidden}
+.titulo-fondo{position:absolute;inset:-40px -40px 0;z-index:-1;background:radial-gradient(ellipse at 50% 30%,#06070a00 0,#06070ad9 60%,#06070a 85%),url('../assets/optimized/capitolio-960.jpg') center 30%/cover no-repeat;opacity:.55}
+html[data-fondo]:not([data-fondo=""]) .titulo-fondo{display:none}
+.titulo-sello{width:74px;height:74px;margin:0 auto 14px;border:1px solid var(--gold);border-radius:50%;display:grid;place-items:center;transform:rotate(45deg)}
+.titulo-sello span{width:30px;height:30px;border:1px solid var(--gold2);transform:rotate(0)}
+.titulo-pre{font:600 10px Inter,sans-serif;letter-spacing:.42em;color:var(--live);margin:0 0 10px}
+.titulo-logo{font:700 clamp(46px,13vw,104px)/.95 Cinzel,serif;letter-spacing:.08em;margin:0;color:#f7f1e4;background:linear-gradient(180deg,#fff7e3,#d9b86e 70%,#a9843f);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.titulo-lema{color:#aeb5c1;font-size:13px;max-width:340px;margin:14px auto 0;line-height:1.6}
+.menu-juego{width:min(440px,100%);display:flex;flex-direction:column;gap:8px}
+.menu-op{display:grid;grid-template-columns:42px 1fr 16px;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;background:linear-gradient(90deg,#141822ee,#0d1016ee);border:1px solid #263044;border-radius:4px;color:#e9e4da;transition:border-color .15s,transform .15s,background .15s}
+.menu-op:hover,.menu-op:focus-visible{border-color:var(--gold);transform:translateX(3px);background:linear-gradient(90deg,#1d2230,#11141c)}
+.menu-op.principal{background:linear-gradient(90deg,#d9b86e,#a9843f);border-color:#f0d391;color:#14110b}
+.menu-op.principal small{color:#3a2e17}.menu-op.principal .menu-ic{border-color:#14110b55;color:#14110b}
+.menu-ic{width:42px;height:42px;display:grid;place-items:center;border:1px solid #3a4459;border-radius:50%;font-size:18px;color:var(--gold2)}
+.menu-tx b{display:block;font:600 13px Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase}
+.menu-tx small{display:block;font-size:11px;color:#8d95a3;margin-top:3px;letter-spacing:.02em}
+.menu-fl{font-size:20px;opacity:.6}
+.titulo-pie{font:italic 13px Cinzel,serif;color:#cdb98e;margin:4px 0 0}
