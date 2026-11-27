@@ -1,6 +1,6 @@
 # HECHO
 
-Estado a 27-11-2026 · rama `integracion-cosecha-5x` · Android 4.18.0 · Archivo de Panem 1.2
+Estado a 27-11-2026 · rama `integracion-cosecha-5x` · Android 4.18.0 · Archivo de Panem 1.3
 
 ## Juego Android
 - **App:** APK con Capacitor 7. CI compila, prueba en emulador (Android 14) y comprueba la actualización desde 4.9.
