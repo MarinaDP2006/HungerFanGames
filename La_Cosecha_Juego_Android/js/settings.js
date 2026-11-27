@@ -2,9 +2,9 @@
 // para que borrar o cargar una partida no las cambie.
 export const SETTINGS_KEY = 'laCosechaSettings';
 export const TEXT_SCALES = [0.9, 1, 1.15, 1.3];
-// sound/volume: efectos. music/musicVolume: música (aún sin pistas). muted: silencia todo.
-// Las preferencias guardadas antes de 4.11 no tienen los campos de música: toman estos valores.
-export const DEFAULT_SETTINGS = Object.freeze({ sound: true, volume: 0.7, music: true, musicVolume: 0.6, muted: false, reducedMotion: false, textScale: 1 });
+// sound/volume: efectos. music/musicVolume: música. ambience/ambienceVolume: ambiente. muted: silencia todo.
+// Las preferencias guardadas antes no tienen los campos nuevos: toman estos valores.
+export const DEFAULT_SETTINGS = Object.freeze({ sound: true, volume: 0.7, music: true, musicVolume: 0.6, ambience: true, ambienceVolume: 0.5, muted: false, reducedMotion: false, textScale: 1 });
 
 const isObj = v => v && typeof v === 'object' && !Array.isArray(v);
 
@@ -13,8 +13,8 @@ export function normalizeSettings(raw) {
   const s = { ...DEFAULT_SETTINGS };
   if (!isObj(raw)) return s;
   if (typeof raw.sound === 'boolean') s.sound = raw.sound;
-  for (const k of ['reducedMotion', 'music', 'muted']) if (typeof raw[k] === 'boolean') s[k] = raw[k];
-  for (const k of ['volume', 'musicVolume']) {
+  for (const k of ['reducedMotion', 'music', 'ambience', 'muted']) if (typeof raw[k] === 'boolean') s[k] = raw[k];
+  for (const k of ['volume', 'musicVolume', 'ambienceVolume']) {
     const v = raw[k] == null ? NaN : Number(raw[k]);
     if (Number.isFinite(v)) s[k] = Math.round(Math.max(0, Math.min(1, v)) * 100) / 100;
   }

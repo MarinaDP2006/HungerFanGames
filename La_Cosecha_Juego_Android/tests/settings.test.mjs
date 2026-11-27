@@ -58,11 +58,11 @@ test('cada ajuste se aplica y persiste tras reiniciar la app', () => {
   let a = boot(storage);
   a.press({ a: 'settings' });
   a.press({ setting: 'reducedMotion' }); a.press({ textScale: '1.3' }); a.slide(35); a.press({ setting: 'sound' });
-  assert.deepEqual(a.api.prefs(), { sound: false, volume: 0.35, music: true, musicVolume: 0.6, muted: false, reducedMotion: true, textScale: 1.3 });
+  assert.deepEqual(a.api.prefs(), { sound: false, volume: 0.35, music: true, musicVolume: 0.6, ambience: true, ambienceVolume: 0.5, muted: false, reducedMotion: true, textScale: 1.3 });
   assert.ok(a.classes.has('reduce-motion')); assert.equal(a.styleVars['--text-scale'], '1.3');
   // Reinicio: nueva instancia de la app sobre el mismo almacenamiento.
   a = boot(storage);
-  assert.deepEqual(a.api.prefs(), { sound: false, volume: 0.35, music: true, musicVolume: 0.6, muted: false, reducedMotion: true, textScale: 1.3 }, 'se recuperan');
+  assert.deepEqual(a.api.prefs(), { sound: false, volume: 0.35, music: true, musicVolume: 0.6, ambience: true, ambienceVolume: 0.5, muted: false, reducedMotion: true, textScale: 1.3 }, 'se recuperan');
   assert.ok(a.classes.has('reduce-motion'), 'se aplican al arrancar'); assert.equal(a.styleVars['--text-scale'], '1.3');
   a.press({ a: 'settings' }); assert.ok(a.html().includes('aria-checked="true"'), 'la pantalla refleja el estado');
 });
@@ -90,8 +90,8 @@ test('preferencias de música y silencio: valores por defecto, migración y pers
   // Ajustes guardados por la 4.10 (sin campos de música): se conservan y se completan.
   const viejos = { sound: false, volume: 0.35, reducedMotion: true, textScale: 1.3 };
   const s = memoryStorage(); s.setItem(ST.SETTINGS_KEY, JSON.stringify(viejos));
-  assert.deepEqual(ST.loadSettings(s), { ...viejos, music: true, musicVolume: 0.6, muted: false });
-  const g = ST.saveSettings(s, { ...ST.loadSettings(s), music: false, musicVolume: 0.25, muted: true });
+  assert.deepEqual(ST.loadSettings(s), { ...viejos, music: true, musicVolume: 0.6, ambience: true, ambienceVolume: 0.5, muted: false });
+  const g = ST.saveSettings(s, { ...ST.loadSettings(s), music: false, musicVolume: 0.25, ambience: false, ambienceVolume: 0.1, muted: true });
   assert.deepEqual(ST.loadSettings(s), g);
   assert.equal(ST.normalizeSettings({ musicVolume: 3 }).musicVolume, 1);
   assert.equal(ST.normalizeSettings({ muted: 'sí' }).muted, false);
