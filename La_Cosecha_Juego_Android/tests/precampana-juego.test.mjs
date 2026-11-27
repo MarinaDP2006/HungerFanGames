@@ -49,7 +49,7 @@ function engine(opts={}){
   return {api:ctx.api,store,alerts,nodes,click,lastBlob:()=>lastBlob};
 }
 const aprobada = { ...CAMPANA_74, status: 'APPROVED' };
-const PCI_PRUEBA = { campana: id => (String(id) === '74' ? aprobada : null), campanaJugable: e => (Number(e) === 74 ? aprobada : null) };
+const PCI_PRUEBA = { campana: id => (['74', 'campaign_74'].includes(String(id)) ? aprobada : null), campanaJugable: e => (Number(e) === 74 ? aprobada : null) };
 const start74 = (approved = true) => { const e = engine({ overrides: approved ? { PCI: PCI_PRUEBA } : {} }); e.api.setMode('story', 74); e.api.begin(); return e; };
 const html = e => e.nodes['#screen'].innerHTML;
 
@@ -59,52 +59,108 @@ test('sin aprobación, el 74.º sigue con las fases de siempre', () => {
   assert.equal(e.api.g().precampana, undefined);
 });
 
-test('aprobado: las once escenas se ven y se juegan con los botones reales, y pasan a la Arena', () => {
-  const e = start74();
-  assert.equal(e.api.g().phase, 'precampana');
-  for (const s of CAMPANA_74.scenes) {
-    e.api.renderGame();
-    assert.ok(html(e).includes(`data-scene="${s.scene_id}"`), s.scene_id);
-    assert.ok(html(e).includes(s.title));
-    for (const o of s.options) assert.ok(html(e).includes(`data-pc-option="${o.option_id}"`), o.option_id);
-    e.click({ pcOption: s.options[1].option_id });
+const jugar = (e, k, desde = 0, hasta = 11) => { for (const s of CAMPANA_74.scenes.slice(desde, hasta)) { e.click({ pcOption: s.options[k].option_id }); e.click({ pcContinue: '1' }); } };
+
+test('aprobado: las once escenas, las 33 opciones con su respuesta y su diario, y paso a la Arena', () => {
+  for (const k of [0, 1, 2]) {
+    const e = start74();
+    assert.equal(e.api.g().phase, 'precampana');
+    for (const s of CAMPANA_74.scenes) {
+      e.api.renderGame();
+      assert.ok(html(e).includes(`data-scene="${s.scene_id}"`), s.scene_id);
+      for (const o of s.options) assert.ok(html(e).includes(`data-pc-option="${o.option_id}"`), o.option_id);
+      const o = s.options[k];
+      e.click({ pcOption: o.option_id });
+      assert.ok(html(e).includes('data-response="1"'), `${o.option_id}: se muestra la respuesta antes de avanzar`);
+      assert.ok(html(e).includes(o.response_text.replace(/"/g, '&quot;').replace(/'/g, '&#39;')), `${o.option_id}: texto de la respuesta`);
+      e.click({ pcOption: s.options[(k + 1) % 3].option_id });
+      e.click({ pcContinue: '1' });
+      assert.ok(html(e).includes(`data-entry="74.diary.${s.scene_id}.${o.option_id}"`) || e.api.g().phase === 'arena', `${o.option_id}: entrada de diario`);
+    }
+    const g = e.api.g();
+    assert.equal(g.phase, 'arena', 'solo se abre la Arena existente');
+    assert.equal(g.decisionLog.length, 11);
+    assert.deepEqual(g.precampana.journal.map(j => j.option_id), CAMPANA_74.scenes.map(s => s.options[k].option_id), 'cada entrada es la de la opción elegida');
+    assert.equal(g.continuity.campaign_74.transfer_id, 'campaign_74:prearena:v1');
+    assert.equal(g.continuity.campaign_74.vars['campaign.launch_plan'], ['survival', 'family', 'observation'][k]);
+    const rec = JSON.parse(e.store[`laCosechaSave:${g.saveSlot}`]);
+    assert.equal(rec.game.phase, 'arena');
+    assert.equal(rec.game.continuity.campaign_74.transfer_applied, true, 'la instantánea está guardada');
   }
-  const g = e.api.g();
-  assert.equal(g.phase, 'arena');
-  assert.equal(g.decisionLog.length, 11);
-  assert.equal(g.continuity['74'].vars['campaign.launch_plan'], 'family');
-  assert.equal(g.continuity['74'].complete, true);
 });
 
-test('doble pulsación y botones de otra escena no aplican nada dos veces', () => {
+test('ruta canónica: la puntuación de la sesión privada sigue siendo alta y los hitos no cambian con ninguna opción', () => {
+  for (const s of CAMPANA_74.scenes) assert.ok(s.milestone.length > 10);
+  const priv = CAMPANA_74.scenes.find(s => s.scene_id === '74_private_session');
+  assert.match(priv.milestone, /extraordinariamente alta/);
+  assert.deepEqual(priv.options.map(o => o.effects.find(e => e.path === 'campaign.private_session_result').value), ['exceptional', 'exceptional', 'strong'], 'tal como la fuente (pregunta abierta en la revisión)');
+});
+
+test('ecos: aparecen una vez en la escena indicada si el flag está activo', () => {
+  const e = start74();
+  e.click({ pcOption: '74_reaping_o1' }); e.click({ pcContinue: '1' });
+  e.api.renderGame();
+  const eco = CAMPANA_74.scenes[0].options[0].echo.text;
+  assert.equal(html(e).split(eco.replace(/'/g, '&#39;')).length - 1, 1);
+  const e2 = start74();
+  e2.click({ pcOption: '74_reaping_o2' }); e2.click({ pcContinue: '1' });
+  e2.api.renderGame();
+  assert.ok(!html(e2).includes('class="eco"'));
+});
+
+test('doble pulsación, otra opción mientras se lee la respuesta y botones de otra escena no aplican nada dos veces', () => {
   const e = start74();
   e.click({ pcOption: '74_reaping_o1' });
   e.click({ pcOption: '74_reaping_o1' });
   e.click({ pcOption: '74_reaping_o3' });
+  e.click({ pcContinue: '1' });
+  e.click({ pcContinue: '1' });
+  e.click({ pcOption: '74_reaping_o2' });
   const g = e.api.g();
   assert.equal(g.precampana.vars['rel.katniss_prim'], 2);
   assert.equal(g.precampana.index, 1);
   assert.equal(g.decisionLog.length, 1);
+  assert.equal(g.precampana.journal.length, 1);
 });
 
-test('guardar y cargar a mitad: sigue en la misma escena sin duplicar efectos', async () => {
+test('guardar y cargar a mitad, incluso con la respuesta en pantalla: sin duplicar efectos ni diario', () => {
   const e = start74();
-  for (const s of CAMPANA_74.scenes.slice(0, 4)) e.click({ pcOption: s.options[0].option_id });
+  jugar(e, 0, 0, 3);
+  e.click({ pcOption: '74_train_o1' }); // respuesta en pantalla, sin pulsar Continuar
   const slot = e.api.g().saveSlot;
-  assert.ok(slot, 'guardado automático');
   const rec = JSON.parse(e.store[`laCosechaSave:${slot}`]);
   assert.equal(rec.saveVersion, 5);
   assert.equal(rec.game.decisionLog.length, 4);
   const e2 = engine({ overrides: { PCI: PCI_PRUEBA } });
   Object.assign(e2.store, e.store);
   e2.api.load(slot);
+  assert.ok(html(e2).includes('data-response="1"'), 'al cargar se ve la respuesta pendiente');
+  e2.click({ pcOption: '74_train_o2' });
+  e2.click({ pcContinue: '1' });
+  e2.click({ pcOption: '74_train_o2' });
   const g = e2.api.g();
   assert.equal(PC.currentScene(aprobada, g.precampana).scene_id, '74_arrival');
-  e2.click({ pcOption: '74_departure_o1' });
-  assert.equal(g.decisionLog.length, 4, 'una escena ya decidida no se repite');
-  e2.click({ pcOption: '74_arrival_o2' });
-  assert.equal(g.decisionLog.length, 5);
-  assert.equal(g.precampana.vars['rel.katniss_prim'], 2, 'reaping_o1 una sola vez');
-  assert.equal(g.precampana.vars['rel.katniss_haymitch'], 2, 'train_o1 una sola vez');
-  assert.equal(g.precampana.vars['rel.katniss_peeta'], 1, 'arrival_o2');
+  assert.equal(g.decisionLog.length, 4);
+  assert.equal(g.precampana.journal.length, 4);
+  assert.equal(g.precampana.vars['rel.katniss_haymitch'], 2);
+});
+
+test('si no se puede guardar antes de la Arena, no se entra en ella', () => {
+  const e = start74();
+  jugar(e, 0, 0, 10);
+  const slot = e.api.g().saveSlot;
+  for (const n of [1, 2, 3]) if (n !== slot) e.store[`laCosechaSave:${n}`] = e.store[`laCosechaSave:${slot}`];
+  // Fuerza un fallo de escritura justo en el paso a la Arena.
+  const g = e.api.g();
+  e.click({ pcOption: '74_launch_o1' });
+  delete g.saveSlot;
+  e.click({ pcContinue: '1' });
+  assert.equal(g.phase, 'precampana', 'sin guardado no hay Arena');
+  assert.ok(e.alerts.some(a => /No se pudo guardar/.test(a)));
+  assert.equal(g.continuity.campaign_74.transfer_applied, true);
+  g.saveSlot = slot;
+  e.click({ pcContinue: '1' });
+  e.api.renderGame();
+  assert.equal(g.phase, 'arena', 'al reintentar con ranura entra, sin repetir la transferencia');
+  assert.equal(g.continuity.campaign_74.decision_ids.length, 11);
 });

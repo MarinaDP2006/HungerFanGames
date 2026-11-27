@@ -38,7 +38,7 @@ test('migración 4 → 5: nada cambia salvo lo añadido, y el 50.º se reconstru
   assert.deepEqual(resto, juego50(), 'la partida original queda intacta');
   assert.deepEqual(g.decisions, [0, 1], 'el campo antiguo «decisions» no se toca');
   assert.equal(timeline.route_type, 'LEGACY');
-  assert.deepEqual(decisionLog.map(d => [d.decision_id, d.option_id, d.migrated]), [['50:reaping', 'watch', true], ['50:woodbine', 'memorize', true]]);
+  assert.deepEqual(decisionLog.map(d => [d.decision_id, d.decision_key, d.migrated]), [['50:reaping:watch:1', '50:reaping', true], ['50:woodbine:memorize:1', '50:woodbine', true]]);
   assert.equal(g.preArena50.stats.resolve, 2, 'los efectos no se aplican otra vez');
   assert.equal(JSON.parse(s.getItem(SV.slotKey(1))).saveVersion, 4, 'leer no reescribe la ranura');
 });

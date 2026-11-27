@@ -53,3 +53,6 @@ body{zoom:var(--text-scale,1)}
 .slot-card b{display:block;font:500 15px Cinzel,serif;color:#ecd6b0}.slot-card small{display:block;color:var(--muted);font-size:11px;margin-top:4px;line-height:1.5}
 .slot-card .button-row{margin-top:10px;flex-wrap:wrap}
 .btn.danger{border-color:#c1563f;color:#f0b3a3}
+/* Precampañas del motor común: respuesta inmediata y ecos de escenas anteriores */
+.respuesta{margin:16px 0;padding:14px 18px;border-left:3px solid var(--gold,#c9a45c);font-style:italic;line-height:1.6}
+.eco{margin:0 0 12px;padding:8px 12px;border-left:2px solid rgba(201,164,92,.5);opacity:.9}

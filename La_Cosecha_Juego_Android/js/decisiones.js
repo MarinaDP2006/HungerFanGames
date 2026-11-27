@@ -12,7 +12,8 @@
 
 export const ROUTE_TYPES = ['CANON', 'ALT_ROUTE', 'FREE', 'PRESIDENCY', 'LEGACY'];
 
-export const decisionId = (campaignId, sceneId) => `${campaignId}:${sceneId}`;
+export const decisionKey = (campaignId, sceneId) => `${campaignId}:${sceneId}`;
+export const decisionId = (campaignId, sceneId, optionId) => `${campaignId}:${sceneId}:${optionId}:1`;
 
 function nuevoTimelineId(random = Math.random) {
   return 'tl_' + Math.floor(random() * 36 ** 8).toString(36).padStart(8, '0');
@@ -32,15 +33,15 @@ export function initDecisions(game, { random } = {}) {
   return game;
 }
 
-export const hasDecision = (game, campaignId, sceneId) => !!game?.decisionLog?.some(d => d.decision_id === decisionId(campaignId, sceneId));
+export const hasDecision = (game, campaignId, sceneId) => !!game?.decisionLog?.some(d => (d.decision_key || d.decision_id) === decisionKey(campaignId, sceneId));
 
 // Anota una decisión. Devuelve { recorded: true, entry } o { recorded: false, duplicate: true, entry } si ya existía.
 export function recordDecision(game, { campaign_id, scene_id, option_id, effects_applied = [], source_text_version = null }) {
   game.decisionLog ??= [];
-  const id = decisionId(campaign_id, scene_id);
-  const prev = game.decisionLog.find(d => d.decision_id === id);
+  const key = decisionKey(campaign_id, scene_id);
+  const prev = game.decisionLog.find(d => (d.decision_key || d.decision_id) === key);
   if (prev) return { recorded: false, duplicate: true, entry: prev };
-  const entry = { decision_id: id, campaign_id: String(campaign_id), scene_id, option_id, seq: game.decisionLog.length + 1, effects_applied, source_text_version };
+  const entry = { decision_id: decisionId(campaign_id, scene_id, option_id), decision_key: key, campaign_id: String(campaign_id), scene_id, option_id, seq: game.decisionLog.length + 1, effects_applied, source_text_version };
   game.decisionLog.push(entry);
   return { recorded: true, entry };
 }
@@ -69,8 +70,9 @@ export function validateDecisions(game) {
   if (!ROUTE_TYPES.includes(game?.timeline?.route_type)) problems.push(`route_type desconocido: ${game?.timeline?.route_type}`);
   const ids = new Set();
   (game?.decisionLog || []).forEach((d, i) => {
-    if (ids.has(d.decision_id)) problems.push(`decisión repetida: ${d.decision_id}`);
-    ids.add(d.decision_id);
+    const k = d.decision_key || d.decision_id;
+    if (ids.has(k)) problems.push(`decisión repetida: ${k}`);
+    ids.add(k);
     if (d.seq !== i + 1) problems.push(`secuencia rota en ${d.decision_id}`);
   });
   return problems;

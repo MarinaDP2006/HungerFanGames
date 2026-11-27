@@ -4,7 +4,8 @@
 // Una campaña es un objeto de datos:
 //   { campaign_id, title, status, source_version, source_ref, variables[], scenes[] }
 //   scene:  { scene_id, sequence, title, location_id, participants[], text, milestone, options[] }
-//   option: { option_id, label, effects[], source_effect, response_text, journal_tag, conditions? }
+//   option: { option_id, label, effects[], source_effect, response_text, journal_text, journal_entry_id, echo?, conditions? }
+//   echo:   { scene_id, flag, text }: frase que se muestra en una escena posterior si el flag está activo.
 //   effect: { op: 'ADD'|'SET'|'MIN'|'MAX'|'CLAMP'|'SET_FLAG'|'CLEAR_FLAG'|'APPEND_UNIQUE', path, value?, min?, max? }
 //
 // status: solo las campañas APPROVED se pueden jugar en el juego. DRAFT_FOR_REVIEW y STRUCTURE_ONLY se
@@ -50,7 +51,7 @@ export const ADAPTADOR_74 = Object.freeze({
 export function createState(campaign) {
   const vars = {};
   for (const v of campaign.variables || []) vars[v.path] = v.default;
-  return { campaign_id: campaign.campaign_id, source_version: campaign.source_version, index: 0, complete: false, vars, flags: {}, journal: [] };
+  return { campaign_id: campaign.campaign_id, source_version: campaign.source_version, index: 0, complete: false, vars, flags: {}, journal: [], pendingResponse: null };
 }
 
 export const currentScene = (campaign, state) => (state && !state.complete ? campaign.scenes[state.index] || null : null);
@@ -106,7 +107,15 @@ export function choose(campaign, state, optionId, { game } = {}) {
   const varsByPath = Object.fromEntries((campaign.variables || []).map(v => [v.path, v]));
   const next = JSON.parse(JSON.stringify(state));
   for (const e of option.effects || []) applyEffect(e, next, varsByPath);
-  next.journal.push({ scene_id: scene.scene_id, option_id: option.option_id, journal_tag: option.journal_tag || null, text: option.journal_text || null });
+  // Entrada de diario (contrato del anexo 74 v1.1): una por decisión, con ID determinista.
+  next.journal.push({
+    entry_id: option.journal_entry_id || `${campaign.campaign_id}.diary.${scene.scene_id}.${option.option_id}`,
+    campaign_id: campaign.campaign_id, scene_id: scene.scene_id, option_id: option.option_id, text: option.journal_text || null,
+    timeline_id: game?.timeline?.timeline_id ?? null, route_type: game?.timeline?.route_type ?? null,
+    source_version: campaign.source_version, effects_applied: option.effects || [], seen: false,
+  });
+  // La respuesta inmediata se muestra después de elegir y antes de avanzar (si la hay).
+  next.pendingResponse = option.response_text ? { scene_id: scene.scene_id, option_id: option.option_id } : null;
   next.index += 1;
   if (next.index >= campaign.scenes.length) next.complete = true;
   Object.assign(state, next);
@@ -114,12 +123,54 @@ export function choose(campaign, state, optionId, { game } = {}) {
   return { ok: true, scene, option, next: currentScene(campaign, state), complete: state.complete };
 }
 
-// Estado que la precampaña entrega al terminar. Se guarda en game.continuity[campaign_id].
-// Cómo afecta a la Arena NO está decidido: la Arena existente no lee estos valores hasta que
-// se apruebe la tabla de transferencia (docs/REVISION_74_PARA_CHATGPT.md, sección «Transferencia»).
-export function transferState(campaign, state) {
-  return { campaign_id: campaign.campaign_id, source_version: campaign.source_version, complete: state.complete, vars: { ...state.vars }, flags: { ...state.flags } };
+export const optionById = (campaign, optionId) => campaign.scenes.flatMap(s => s.options).find(o => o.option_id === optionId) || null;
+
+// Respuesta pendiente de mostrar tras la última elección.
+export function pendingResponse(campaign, state) {
+  if (!state?.pendingResponse) return null;
+  const o = optionById(campaign, state.pendingResponse.option_id);
+  return o?.response_text ? { ...state.pendingResponse, text: o.response_text } : null;
 }
+export function acknowledgeResponse(state) { state.pendingResponse = null; return state; }
+
+// Ecos: frases de escenas anteriores que se muestran en una escena si su flag está activo. Una vez cada una.
+export function echoesFor(campaign, state, scene) {
+  if (!scene) return [];
+  const seen = new Set();
+  return campaign.scenes.flatMap(s => s.options).filter(o => o.echo && o.echo.scene_id === scene.scene_id && state.flags[o.echo.flag] && o.echo.text)
+    .filter(o => !seen.has(o.echo.text) && seen.add(o.echo.text)).map(o => o.echo.text);
+}
+
+// Transferencia a la Arena (anexo 74 v1.1, sección 4). Instantánea completa e idempotente: si ya se
+// aplicó, devuelve la existente sin sumar nada otra vez. No convierte flags en ventajas, no crea objetos,
+// alianzas ni conocimiento del mapa. Los valores numéricos (patrocinio e imagen pública) NO se aplican
+// todavía: el anexo pide confirmar antes los límites del sistema de patrocinio.
+export const MAPEO_NUMERICO_ACTIVO = false;
+export function buildTransfer(campaign, state, game = {}) {
+  return {
+    transfer_id: campaign.transfer_id || `${campaign.campaign_id}:prearena:v1`,
+    campaign_id: campaign.campaign_id, campaign_content_version: campaign.source_version,
+    timeline_id: game.timeline?.timeline_id ?? null, route_type: game.timeline?.route_type ?? null,
+    prearena_complete: !!state.complete,
+    scenes_completed: state.journal.map(j => j.scene_id),
+    vars: { ...state.vars }, flags: { ...state.flags },
+    decision_ids: (game.decisionLog || []).filter(d => d.campaign_id === campaign.campaign_id).map(d => d.decision_id),
+    diary_entry_ids: state.journal.map(j => j.entry_id),
+    numeric_mapping: MAPEO_NUMERICO_ACTIVO ? 'aplicado' : 'pendiente de confirmar límites',
+    transfer_applied: true,
+  };
+}
+export function applyTransfer(game, campaign, state) {
+  game.continuity ??= {};
+  const prev = game.continuity[campaign.campaign_id];
+  const snapshot = buildTransfer(campaign, state, game);
+  if (prev?.transfer_applied && prev.transfer_id === snapshot.transfer_id) return { applied: false, snapshot: prev };
+  if (!state.complete) throw new Error('La precampaña no está terminada');
+  game.continuity[campaign.campaign_id] = snapshot;
+  return { applied: true, snapshot };
+}
+// Compatibilidad con la versión anterior del motor.
+export const transferState = (campaign, state, game) => buildTransfer(campaign, state, game);
 
 // Validación estructural de una campaña (IDs únicos, efectos sobre variables registradas, enums válidos).
 export function validateCampaign(campaign) {

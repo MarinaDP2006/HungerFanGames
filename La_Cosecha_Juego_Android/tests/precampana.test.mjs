@@ -7,14 +7,16 @@ import * as PCI from '../js/campanas/indice.js';
 import * as DEC from '../js/decisiones.js';
 import { CAMPANA_74 } from '../js/campanas/campana-74.js';
 import { GIRA, CAMPANA_75 } from '../js/campanas/estructuras.js';
-import { generar, parse, FUENTE, SALIDA } from '../../scripts/importar-campana-74.mjs';
+import { generar, parse, parseAnexo, FUENTE, SALIDA, ANEXO } from '../../scripts/importar-campana-74.mjs';
 
 const root = new URL('../../', import.meta.url);
 const fuente = fs.readFileSync(new URL(FUENTE, root), 'utf8');
+const anexo = fs.readFileSync(new URL(ANEXO, root), 'utf8');
+const plano = t => t.replace(/\\\n/g, ' ').replace(/\s+/g, ' ');
 const ORDEN = ['74_reaping', '74_goodbyes', '74_departure', '74_train', '74_arrival', '74_prep', '74_parade', '74_training', '74_private_session', '74_interview', '74_launch'];
 
 test('74.º: los datos del juego son exactamente los generados desde la fuente (nadie los ha editado)', () => {
-  assert.equal(fs.readFileSync(new URL(SALIDA, root), 'utf8'), generar(fuente));
+  assert.equal(fs.readFileSync(new URL(SALIDA, root), 'utf8'), generar(fuente, anexo));
 });
 
 test('74.º: once escenas en el orden del contrato, tres opciones cada una, textos íntegros', () => {
@@ -25,11 +27,23 @@ test('74.º: once escenas en el orden del contrato, tres opciones cada una, text
     assert.ok(fuente.includes(s.milestone), `${s.scene_id}: hito literal`);
     for (const o of s.options) {
       assert.ok(fuente.includes(`\`${o.option_id}\` **${o.label}** Efecto: \`${o.source_effect}\``), `${o.option_id} literal`);
-      assert.equal(o.response_text, null, 'la fuente no trae respuesta: no se inventa');
-      assert.equal(o.journal_text, null, 'la fuente no trae texto de diario: no se inventa');
+      assert.ok(o.response_text && plano(anexo).includes(`Respuesta: «${o.response_text}»`), `${o.option_id}: respuesta literal del anexo`);
+      assert.ok(o.journal_text && plano(anexo).includes(`Diario: «${o.journal_text}»`), `${o.option_id}: diario literal del anexo`);
+      assert.equal(o.journal_entry_id, `74.diary.${s.scene_id}.${o.option_id}`);
     }
   }
   assert.deepEqual(PC.validateCampaign(CAMPANA_74), []);
+  assert.equal(CAMPANA_74.campaign_id, 'campaign_74');
+  assert.equal(CAMPANA_74.source_version, '74-prearena-1.1');
+});
+
+test('anexo 1.1: 33 respuestas y diarios, solo dos ecos con frase escrita, el resto como nota', () => {
+  const a = parseAnexo(anexo);
+  assert.equal(Object.keys(a).length, 33);
+  const ecos = CAMPANA_74.scenes.flatMap(s => s.options).filter(o => o.echo);
+  assert.deepEqual(ecos.map(o => [o.option_id, o.echo.scene_id, o.echo.flag]), [['74_reaping_o1', '74_goodbyes', 'prim_saw_katniss_protect'], ['74_reaping_o3', '74_train', 'first_recognition_peeta']]);
+  for (const o of ecos) assert.ok(plano(anexo).includes(`«${o.echo.text}»`));
+  for (const s of CAMPANA_74.scenes) for (const o of s.options) assert.ok(o.label.startsWith(o.label_anexo), `${o.option_id}: el anexo no cambia el texto del botón`);
 });
 
 test('74.º: cada efecto de la fuente se traduce al contrato maestro sin perder ninguno', () => {
@@ -38,6 +52,7 @@ test('74.º: cada efecto de la fuente se traduce al contrato maestro sin perder 
     assert.equal(o.effects.length, partes.length, o.option_id);
   }
   const reaping = CAMPANA_74.scenes[0].options[0];
+  assert.equal(reaping.source_effect, 'rel_katniss_prim +2; flag prim_saw_katniss_protect');
   assert.deepEqual(reaping.effects, [{ op: 'ADD', path: 'rel.katniss_prim', value: 2 }, { op: 'SET_FLAG', path: 'prim_saw_katniss_protect' }]);
   const priv = CAMPANA_74.scenes[8].options.map(o => o.option_id);
   assert.deepEqual(priv, ['74_private_o1', '74_private_o2', '74_private_o3'], 'los IDs se conservan tal cual, aunque no sigan el patrón de la escena');
@@ -114,11 +129,41 @@ test('motor: condiciones de disponibilidad', () => {
   assert.throws(() => ok({ op: 'RARO' }), /desconocida/);
 });
 
-test('transferencia: el estado final se entrega completo y la Arena no lo usa todavía', () => {
+test('respuesta inmediata, diario con el contrato del anexo y ecos sin repetir', () => {
+  const game = DEC.initDecisions({ mode: 'story' }, { random: () => 0.1 });
   const st = PC.createState(CAMPANA_74);
-  for (const s of CAMPANA_74.scenes) PC.choose(CAMPANA_74, st, s.options[2].option_id);
-  const t = PC.transferState(CAMPANA_74, st);
-  assert.equal(t.complete, true);
+  PC.choose(CAMPANA_74, st, '74_reaping_o1', { game });
+  assert.equal(PC.pendingResponse(CAMPANA_74, st).text, CAMPANA_74.scenes[0].options[0].response_text);
+  const j = st.journal[0];
+  assert.deepEqual(Object.keys(j).sort(), ['campaign_id', 'effects_applied', 'entry_id', 'option_id', 'scene_id', 'seen', 'source_version', 'text', 'timeline_id', 'route_type'].sort());
+  assert.equal(j.entry_id, '74.diary.74_reaping.74_reaping_o1');
+  assert.equal(j.timeline_id, game.timeline.timeline_id);
+  assert.equal(game.decisionLog[0].decision_id, 'campaign_74:74_reaping:74_reaping_o1:1');
+  PC.acknowledgeResponse(st);
+  const ecos = PC.echoesFor(CAMPANA_74, st, CAMPANA_74.scenes[1]);
+  assert.equal(ecos.length, 1);
+  assert.equal(PC.echoesFor(CAMPANA_74, st, CAMPANA_74.scenes[2]).length, 0);
+});
+
+test('transferencia: instantánea completa, idempotente y sin valores numéricos aplicados', () => {
+  const st = PC.createState(CAMPANA_74);
+  const game = DEC.initDecisions({ mode: 'story', support: 12, sponsorTrust: 0 });
+  for (const s of CAMPANA_74.scenes) PC.choose(CAMPANA_74, st, s.options[2].option_id, { game });
+  const r1 = PC.applyTransfer(game, CAMPANA_74, st);
+  assert.equal(r1.applied, true);
+  const t = r1.snapshot;
+  assert.equal(t.transfer_id, 'campaign_74:prearena:v1');
+  assert.equal(t.prearena_complete, true);
+  assert.equal(t.decision_ids.length, 11);
+  assert.equal(t.diary_entry_ids.length, 11);
+  assert.deepEqual(t.scenes_completed, ORDEN);
+  const r2 = PC.applyTransfer(game, CAMPANA_74, st);
+  assert.equal(r2.applied, false, 'la segunda vez no aplica nada');
+  assert.equal(r2.snapshot, r1.snapshot);
+  assert.equal(game.support, 12);
+  assert.equal(game.sponsorTrust, 0, 'patrocinio e imagen pública: pendientes de confirmar límites');
+  assert.equal(PC.MAPEO_NUMERICO_ACTIVO, false);
+  assert.throws(() => PC.applyTransfer({}, CAMPANA_74, PC.createState(CAMPANA_74)), /no está terminada/);
   assert.equal(t.vars['campaign.launch_plan'], 'observation');
   assert.equal(t.flags.launch_observation_focus, true);
   const campaigns = fs.readFileSync(new URL('../js/campaigns.js', import.meta.url), 'utf8');
