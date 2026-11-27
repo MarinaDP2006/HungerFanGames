@@ -7,6 +7,7 @@
 - Retirados de la Web el motor y las pantallas del juego (`js/app.js`, `campaigns.js`, `presidency.js`, `whatif.js`, `css/style.css`) y sus pruebas. Siguen en Android, que es el producto del juego; el historial de Git conserva las versiones web.
 - Datos: `js/data.js` es una copia de `compartido/data.js`.
 - Lo que no tiene contenido aprobado aparece como pendiente; no se ha escrito contenido nuevo.
+- Cada ficha de distrito y de personaje muestra su estado de canon y su fuente. Hoy todas aparecen como «Sin clasificar» y «Pendiente de referencia»: los valores los aporta la dirección creativa.
 - Pruebas propias: `tests/archivo.test.mjs` (10 casos) y `tests/navegador.mjs` (Chrome, móvil y escritorio).
 - No se ha desplegado en Render.
 

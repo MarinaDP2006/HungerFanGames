@@ -42,6 +42,9 @@ const cabecera = (antetitulo, titulo, entradilla = '') => `
 const migas = (...pasos) => `<nav class="migas" aria-label="Estás en"><a href="#/">Archivo</a>${pasos.map(([t, h]) => ` <span aria-hidden="true">›</span> ${h ? `<a href="${h}">${esc(t)}</a>` : `<span aria-current="page">${esc(t)}</span>`}`).join('')}</nav>`;
 
 const sello = d => `<span class="sello-distrito" style="--c:${esc(d.color)}" aria-hidden="true">${d.id}</span>`;
+// Estado de canon y fuente de cada ficha (modelo de datos de la Entrega Maestra v1).
+const CANON = { CANON_FACT: 'Hecho canónico', CANON_COMPATIBLE: 'Compatible con el canon', INTERPRETATION: 'Interpretación del proyecto', ALT_ROUTE: 'Ruta alternativa' };
+const canon = r => `<div class="canon" data-canon="${esc(r.canon_status || 'unknown')}"><dt>Estado de canon</dt><dd>${esc(CANON[r.canon_status] || 'Sin clasificar')}</dd></div><div><dt>Fuente</dt><dd>${r.source_ref ? esc(r.source_ref) : 'Pendiente de referencia'}</dd></div>`;
 const nombreDistrito = id => A.distrito(id)?.name || `Distrito ${id}`;
 
 const imagen = (g, cls = '', loading = 'lazy') => `<picture class="${cls}"><source srcset="${esc(g.src)}" type="image/webp"><img src="${esc(g.fallback)}" width="${g.w}" height="${g.h}" alt="${esc(g.titulo)}" loading="${loading}" decoding="async"></picture>`;
@@ -105,7 +108,7 @@ function fichaDistrito(id) {
   return `${migas(['Distritos', enlace('distritos')], [d.name])}
   <article class="ficha" style="--c:${esc(d.color)}">
     ${cabecera(d.id === 13 ? 'Expediente histórico · no participa en las cosechas' : `Expediente D-${String(d.id).padStart(2, '0')}`, d.name, d.description)}
-    <dl class="datos"><div><dt>Industria</dt><dd>${esc(d.industry)}</dd></div>${m ? `<div><dt>Mentores y vencedores registrados</dt><dd>${m.nombres.length ? m.nombres.map(esc).join(', ') : 'Sin identificar'}${m.nombres.length && m.sinIdentificar ? ' y otros sin identificar' : ''}</dd></div>` : ''}</dl>
+    <dl class="datos"><div><dt>Industria</dt><dd>${esc(d.industry)}</dd></div>${m ? `<div><dt>Mentores y vencedores registrados</dt><dd>${m.nombres.length ? m.nombres.map(esc).join(', ') : 'Sin identificar'}${m.nombres.length && m.sinIdentificar ? ' y otros sin identificar' : ''}</dd></div>` : ''}${canon(d)}</dl>
     <section class="bloque"><h2>Personajes del distrito</h2>${gente.length ? `<ul class="lista-personajes">${gente.map(tarjetaPersonaje).join('')}</ul>` : '<p class="vacio">No hay fichas de personajes de este distrito.</p>'}</section>
     ${pendiente('distrito')}
     <nav class="paginacion">${d.id > 1 && d.id <= 13 ? `<a href="${enlace('distritos', d.id - 1)}">← ${esc(nombreDistrito(d.id - 1))}</a>` : '<span></span>'}${d.id < 12 ? `<a href="${enlace('distritos', d.id + 1)}">${esc(nombreDistrito(d.id + 1))} →</a>` : ''}</nav>
@@ -151,6 +154,7 @@ function fichaPersonaje(s) {
       <div><dt>Papel</dt><dd>${esc(c.role)}</dd></div>
       <div><dt>Rasgos</dt><dd><ul class="rasgos">${c.traits.map(t => `<li>${esc(t)}</li>`).join('')}</ul></dd></div>
       <div><dt>Retrato</dt><dd>Pendiente de un retrato aprobado</dd></div>
+      ${canon(c)}
     </dl>
   </article>`;
 }

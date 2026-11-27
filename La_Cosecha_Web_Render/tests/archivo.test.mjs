@@ -96,3 +96,10 @@ test('el service worker del archivo precarga todos sus módulos', () => {
   for (const f of fs.readdirSync(path.join(web, 'js'))) assert.ok(sw.includes(`'./js/${f}'`), f);
   for (const m of sw.matchAll(/'\.\/([^']+)'/g)) if (m[1]) assert.ok(fs.existsSync(path.join(web, m[1])), m[1]);
 });
+
+test('cada ficha de distrito y de personaje muestra su estado de canon y su fuente', () => {
+  for (const d of districts) assert.match(V.render({ seccion: 'distritos', id: String(d.id) }), /data-canon="unknown"[\s\S]*Sin clasificar[\s\S]*Pendiente de referencia/, d.name);
+  for (const c of A.PERSONAJES) assert.match(V.render({ seccion: 'personajes', id: c.slug }), /Estado de canon[\s\S]*Fuente/, c.name);
+  assert.equal(new Set(characters.map(c => c.character_id)).size, characters.length, 'character_id únicos');
+  assert.deepEqual(districts.map(d => d.district_id), districts.map(d => `district_${String(d.id).padStart(2, '0')}`));
+});
