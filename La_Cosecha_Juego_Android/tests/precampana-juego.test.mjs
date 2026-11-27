@@ -93,7 +93,7 @@ test('ruta canónica: la puntuación de la sesión privada sigue siendo alta y l
   for (const s of CAMPANA_74.scenes) assert.ok(s.milestone.length > 10);
   const priv = CAMPANA_74.scenes.find(s => s.scene_id === '74_private_session');
   assert.match(priv.milestone, /extraordinariamente alta/);
-  assert.deepEqual(priv.options.map(o => o.effects.find(e => e.path === 'campaign.private_session_result').value), ['exceptional', 'exceptional', 'strong'], 'tal como la fuente (pregunta abierta en la revisión)');
+  assert.deepEqual(priv.options.map(o => o.effects.find(e => e.path === 'campaign.private_session_result').value), ['exceptional', 'exceptional', 'exceptional'], 'revisión 27-11, pregunta 2');
 });
 
 test('ecos: aparecen una vez en la escena indicada si el flag está activo', () => {

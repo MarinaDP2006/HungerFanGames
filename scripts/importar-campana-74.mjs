@@ -13,6 +13,32 @@ const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..')
 export const FUENTE = 'docs/paquetes/entrega_maestra_v1/00_FUENTES_APROBADAS/74_v1/narrativa/74_PreArena_11_Escenas_v1.md';
 export const SALIDA = 'La_Cosecha_Juego_Android/js/campanas/campana-74.js';
 export const ANEXO = 'docs/paquetes/74_anexo_1_1/74_Diario_Respuestas_y_Transferencia_Arena_v1_1.md';
+// Revisión creativa de ChatGPT (27-11-2026): ecos completos y decisiones sobre las nueve preguntas.
+export const REVISION = 'docs/paquetes/74_revision_chatgpt/La_Cosecha_Respuesta_Revision_74_y_Correspondencias_Gira_75_v1.md';
+// Dónde se muestra cada eco de la revisión. La revisión da el momento en palabras; aquí se fija la escena.
+// confirmado: la revisión nombra la escena o el lugar sin ambigüedad. false: interpretación técnica, a confirmar.
+export const UBICACION_ECOS = {
+  katniss_observed_ceremony: ['74_arrival', true], gale_promise_explicit: ['74_launch', true],
+  mother_responsibility_named: ['74_launch', true], goodbye_without_words: ['74_launch', true],
+  departure_observant: ['74_arrival', true], departure_composure: ['74_train', true], departure_noticed_peeta: ['74_train', true],
+  haymitch_practical_questions: ['74_training', true], train_peeta_opening: ['74_training', true], katniss_keeps_advantage_private: ['74_training', true],
+  capitol_layout_observed: ['74_prep', false], arrival_stayed_near_peeta: ['74_prep', false], arrival_guarded: ['74_parade', false],
+  cinna_trust: ['74_parade', true], district_identity_visible: ['74_parade', true], prep_controlled: ['74_parade', true],
+  parade_confident: ['74_training', false], parade_pair_identity: ['74_training', false], parade_trust_team: ['74_training', false],
+  trained_archery: ['74_private_session', false], trained_survival: ['74_launch', false], training_observed_others: ['74_private_session', false],
+  private_archery_display: ['74_interview', false], private_tactical_display: ['74_interview', false], private_controlled_display: ['74_interview', false],
+  interview_honest: ['74_launch', false], interview_warm: ['74_launch', false], interview_defiant: ['74_launch', false],
+};
+// Cambios de efecto que decide la revisión (pregunta 2). La fuente 1.0 no se edita: se corrige aquí, con su motivo.
+export const ENMIENDAS = { '74_private_o3': { from: 'private_session_result = strong', to: 'private_session_result = exceptional', motivo: 'Revisión 27-11-2026, pregunta 2: las tres opciones conservan la puntuación extraordinaria' } };
+
+// Ecos de la revisión: [{ flags[], momento, text }] en el orden del documento.
+export function parseRevision(md) {
+  const sec = md.slice(md.indexOf('2. Ecos completos'), md.indexOf('3. Reglas de implementación'));
+  return [...sec.matchAll(/^- Condición: (.+?); (.+?)\n\s+Eco: «(.+?)»\s*$/gm)].map(m => ({
+    flags: m[1].split(/\s+y\s+/).map(f => f.trim()), momento: m[2].trim(), text: m[3],
+  }));
+}
 // Dónde se muestra cada eco, según la expresión del anexo («Eco en despedida», «Eco en el tren»…).
 const ECO_ESCENA = { 'despedida': '74_goodbyes', 'el tren': '74_train', 'el lanzamiento': '74_launch', 'llegar al capitolio': '74_arrival' };
 // Mismo adaptador que js/precampana.js (ADAPTADOR_74); se repite aquí para que el script no dependa del juego.
@@ -63,7 +89,7 @@ export function parseAnexo(md) {
   return out;
 }
 
-export function generar(md, anexoMd = null) {
+export function generar(md, anexoMd = null, revisionMd = null) {
   const scenes = parse(md);
   const anexo = anexoMd ? parseAnexo(anexoMd) : {};
   for (const s of scenes) for (const o of s.options) {
@@ -71,17 +97,38 @@ export function generar(md, anexoMd = null) {
     if (!a) continue;
     Object.assign(o, { response_text: a.response_text, journal_text: a.journal_text, journal_entry_id: `74.diary.${s.scene_id}.${o.option_id}`, echo: a.echo, echo_note: a.echo_note, transfer_note: a.transfer_note, label_anexo: a.label_anexo });
   }
+  if (revisionMd) {
+    const ecos = parseRevision(revisionMd);
+    const todas = scenes.flatMap(sc => sc.options.map(o => ({ sc, o })));
+    for (const e of ecos) {
+      // El eco pertenece a la opción que activa su primer flag (en «A y B», la opción de A, que es la escena donde se muestra).
+      const propio = e.flags[0];
+      const { sc, o } = todas.find(x => x.o.effects.some(f => f.op === 'SET_FLAG' && f.path === propio)) || {};
+      if (!o) throw new Error(`Eco sin opción: ${e.flags.join(' y ')}`);
+      const combinado = e.flags.length > 1;
+      const [scene_id, confirmado] = combinado ? [sc.scene_id, true] : (UBICACION_ECOS[propio] || [null, false]);
+      o.echo = { echo_id: `74.echo.${e.flags.join('+')}`, scene_id, flags: e.flags, text: e.text, moment: combinado ? 'after_response' : 'scene_start',
+        group: e.flags.includes('gale_promise_explicit') ? 'gale_promise' : null, placement: e.momento, placement_confirmed: confirmado, source: 'revision-74-2026-11-27' };
+      o.echo_note = null;
+    }
+    for (const sc of scenes) for (const o of sc.options) {
+      if (o.echo && !o.echo.echo_id) Object.assign(o.echo, { echo_id: `74.echo.${o.echo.flag}`, flags: [o.echo.flag], moment: 'scene_start', group: null, placement_confirmed: true, source: 'anexo-1.1' });
+      const en = ENMIENDAS[o.option_id];
+      if (en) { if (o.source_effect.includes(en.from)) { o.source_effect_original = o.source_effect; o.source_effect = o.source_effect.replace(en.from, en.to); o.effects = efectos(o.source_effect); o.amendment = en.motivo; } else throw new Error(`Enmienda sin efecto original: ${o.option_id}`); }
+    }
+    for (const sc of scenes) Object.assign(sc, { dialogue: null, player_prompt: null, participant_ids: null });
+  }
   const campaign = {
     campaign_id: 'campaign_74', title: '74.º Juegos del Hambre · precampaña', status: 'DRAFT_FOR_REVIEW',
-    source_version: anexoMd ? '74-prearena-1.1' : '74-prearena-1.0', source_ref: FUENTE, annex_ref: anexoMd ? ANEXO : null,
+    source_version: revisionMd ? '74-prearena-1.2-borrador' : anexoMd ? '74-prearena-1.1' : '74-prearena-1.0', source_ref: FUENTE, annex_ref: anexoMd ? ANEXO : null, revision_ref: revisionMd ? REVISION : null,
     transfer_id: 'campaign_74:prearena:v1',
     scenes,
   };
-  return `// GENERADO por scripts/importar-campana-74.mjs desde ${FUENTE}${anexoMd ? ` y ${ANEXO}` : ''}.\n// No editar a mano. Estado DRAFT_FOR_REVIEW: no se puede jugar hasta su aprobación.\nimport { VARIABLES_74 } from '../precampana.js';\n\nexport const CAMPANA_74 = Object.freeze({ ...${JSON.stringify(campaign, null, 2)}, variables: VARIABLES_74 });\n`;
+  return `// GENERADO por scripts/importar-campana-74.mjs desde ${FUENTE}${anexoMd ? ` y ${ANEXO}` : ''}${revisionMd ? ` y ${REVISION}` : ''}.\n// No editar a mano. Estado DRAFT_FOR_REVIEW: no se puede jugar hasta su aprobación.\nimport { VARIABLES_74 } from '../precampana.js';\n\nexport const CAMPANA_74 = Object.freeze({ ...${JSON.stringify(campaign, null, 2)}, variables: VARIABLES_74 });\n`;
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname)) {
-  const out = generar(fs.readFileSync(path.join(root, FUENTE), 'utf8'), fs.readFileSync(path.join(root, ANEXO), 'utf8'));
+  const out = generar(fs.readFileSync(path.join(root, FUENTE), 'utf8'), fs.readFileSync(path.join(root, ANEXO), 'utf8'), fs.readFileSync(path.join(root, REVISION), 'utf8'));
   const dest = path.join(root, SALIDA);
   if (process.argv.includes('--comprobar')) {
     if (!fs.existsSync(dest) || fs.readFileSync(dest, 'utf8') !== out) { console.error(`${SALIDA} no corresponde a la fuente: ejecuta node scripts/importar-campana-74.mjs`); process.exit(1); }

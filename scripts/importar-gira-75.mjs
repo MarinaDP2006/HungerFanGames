@@ -184,16 +184,17 @@ ${escenas.map(e => `| ${e.narrative_id} | ${e.title} | ${ESCENAS[e.narrative_id]
 ## 2. Arena del 75.º: escenas → acontecimientos existentes
 En el juego, la Arena del 75.º tiene **ocho acontecimientos**: tres capítulos en \`campaigns.js\` y cinco eventos en \`app.js\` (esto resuelve la discrepancia de los «ocho acontecimientos»). Se conservan sus IDs técnicos; las escenas amplían su contenido.
 
-**Aviso sobre los «cuatro capítulos»:** la decisión de dirección habla de cuatro capítulos de Arena, pero el código tiene **tres** capítulos (\`chapters[75]\` en los días 1, 4 y 7) más el final del reloj (\`finalChoice\`: \`breakout\`, \`rescue\` u otro), y cinco eventos intermedios en \`app.js\`. Si los cuatro capítulos son esos tres más el final, el reparto es este: capítulo 1 = turnos 1–3 (75-07, 75-08); capítulo 2 = turnos 4–6 (75-09 a 75-13); capítulo 3 = turno 7 (sin escena); final = turno 8 (75-14, 75-15). Hay que confirmarlo antes de integrar nada.
+**Correspondencia aprobada por la dirección (27-11-2026):** los ocho acontecimientos existentes, tal como figura en esta tabla. No se añaden turnos ni acontecimientos y cada escena amplía solo el acontecimiento de su fila.
 
 | Turno | Acontecimiento existente | ID técnico | Escenas del documento |
 |---|---|---|---|
 ${arena.map(a => `| ${a.turno} | ${a.titulo} | ${a.id} | ${a.escenas.join(', ') || '— (sin escena: se mantiene tal cual)'} |`).join('\n')}
 
-Conflictos que tenéis que revisar:
-- **75-12** dice que Wiress ayuda a descubrir el reloj, y el capítulo existente «Los charlajos» (turno 7) dice que Wiress ya ha muerto: hay que comprobar el orden.
-- **75-10:** el documento fija que Mags muere sin remedio, pero el capítulo «La niebla» permite salvarla con la opción «Cargar tú con Mags». Con el canon cinematográfico, esa opción debería desaparecer o cambiar.
-- **75-07:** el documento coloca la decisión inicial en la playa (arma, herramienta o Peeta), pero el capítulo existente la sitúa en las plataformas de agua (Finnick, Peeta o armas). Hay que unificar.
+Verificación contra el código (27-11-2026):
+- **Wiress · orden correcto.** El descubrimiento del reloj es el turno 5 («El mecanismo del reloj», \`app.js\`), y Wiress muere en el \`pre\` del capítulo del turno 7 («Los charlajos», \`a.kill('Wiress', …)\`). Antes del turno 7 ningún código la mata: su protección de canon dura hasta el turno 7 (\`campaigns.js\`, \`'Wiress':7\`). Por tanto, 75-11 y 75-12 (turno 5) ocurren con Wiress viva. Pendiente de texto: hoy el evento del turno 5 no la nombra; su participación llegará con el texto de 75-11/75-12.
+- **Mags · contradice el canon. Pendiente de texto.** En «La niebla» (turno 4) la opción \`carry\` la salva si \`relationships.victors >= 2\` y la salud es al menos 60 (flag \`magsSaved\`), y el final del 75.º añade «Mags sale viva del Vasallaje». Su protección de canon termina en el turno 4 (\`'Mags Flanagan':4\`). Para cumplir la decisión hay que cambiar el efecto de \`carry\` (Mags muere siempre) y retirar esa línea del final. Eso necesita la frase nueva de la opción, que escribe ChatGPT: no la invento. Hasta entonces el código actual no se toca, porque el 75.º no es jugable en modo historia con el motor nuevo, pero su Arena sí existe hoy.
+- **75-07 · se unifica en las plataformas de agua.** El capítulo del turno 1 ya ocurre en las plataformas y sus opciones son \`finnick\`, \`peeta\` y \`alone\` (armas). El texto de 75-07 (playa: arma, herramienta o Peeta) debe reescribirse para ese contexto. Se conserva el turno 1 sin duplicarlo.
+- **Variables:** \`relationships.victors\` es un entero sin límites (empieza en 0; ±1, ±2 o +3 según la opción) que mide la relación con los vencedores aliados. \`wire_plan_ready\` no existe, pero hay un flag de evento cercano: \`clockPlan\`, que se activa en «El relámpago y el árbol» (\`prepare\`, «Preparar el cable», o \`coordinate\`) y en «La alianza de los vencedores» (\`trust\`), y decide el final \`breakout\`. Es el plan del reloj, no solo el cable: ChatGPT decide si equivale.
 
 ## 3. Variables → sistema real
 | Variable del documento | Equivale a | Dónde | Nota |

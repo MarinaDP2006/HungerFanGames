@@ -1,5 +1,20 @@
 # Changelog
 
+## 4.14 — Revisión creativa del 74.º integrada (sigue en borrador)
+- **Ecos del 74.º:** hay 31 con frase, que se importan literalmente del anexo 1.1 y de la revisión de ChatGPT del 27-11-2026 (`docs/paquetes/74_revision_chatgpt/`).
+  - Son solo texto: no aplican efectos.
+  - Tienen ID estable, se deduplican por ID y por grupo (la promesa a Gale se muestra una sola vez) y se calculan con funciones puras.
+  - Nuevo `responseEchoes` para el eco que va tras una respuesta.
+- **`74_private_o3`:** su resultado pasa a `exceptional` (pregunta 2 de la revisión). Los datos conservan el efecto original y el motivo del cambio.
+- **Campos pendientes:** `dialogue`, `player_prompt` y `participant_ids` quedan en `null`; no se extraen de la prosa.
+- **Informe técnico** `docs/REVISION_74_RESPUESTA_TECNICA.md`:
+  - lugares y personajes contra los registros reales;
+  - esquema de `support` y `sponsorTrust`;
+  - `district_memory` y `canon_route`;
+  - propuesta de `dialogue[]`.
+- **Arena del 75.º:** la tabla de ocho acontecimientos queda fijada como aprobada y una prueba la contrasta con los títulos y turnos del código. Están verificados el orden de Wiress y la contradicción de Mags (pendiente de texto) y el comienzo se unifica en las plataformas de agua.
+- El 74.º, la Gira y el 75.º siguen sin poder jugarse.
+
 ## 4.13 — 50.º retirado, Gira y 75.º en borrador
 - **50.º Vasallaje retirado del juego activo** (decisión de dirección). Ya no aparece en el selector y el juego no deja empezarlo. Es reversible: se conservan su código, sus pruebas y la carga de partidas antiguas (`RETIRADAS` en `js/campanas/indice.js`). Edición por defecto: 74.º.
 - **Canon:** continuidad de las películas; los libros son complementarios. El 10.º queda fuera.

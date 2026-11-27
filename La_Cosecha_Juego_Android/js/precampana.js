@@ -5,7 +5,7 @@
 //   { campaign_id, title, status, source_version, source_ref, variables[], scenes[] }
 //   scene:  { scene_id, sequence, title, location_id, participants[], text, milestone, options[] }
 //   option: { option_id, label, effects[], source_effect, response_text, journal_text, journal_entry_id, echo?, conditions? }
-//   echo:   { scene_id, flag, text }: frase que se muestra en una escena posterior si el flag está activo.
+//   echo:   { echo_id, scene_id, flags[], text, moment, group? }: frase condicional (ver echoesFor).
 //   effect: { op: 'ADD'|'SET'|'MIN'|'MAX'|'CLAMP'|'SET_FLAG'|'CLEAR_FLAG'|'APPEND_UNIQUE', path, value?, min?, max? }
 //
 // status: solo las campañas APPROVED se pueden jugar en el juego. DRAFT_FOR_REVIEW y STRUCTURE_ONLY se
@@ -133,12 +133,35 @@ export function pendingResponse(campaign, state) {
 }
 export function acknowledgeResponse(state) { state.pendingResponse = null; return state; }
 
-// Ecos: frases de escenas anteriores que se muestran en una escena si su flag está activo. Una vez cada una.
+// Ecos: frases condicionadas por flags de escenas anteriores. Son solo texto: no aplican efectos.
+//   echo: { echo_id, scene_id, flags[] (todos deben estar activos), text, moment: 'scene_start'|'after_response', group? }
+// Funciones puras: el mismo estado da siempre los mismos ecos, así que repetir la pantalla no los duplica.
+// Se deduplican por echo_id y por grupo (p. ej. la promesa a Gale se muestra una sola vez en la escena).
+const flagsDe = e => e.flags || (e.flag ? [e.flag] : []);
+const ecoActivo = (e, state) => e && e.text && flagsDe(e).length && flagsDe(e).every(f => state.flags[f]);
 export function echoesFor(campaign, state, scene) {
   if (!scene) return [];
-  const seen = new Set();
-  return campaign.scenes.flatMap(s => s.options).filter(o => o.echo && o.echo.scene_id === scene.scene_id && state.flags[o.echo.flag] && o.echo.text)
-    .filter(o => !seen.has(o.echo.text) && seen.add(o.echo.text)).map(o => o.echo.text);
+  const ids = new Set(), grupos = new Set(), out = [];
+  for (const o of campaign.scenes.flatMap(s => s.options)) {
+    const e = o.echo;
+    if (!ecoActivo(e, state) || e.scene_id !== scene.scene_id || (e.moment || 'scene_start') !== 'scene_start') continue;
+    const id = e.echo_id || e.text;
+    if (ids.has(id) || (e.group && grupos.has(e.group))) continue;
+    ids.add(id); if (e.group) grupos.add(e.group); out.push(e.text);
+  }
+  return out;
+}
+// Eco que se añade tras la respuesta inmediata de una opción (moment 'after_response'). No se muestra si
+// un eco del mismo grupo ya apareció al empezar esa escena.
+export function responseEchoes(campaign, state, optionId) {
+  const o = optionById(campaign, optionId), e = o?.echo;
+  if (!ecoActivo(e, state) || e.moment !== 'after_response') return [];
+  if (e.group) {
+    const escena = campaign.scenes.find(s => s.scene_id === e.scene_id);
+    const yaMostrado = campaign.scenes.flatMap(s => s.options).some(x => x !== o && x.echo?.group === e.group && x.echo.scene_id === e.scene_id && (x.echo.moment || 'scene_start') === 'scene_start' && ecoActivo(x.echo, state));
+    if (escena && yaMostrado) return [];
+  }
+  return [e.text];
 }
 
 // Transferencia a la Arena (anexo 74 v1.1, sección 4). Instantánea completa e idempotente: si ya se

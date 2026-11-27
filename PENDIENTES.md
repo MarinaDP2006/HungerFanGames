@@ -16,7 +16,7 @@ Arquitectura en `docs/SEPARACION_ANDROID_WEB.md`. Entrega creativa en `docs/ENTR
 | Acerca (aviso fan y leyenda de canon) | ✅ | ✅ | ✅ | ✅ |
 | Despliegue en Render | ❌ no autorizado | — | — | — |
 
-# Matriz del motor de campañas (Android 4.13)
+# Matriz del motor de campañas (Android 4.14)
 | Pieza | Implementado | Probado | Activo en el juego |
 |---|---|---|---|
 | Motor común de precampañas (fase 2) | ✅ | ✅ 11 pruebas del motor y 7 dentro del juego con el 74.º aprobado solo en la prueba | Solo para campañas `APPROVED`: hoy ninguna |

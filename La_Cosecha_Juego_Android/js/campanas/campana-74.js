@@ -1,4 +1,4 @@
-// GENERADO por scripts/importar-campana-74.mjs desde docs/paquetes/entrega_maestra_v1/00_FUENTES_APROBADAS/74_v1/narrativa/74_PreArena_11_Escenas_v1.md y docs/paquetes/74_anexo_1_1/74_Diario_Respuestas_y_Transferencia_Arena_v1_1.md.
+// GENERADO por scripts/importar-campana-74.mjs desde docs/paquetes/entrega_maestra_v1/00_FUENTES_APROBADAS/74_v1/narrativa/74_PreArena_11_Escenas_v1.md y docs/paquetes/74_anexo_1_1/74_Diario_Respuestas_y_Transferencia_Arena_v1_1.md y docs/paquetes/74_revision_chatgpt/La_Cosecha_Respuesta_Revision_74_y_Correspondencias_Gira_75_v1.md.
 // No editar a mano. Estado DRAFT_FOR_REVIEW: no se puede jugar hasta su aprobación.
 import { VARIABLES_74 } from '../precampana.js';
 
@@ -6,9 +6,10 @@ export const CAMPANA_74 = Object.freeze({ ...{
   "campaign_id": "campaign_74",
   "title": "74.º Juegos del Hambre · precampaña",
   "status": "DRAFT_FOR_REVIEW",
-  "source_version": "74-prearena-1.1",
+  "source_version": "74-prearena-1.2-borrador",
   "source_ref": "docs/paquetes/entrega_maestra_v1/00_FUENTES_APROBADAS/74_v1/narrativa/74_PreArena_11_Escenas_v1.md",
   "annex_ref": "docs/paquetes/74_anexo_1_1/74_Diario_Respuestas_y_Transferencia_Arena_v1_1.md",
+  "revision_ref": "docs/paquetes/74_revision_chatgpt/La_Cosecha_Respuesta_Revision_74_y_Correspondencias_Gira_75_v1.md",
   "transfer_id": "campaign_74:prearena:v1",
   "scenes": [
     {
@@ -43,7 +44,15 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "echo": {
             "scene_id": "74_goodbyes",
             "flag": "prim_saw_katniss_protect",
-            "text": "Prim todavía intenta entender por qué lo hice. No tengo una explicación que pueda aliviarla."
+            "text": "Prim todavía intenta entender por qué lo hice. No tengo una explicación que pueda aliviarla.",
+            "echo_id": "74.echo.prim_saw_katniss_protect",
+            "flags": [
+              "prim_saw_katniss_protect"
+            ],
+            "moment": "scene_start",
+            "group": null,
+            "placement_confirmed": true,
+            "source": "anexo-1.1"
           },
           "echo_note": null,
           "transfer_note": null,
@@ -63,8 +72,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Me obligué a mirar la ceremonia como si observarla pudiera mantenerme a salvo. La plaza, el escenario, los agentes, las papeletas. Nada cambió lo que ocurrió, pero recordar los detalles era algo que todavía podía controlar.",
           "journal_entry_id": "74.diary.74_reaping.74_reaping_o2",
-          "echo": null,
-          "echo_note": "al llegar al Capitolio: reflexión breve sobre la diferencia entre la plaza del Distrito 12 y los espacios vigilados.",
+          "echo": {
+            "echo_id": "74.echo.katniss_observed_ceremony",
+            "scene_id": "74_arrival",
+            "flags": [
+              "katniss_observed_ceremony"
+            ],
+            "text": "La plaza del Distrito 12 no tenía nada de aquel orden brillante. Allí todos sabían quién los vigilaba; aquí, en cambio, hasta los pasillos parecen diseñados para que olvides que alguien está mirando.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar al llegar al Capitolio.",
+            "placement_confirmed": true,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Observar cada detalle"
         },
@@ -90,13 +111,24 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "echo": {
             "scene_id": "74_train",
             "flag": "first_recognition_peeta",
-            "text": "No era la primera vez que lo veía aquel día. Eso no significa que sepa qué piensa."
+            "text": "No era la primera vez que lo veía aquel día. Eso no significa que sepa qué piensa.",
+            "echo_id": "74.echo.first_recognition_peeta",
+            "flags": [
+              "first_recognition_peeta"
+            ],
+            "moment": "scene_start",
+            "group": null,
+            "placement_confirmed": true,
+            "source": "anexo-1.1"
           },
           "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Buscar a Peeta entre la multitud"
         }
-      ]
+      ],
+      "dialogue": null,
+      "player_prompt": null,
+      "participant_ids": null
     },
     {
       "scene_id": "74_goodbyes",
@@ -122,8 +154,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Le pedí a Gale que cuidara de Prim y de mi madre. No era justo dejarle una responsabilidad así, pero era la única persona a quien podía pedírselo sin explicar cada detalle.",
           "journal_entry_id": "74.diary.74_goodbyes.74_goodbyes_o1",
-          "echo": null,
-          "echo_note": "en el lanzamiento, si `gale_promise_explicit`: recuerdo de la promesa, sin afirmar que Katniss sabe si se está cumpliendo.",
+          "echo": {
+            "echo_id": "74.echo.gale_promise_explicit",
+            "scene_id": "74_launch",
+            "flags": [
+              "gale_promise_explicit"
+            ],
+            "text": "Pienso en Gale y en lo que le pedí antes de marcharme. Le confié a mi familia porque no tenía otra forma de protegerlas desde aquí. No sé qué habrá ocurrido desde entonces.",
+            "moment": "scene_start",
+            "group": "gale_promise",
+            "placement": "mostrar en 74_launch.",
+            "placement_confirmed": true,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Pedir a Gale que cuide de Prim y de tu madre"
         },
@@ -141,8 +185,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Intenté que mi madre entendiera que Prim la necesitaría. No podía resolver su miedo ni el mío. Solo podía pedirle que permaneciera junto a mi hermana.",
           "journal_entry_id": "74.diary.74_goodbyes.74_goodbyes_o2",
-          "echo": null,
-          "echo_note": "en el lanzamiento, si `mother_responsibility_named`: recuerdo breve de la petición.",
+          "echo": {
+            "echo_id": "74.echo.mother_responsibility_named",
+            "scene_id": "74_launch",
+            "flags": [
+              "mother_responsibility_named"
+            ],
+            "text": "Le pedí a mi madre que volviera a estar junto a Prim. No sé si el miedo la dejará hacerlo, pero necesitaba pedírselo antes de que se cerrara aquella puerta.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar en 74_launch.",
+            "placement_confirmed": true,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Pedir a tu madre que vuelva a cuidar de Prim"
         },
@@ -165,12 +221,27 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "No dije nada. Cualquier promesa habría sonado pequeña frente a lo que estaba ocurriendo. Me limité a abrazarla todo el tiempo que me permitieron.",
           "journal_entry_id": "74.diary.74_goodbyes.74_goodbyes_o3",
-          "echo": null,
-          "echo_note": "en el lanzamiento, si `goodbye_without_words`: recuerdo silencioso.",
+          "echo": {
+            "echo_id": "74.echo.goodbye_without_words",
+            "scene_id": "74_launch",
+            "flags": [
+              "goodbye_without_words"
+            ],
+            "text": "No dije nada más. Todavía recuerdo el abrazo y el momento en que tuvieron que separarnos. Hay despedidas que siguen pesando incluso cuando ya no queda nadie a quien abrazar.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar en 74_launch.",
+            "placement_confirmed": true,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Abrazar a Prim sin decir nada"
         }
-      ]
+      ],
+      "dialogue": null,
+      "player_prompt": null,
+      "participant_ids": null
     },
     {
       "scene_id": "74_departure",
@@ -201,8 +272,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Antes de subir al tren memoricé el camino, las posiciones de los agentes y los rostros que pude reconocer. No sabía si esos detalles servirían de algo, pero observar era mejor que dejar que el miedo ocupara todo el espacio.",
           "journal_entry_id": "74.diary.74_departure.74_departure_o1",
-          "echo": null,
-          "echo_note": "inclinación descriptiva a observar el entorno; no concede conocimiento automático del mapa.",
+          "echo": {
+            "echo_id": "74.echo.departure_observant",
+            "scene_id": "74_arrival",
+            "flags": [
+              "departure_observant"
+            ],
+            "text": "Recuerdo el camino desde el Edificio de Justicia hasta la estación: los agentes, las salidas y los rostros que alcancé a distinguir. No sé si esos detalles servirán, pero no quiero olvidarlos.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar durante la llegada o el primer recorrido por el Capitolio.",
+            "placement_confirmed": true,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Memorizar el camino y los rostros"
         },
@@ -225,8 +308,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Me concentré en respirar mientras me conducían a la estación. El miedo seguía allí, pero al menos podía impedir que decidiera cada uno de mis movimientos.",
           "journal_entry_id": "74.diary.74_departure.74_departure_o2",
-          "echo": null,
-          "echo_note": "recuerdo de autocontrol; no concede inmunidad al miedo ni bonificaciones ocultas.",
+          "echo": {
+            "echo_id": "74.echo.departure_composure",
+            "scene_id": "74_train",
+            "flags": [
+              "departure_composure"
+            ],
+            "text": "Conté la respiración para no dejar que el miedo decidiera por mí. No hizo que desapareciera. Solo me permitió seguir caminando sin que se notara cuánto me costaba.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar en el tren.",
+            "placement_confirmed": true,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Controlar la respiración"
         },
@@ -249,12 +344,27 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Peeta caminaba acompañado por su escolta. Quise saber qué estaba pensando, pero no tenía forma de preguntárselo. Seguimos caminos separados hacia el mismo tren.",
           "journal_entry_id": "74.diary.74_departure.74_departure_o3",
-          "echo": null,
-          "echo_note": "familiaridad visual, sin asumir confianza.",
+          "echo": {
+            "echo_id": "74.echo.departure_noticed_peeta",
+            "scene_id": "74_train",
+            "flags": [
+              "departure_noticed_peeta"
+            ],
+            "text": "Vi a Peeta antes de subir. Ya había reparado en él durante la cosecha, aunque todavía no sé qué piensa de todo esto ni qué espera de mí.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar en el tren.",
+            "placement_confirmed": true,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Observar a Peeta sin hablar"
         }
-      ]
+      ],
+      "dialogue": null,
+      "player_prompt": null,
+      "participant_ids": null
     },
     {
       "scene_id": "74_train",
@@ -285,8 +395,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Le pedí a Haymitch respuestas prácticas. No sabía cuánto podía confiar en él, pero era nuestro mentor y necesitaba entender qué podía enseñarnos antes de llegar.",
           "journal_entry_id": "74.diary.74_train.74_train_o1",
-          "echo": null,
-          "echo_note": "Haymitch puede ofrecer explicaciones más directas; no se crea una alianza automática.",
+          "echo": {
+            "echo_id": "74.echo.haymitch_practical_questions",
+            "scene_id": "74_training",
+            "flags": [
+              "haymitch_practical_questions"
+            ],
+            "text": "En el tren le pedí a Haymitch respuestas concretas. No se convirtió por eso en alguien fácil de confiar, pero al menos entendió que no necesitaba consuelo: necesitaba aprender.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar durante el entrenamiento o una conversación posterior con Haymitch.",
+            "placement_confirmed": true,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Exigir instrucciones concretas a Haymitch"
         },
@@ -309,8 +431,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Le pregunté a Peeta por su estrategia. Hablar con él no borró el hecho de que ambos éramos tributos del mismo distrito, pero me permitió conocer un poco mejor cómo afrontaba la situación.",
           "journal_entry_id": "74.diary.74_train.74_train_o2",
-          "echo": null,
-          "echo_note": "referencia a esa conversación durante el entrenamiento.",
+          "echo": {
+            "echo_id": "74.echo.train_peeta_opening",
+            "scene_id": "74_training",
+            "flags": [
+              "train_peeta_opening"
+            ],
+            "text": "Le pregunté a Peeta cómo pensaba afrontar los Juegos. Aquella conversación no resolvió lo que nos esperaba, pero fue la primera vez que intenté conocer su manera de pensar en lugar de limitarme a verlo como al otro tributo.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar durante el entrenamiento.",
+            "placement_confirmed": true,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Preguntar a Peeta por su estrategia"
         },
@@ -333,12 +467,27 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Dejé que Haymitch y Peeta hablaran. No expliqué qué sabía hacer ni qué pensaba intentar. Todavía no tenía motivos para mostrar todas mis cartas.",
           "journal_entry_id": "74.diary.74_train.74_train_o3",
-          "echo": null,
-          "echo_note": "reflexión de entrenamiento más reservada; no oculta habilidades ya conocidas por el sistema.",
+          "echo": {
+            "echo_id": "74.echo.katniss_keeps_advantage_private",
+            "scene_id": "74_training",
+            "flags": [
+              "katniss_keeps_advantage_private"
+            ],
+            "text": "En el tren preferí escuchar antes de enseñar mis cartas. Sigo pensando que no todos necesitan saber de qué soy capaz, y mucho menos antes de que empiecen los Juegos.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar durante el entrenamiento.",
+            "placement_confirmed": true,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Escuchar sin revelar tus habilidades"
         }
-      ]
+      ],
+      "dialogue": null,
+      "player_prompt": null,
+      "participant_ids": null
     },
     {
       "scene_id": "74_arrival",
@@ -369,8 +518,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Al llegar al Capitolio presté atención a la distribución del complejo. Todo parecía diseñado para impresionar y controlar el movimiento de quienes entraban.",
           "journal_entry_id": "74.diary.74_arrival.74_arrival_o1",
-          "echo": null,
-          "echo_note": "descripción de orientación; no concede rutas secretas ni ventajas de navegación.",
+          "echo": {
+            "echo_id": "74.echo.capitol_layout_observed",
+            "scene_id": "74_prep",
+            "flags": [
+              "capitol_layout_observed"
+            ],
+            "text": "Me fijé en los accesos, los pasillos y la distribución del complejo. Recordar cómo estaba organizado me ayuda a orientarme, aunque no significa que conozca rutas que nunca he recorrido.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar durante la exploración del complejo.",
+            "placement_confirmed": false,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Observar arquitectura y rutas"
         },
@@ -393,8 +554,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Me mantuve cerca de Peeta mientras nos conducían por el complejo. No sabía si aquello era confianza o simplemente la necesidad de reconocer a alguien del Distrito 12.",
           "journal_entry_id": "74.diary.74_arrival.74_arrival_o2",
-          "echo": null,
-          "echo_note": "referencia de familiaridad, sin alianza incondicional.",
+          "echo": {
+            "echo_id": "74.echo.arrival_stayed_near_peeta",
+            "scene_id": "74_prep",
+            "flags": [
+              "arrival_stayed_near_peeta"
+            ],
+            "text": "Me mantuve cerca de Peeta al llegar. En medio de aquel lugar desconocido, reconocer a alguien del Distrito 12 resultaba más sencillo que decidir si podía confiar en él.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar en una escena compartida con Peeta.",
+            "placement_confirmed": false,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Permanecer cerca de Peeta"
         },
@@ -412,12 +585,27 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Decidí ser correcta sin mostrar demasiado. En el Capitolio incluso una respuesta sencilla podía convertirse en parte de la imagen que otros construyeran de mí.",
           "journal_entry_id": "74.diary.74_arrival.74_arrival_o3",
-          "echo": null,
-          "echo_note": "primera impresión más reservada.",
+          "echo": {
+            "echo_id": "74.echo.arrival_guarded",
+            "scene_id": "74_parade",
+            "flags": [
+              "arrival_guarded"
+            ],
+            "text": "En el Capitolio aprendí a contestar solo lo necesario. Una respuesta cortés podía bastar; no tenía por qué entregarles también lo que estaba pensando.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar en la primera interacción pública posterior a la llegada.",
+            "placement_confirmed": false,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Responder con cortesía breve"
         }
-      ]
+      ],
+      "dialogue": null,
+      "player_prompt": null,
+      "participant_ids": null
     },
     {
       "scene_id": "74_prep",
@@ -453,8 +641,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Cinna no me pidió que fingiera ser alguien distinta. Su propuesta consistía en hacer visible algo que ya formaba parte de mí. Decidí confiar en su criterio.",
           "journal_entry_id": "74.diary.74_prep.74_prep_o1",
-          "echo": null,
-          "echo_note": "coordinación con Cinna durante el desfile.",
+          "echo": {
+            "echo_id": "74.echo.cinna_trust",
+            "scene_id": "74_parade",
+            "flags": [
+              "cinna_trust"
+            ],
+            "text": "Cinna no intentó convertirme en alguien distinta. Confié en su criterio porque parecía entender que la imagen que el Capitolio vería no tenía por qué borrar quién era yo.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar durante el desfile.",
+            "placement_confirmed": true,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Confiar en la propuesta de Cinna"
         },
@@ -472,8 +672,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Acepté la preparación, pero quise conservar una señal de mi procedencia. No sabía cómo interpretaría el público aquel detalle; para mí era importante no desaparecer dentro del espectáculo.",
           "journal_entry_id": "74.diary.74_prep.74_prep_o2",
-          "echo": null,
-          "echo_note": "el diario conserva la intención. Solo se refleja en el atuendo si el diseño aprobado lo permite; no altera por sí solo el atuendo canónico.",
+          "echo": {
+            "echo_id": "74.echo.district_identity_visible",
+            "scene_id": "74_parade",
+            "flags": [
+              "district_identity_visible"
+            ],
+            "text": "Quise conservar algo que recordara de dónde venía. No sé si los demás lo notarán, pero no quiero que el espectáculo haga desaparecer al Distrito 12 detrás del vestuario.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar en el diario o recuerdo previo al desfile.",
+            "placement_confirmed": true,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Conservar una referencia visible al Distrito 12"
         },
@@ -496,12 +708,27 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Permití que el equipo terminara la preparación sin fingir entusiasmo. Podía colaborar sin olvidar que aquello era una presentación organizada para el Capitolio.",
           "journal_entry_id": "74.diary.74_prep.74_prep_o3",
-          "echo": null,
-          "echo_note": "descripción contenida antes del desfile.",
+          "echo": {
+            "echo_id": "74.echo.prep_controlled",
+            "scene_id": "74_parade",
+            "flags": [
+              "prep_controlled"
+            ],
+            "text": "Dejé que terminaran la preparación sin fingir entusiasmo. Podía colaborar con el equipo sin olvidar que aquella presentación estaba pensada para convertirnos en algo que el Capitolio pudiera consumir.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar justo antes del desfile.",
+            "placement_confirmed": true,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Aceptar el trabajo sin mostrar entusiasmo"
         }
-      ]
+      ],
+      "dialogue": null,
+      "player_prompt": null,
+      "participant_ids": null
     },
     {
       "scene_id": "74_parade",
@@ -537,8 +764,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "La avenida estaba llena de voces y luces. Sostuve la mirada del público y sentí cómo cambiaba su atención. No podía controlar lo que pensaban, pero sí cómo me presentaba ante ellos.",
           "journal_entry_id": "74.diary.74_parade.74_parade_o1",
-          "echo": null,
-          "echo_note": "refuerza la descripción de reacción pública ya contemplada por el juego.",
+          "echo": {
+            "echo_id": "74.echo.parade_confident",
+            "scene_id": "74_training",
+            "flags": [
+              "parade_confident"
+            ],
+            "text": "Sostuve la mirada de la multitud. No podía decidir lo que pensarían de mí, pero durante aquellos segundos sí pude decidir que no iba a bajar la cabeza.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar al recordar la reacción del público.",
+            "placement_confirmed": false,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Sostener la mirada del público"
         },
@@ -566,8 +805,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Compartí el momento con Peeta. El gesto nos presentó juntos ante el público y convirtió a los dos tributos del Distrito 12 en una imagen que el Capitolio podía recordar.",
           "journal_entry_id": "74.diary.74_parade.74_parade_o2",
-          "echo": null,
-          "echo_note": "imagen pública conjunta y contexto para el sistema de patrocinadores existente.",
+          "echo": {
+            "echo_id": "74.echo.parade_pair_identity",
+            "scene_id": "74_training",
+            "flags": [
+              "parade_pair_identity"
+            ],
+            "text": "Peeta y yo aparecimos juntos ante todos. No significaba que confiáramos el uno en el otro sin reservas, pero el Capitolio ya había encontrado una imagen que podía vender.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar en la siguiente escena pública compartida con Peeta.",
+            "placement_confirmed": false,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Compartir el momento con Peeta"
         },
@@ -585,12 +836,27 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Seguí las indicaciones de Cinna durante el desfile. Él conocía el espectáculo mejor que yo. Mi tarea era sostener la presentación sin perder de vista quién era.",
           "journal_entry_id": "74.diary.74_parade.74_parade_o3",
-          "echo": null,
-          "echo_note": "reconocimiento del trabajo del equipo al terminar el desfile.",
+          "echo": {
+            "echo_id": "74.echo.parade_trust_team",
+            "scene_id": "74_training",
+            "flags": [
+              "parade_trust_team"
+            ],
+            "text": "Seguí las indicaciones de Cinna. Él sabía cómo funcionaba aquel espectáculo y yo necesitaba concentrarme en atravesarlo sin perderme dentro de la imagen que habían preparado.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar al terminar el desfile.",
+            "placement_confirmed": false,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Seguir las indicaciones de Cinna"
         }
-      ]
+      ],
+      "dialogue": null,
+      "player_prompt": null,
+      "participant_ids": null
     },
     {
       "scene_id": "74_training",
@@ -626,8 +892,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Elegí practicar tiro con arco. La familiaridad con el arma me dio cierta seguridad, aunque sabía que cada movimiento podía ser observado por otros tributos y por los Vigilantes.",
           "journal_entry_id": "74.diary.74_training.74_training_o1",
-          "echo": null,
-          "echo_note": "referencia a la práctica y atributo de arco solo si ya existe en el sistema.",
+          "echo": {
+            "echo_id": "74.echo.trained_archery",
+            "scene_id": "74_private_session",
+            "flags": [
+              "trained_archery"
+            ],
+            "text": "Elegí practicar con el arco. Era algo que ya conocía, pero hacerlo delante de los demás significaba aceptar que los Vigilantes y los otros tributos podían fijarse en cada movimiento.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar al volver a practicar o al hablar del entrenamiento.",
+            "placement_confirmed": false,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Practicar tiro con arco"
         },
@@ -655,8 +933,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Dediqué la sesión a supervivencia y rastreo. En la Arena no todo dependería de enfrentarse a alguien. Encontrar recursos y leer el entorno también podía marcar la diferencia.",
           "journal_entry_id": "74.diary.74_training.74_training_o2",
-          "echo": null,
-          "echo_note": "atributo de supervivencia solo si ya existe; no crear mecánica nueva.",
+          "echo": {
+            "echo_id": "74.echo.trained_survival",
+            "scene_id": "74_launch",
+            "flags": [
+              "trained_survival"
+            ],
+            "text": "Dediqué tiempo a pensar en rastreo y supervivencia. No todo se resolvería enfrentándome a alguien; encontrar agua, leer el terreno y saber cuándo avanzar también importaría.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar al hablar de preparación para la Arena.",
+            "placement_confirmed": false,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Practicar supervivencia y rastreo"
         },
@@ -684,12 +974,27 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Observé las estaciones y los comportamientos de los otros tributos. No inicié encuentros ni saqué conclusiones definitivas. Solo intenté aprender cómo funcionaba aquel espacio.",
           "journal_entry_id": "74.diary.74_training.74_training_o3",
-          "echo": null,
-          "echo_note": "inclinación de observación descriptiva; no revela estadísticas privadas de otros tributos.",
+          "echo": {
+            "echo_id": "74.echo.training_observed_others",
+            "scene_id": "74_private_session",
+            "flags": [
+              "training_observed_others"
+            ],
+            "text": "Preferí observar las estaciones y a los demás tributos antes de acercarme. Vi cómo se movían, pero no puedo saber lo que piensan ni convertir unas pocas miradas en certezas.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar durante una observación posterior del Centro de Entrenamiento.",
+            "placement_confirmed": false,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Observar estaciones y comportamientos"
         }
-      ]
+      ],
+      "dialogue": null,
+      "player_prompt": null,
+      "participant_ids": null
     },
     {
       "scene_id": "74_private_session",
@@ -720,8 +1025,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "En la sesión privada utilicé el arco para demostrar precisión. Los Vigilantes no reaccionaron como un público normal. Anotaron el resultado y me dejaron sin saber qué habían decidido.",
           "journal_entry_id": "74.diary.74_private_session.74_private_o1",
-          "echo": null,
-          "echo_note": "conserva el método de demostración. La puntuación canónica extraordinariamente alta se mantiene.",
+          "echo": {
+            "echo_id": "74.echo.private_archery_display",
+            "scene_id": "74_interview",
+            "flags": [
+              "private_archery_display"
+            ],
+            "text": "Elegí demostrar mi precisión con el arco. Los Vigilantes no aplaudieron ni dieron explicaciones; solo anotaron lo que habían visto. La puntuación que vino después fue mucho más alta de lo que esperaba.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar al recordar la sesión privada.",
+            "placement_confirmed": false,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Demostrar precisión con el arco"
         },
@@ -744,20 +1061,32 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Combiné precisión y lectura táctica durante la sesión. Intenté mostrar que podía tomar decisiones y no limitarme a ejecutar un movimiento.",
           "journal_entry_id": "74.diary.74_private_session.74_private_o2",
-          "echo": null,
-          "echo_note": "modifica la descripción, no el valor canónico de la puntuación.",
+          "echo": {
+            "echo_id": "74.echo.private_tactical_display",
+            "scene_id": "74_interview",
+            "flags": [
+              "private_tactical_display"
+            ],
+            "text": "Intenté demostrar que podía leer una situación además de acertar a un objetivo. No sé qué parte valoraron más los Vigilantes. Solo sé que mi actuación terminó con una puntuación extraordinariamente alta.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar al recordar la sesión privada.",
+            "placement_confirmed": false,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Combinar precisión y lectura táctica"
         },
         {
           "option_id": "74_private_o3",
           "label": "Mantener la calma y reservar capacidades.",
-          "source_effect": "private_session_result = strong; flag private_controlled_display",
+          "source_effect": "private_session_result = exceptional; flag private_controlled_display",
           "effects": [
             {
               "op": "SET",
               "path": "campaign.private_session_result",
-              "value": "strong"
+              "value": "exceptional"
             },
             {
               "op": "SET_FLAG",
@@ -768,12 +1097,29 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Mantuve la calma y reservé parte de mis capacidades. Los Vigilantes tendrían que evaluar lo que habían visto. Yo no podía controlar su interpretación.",
           "journal_entry_id": "74.diary.74_private_session.74_private_o3",
-          "echo": null,
-          "echo_note": "matiza el recuerdo. La puntuación sigue siendo extraordinariamente alta en la ruta canónica.",
+          "echo": {
+            "echo_id": "74.echo.private_controlled_display",
+            "scene_id": "74_interview",
+            "flags": [
+              "private_controlled_display"
+            ],
+            "text": "Reservé parte de mis capacidades y mantuve la calma. Aun así, los Vigilantes me dieron una puntuación extraordinariamente alta. Mostrar menos no cambió el resultado que ahora todos conocen.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar al recordar la sesión privada.",
+            "placement_confirmed": false,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
-          "label_anexo": "Mantener la calma y reservar capacidades"
+          "label_anexo": "Mantener la calma y reservar capacidades",
+          "source_effect_original": "private_session_result = strong; flag private_controlled_display",
+          "amendment": "Revisión 27-11-2026, pregunta 2: las tres opciones conservan la puntuación extraordinaria"
         }
-      ]
+      ],
+      "dialogue": null,
+      "player_prompt": null,
+      "participant_ids": null
     },
     {
       "scene_id": "74_interview",
@@ -809,8 +1155,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Intenté responder con sinceridad sin entregar más de lo que estaba dispuesta a contar. Cada pregunta parecía sencilla hasta que recordaba cuántas personas estaban escuchando.",
           "journal_entry_id": "74.diary.74_interview.74_interview_o1",
-          "echo": null,
-          "echo_note": "tono público `guarded`.",
+          "echo": {
+            "echo_id": "74.echo.interview_honest",
+            "scene_id": "74_launch",
+            "flags": [
+              "interview_honest"
+            ],
+            "text": "Intenté responder con sinceridad sin contar más de lo necesario. Las cámaras podían convertir cualquier palabra en una historia, pero al menos procuré que aquella no fuera completamente ajena a mí.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar al recordar la entrevista.",
+            "placement_confirmed": false,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Responder con sinceridad contenida"
         },
@@ -838,8 +1196,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Mostré calidez durante la entrevista. No significaba que confiara en el Capitolio, pero sí que podía decidir qué parte de mí quería presentar ante la audiencia.",
           "journal_entry_id": "74.diary.74_interview.74_interview_o2",
-          "echo": null,
-          "echo_note": "puede reflejarse en el interés de patrocinadores ya existente.",
+          "echo": {
+            "echo_id": "74.echo.interview_warm",
+            "scene_id": "74_launch",
+            "flags": [
+              "interview_warm"
+            ],
+            "text": "Dejé que vieran algo más que mi desconfianza. Mostrar calidez no significaba confiar en el Capitolio; significaba decidir qué parte de mí podían conocer.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar al recordar la entrevista o al tratar con el público.",
+            "placement_confirmed": false,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Mostrar calidez"
         },
@@ -867,12 +1237,27 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Respondí con firmeza. Sabía que podían interpretar mis palabras como desafío, pero preferí no fingir una docilidad que no sentía.",
           "journal_entry_id": "74.diary.74_interview.74_interview_o3",
-          "echo": null,
-          "echo_note": "tono público `defiant`; no inicia una confrontación ni una consecuencia política nueva.",
+          "echo": {
+            "echo_id": "74.echo.interview_defiant",
+            "scene_id": "74_launch",
+            "flags": [
+              "interview_defiant"
+            ],
+            "text": "Respondí con firmeza y no intenté disfrazarlo. No estaba buscando una pelea con Caesar ni con el público, pero tampoco iba a aceptar cada papel que quisieran asignarme.",
+            "moment": "scene_start",
+            "group": null,
+            "placement": "mostrar al recordar la entrevista.",
+            "placement_confirmed": false,
+            "source": "revision-74-2026-11-27"
+          },
+          "echo_note": null,
           "transfer_note": null,
           "label_anexo": "Responder con firmeza"
         }
-      ]
+      ],
+      "dialogue": null,
+      "player_prompt": null,
+      "participant_ids": null
     },
     {
       "scene_id": "74_launch",
@@ -927,7 +1312,20 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "journal_tag": null,
           "journal_text": "Recordé a mi familia y las promesas que había hecho. No sabía qué podría cumplir desde la Arena, pero necesitaba conservar una razón para seguir adelante.",
           "journal_entry_id": "74.diary.74_launch.74_launch_o2",
-          "echo": null,
+          "echo": {
+            "echo_id": "74.echo.launch_family_focus+gale_promise_explicit",
+            "scene_id": "74_launch",
+            "flags": [
+              "launch_family_focus",
+              "gale_promise_explicit"
+            ],
+            "text": "También recuerdo lo que le pedí a Gale: que cuidara de Prim y de mi madre. No sé si podrá mantenerlas a salvo, pero esa promesa sigue conmigo.",
+            "moment": "after_response",
+            "group": "gale_promise",
+            "placement": "añadir después del texto base del recuerdo familiar.",
+            "placement_confirmed": true,
+            "source": "revision-74-2026-11-27"
+          },
           "echo_note": null,
           "transfer_note": "`launch_plan=family`. Si existe `gale_promise_explicit`, añadir una sola frase sobre esa promesa.",
           "label_anexo": "Recordar la promesa a tu familia"
@@ -956,7 +1354,10 @@ export const CAMPANA_74 = Object.freeze({ ...{
           "transfer_note": "`launch_plan=observation`.",
           "label_anexo": "Prepararte para observar el terreno"
         }
-      ]
+      ],
+      "dialogue": null,
+      "player_prompt": null,
+      "participant_ids": null
     }
   ]
 }, variables: VARIABLES_74 });

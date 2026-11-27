@@ -211,7 +211,7 @@ function renderPrecampana(){
  const st=game.precampana,resp=PC.pendingResponse(camp,st),scene=resp?camp.scenes.find(x=>x.scene_id===resp.scene_id):PC.currentScene(camp,st);
  if(!scene){finishPrecampana();renderGame();return;}
  const diario=st.journal.filter(j=>j.text);
- const cuerpo=resp?`<p class="small muted">${esc(scene.title)}</p><blockquote class="respuesta">${esc(resp.text)}</blockquote><button class="btn primary" data-pc-continue="1">Continuar</button>`
+ const cuerpo=resp?`<p class="small muted">${esc(scene.title)}</p><blockquote class="respuesta">${esc(resp.text)}</blockquote>${PC.responseEchoes(camp,st,resp.option_id).map(t=>`<p class="eco"><em>${esc(t)}</em></p>`).join('')}<button class="btn primary" data-pc-continue="1">Continuar</button>`
   :`${PC.echoesFor(camp,st,scene).map(t=>`<p class="eco"><em>${esc(t)}</em></p>`).join('')}
  <p class="small muted">${esc(scene.location||'')}</p><h2>${esc(scene.title)}</h2>${String(scene.text).split(/\n\s*\n/).map(p=>`<p>${esc(p)}</p>`).join('')}
  <div class="choice-list">${PC.availableOptions(scene,st).map(o=>`<button class="choice" data-pc-option="${esc(o.option_id)}">${esc(o.label)}</button>`).join('')}</div>`;

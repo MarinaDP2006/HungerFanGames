@@ -7,16 +7,17 @@ import * as PCI from '../js/campanas/indice.js';
 import * as DEC from '../js/decisiones.js';
 import { CAMPANA_74 } from '../js/campanas/campana-74.js';
 import { GIRA, CAMPANA_75 } from '../js/campanas/estructuras.js';
-import { generar, parse, parseAnexo, FUENTE, SALIDA, ANEXO } from '../../scripts/importar-campana-74.mjs';
+import { generar, parse, parseAnexo, parseRevision, FUENTE, SALIDA, ANEXO, REVISION, ENMIENDAS } from '../../scripts/importar-campana-74.mjs';
 
 const root = new URL('../../', import.meta.url);
 const fuente = fs.readFileSync(new URL(FUENTE, root), 'utf8');
 const anexo = fs.readFileSync(new URL(ANEXO, root), 'utf8');
+const revision = fs.readFileSync(new URL(REVISION, root), 'utf8');
 const plano = t => t.replace(/\\\n/g, ' ').replace(/\s+/g, ' ');
 const ORDEN = ['74_reaping', '74_goodbyes', '74_departure', '74_train', '74_arrival', '74_prep', '74_parade', '74_training', '74_private_session', '74_interview', '74_launch'];
 
 test('74.º: los datos del juego son exactamente los generados desde la fuente (nadie los ha editado)', () => {
-  assert.equal(fs.readFileSync(new URL(SALIDA, root), 'utf8'), generar(fuente, anexo));
+  assert.equal(fs.readFileSync(new URL(SALIDA, root), 'utf8'), generar(fuente, anexo, revision));
 });
 
 test('74.º: once escenas en el orden del contrato, tres opciones cada una, textos íntegros', () => {
@@ -26,7 +27,7 @@ test('74.º: once escenas en el orden del contrato, tres opciones cada una, text
     assert.ok(fuente.includes(s.text), `${s.scene_id}: el texto es literal de la fuente`);
     assert.ok(fuente.includes(s.milestone), `${s.scene_id}: hito literal`);
     for (const o of s.options) {
-      assert.ok(fuente.includes(`\`${o.option_id}\` **${o.label}** Efecto: \`${o.source_effect}\``), `${o.option_id} literal`);
+      assert.ok(fuente.includes(`\`${o.option_id}\` **${o.label}** Efecto: \`${o.source_effect_original || o.source_effect}\``), `${o.option_id} literal`);
       assert.ok(o.response_text && plano(anexo).includes(`Respuesta: «${o.response_text}»`), `${o.option_id}: respuesta literal del anexo`);
       assert.ok(o.journal_text && plano(anexo).includes(`Diario: «${o.journal_text}»`), `${o.option_id}: diario literal del anexo`);
       assert.equal(o.journal_entry_id, `74.diary.${s.scene_id}.${o.option_id}`);
@@ -34,16 +35,61 @@ test('74.º: once escenas en el orden del contrato, tres opciones cada una, text
   }
   assert.deepEqual(PC.validateCampaign(CAMPANA_74), []);
   assert.equal(CAMPANA_74.campaign_id, 'campaign_74');
-  assert.equal(CAMPANA_74.source_version, '74-prearena-1.1');
+  assert.equal(CAMPANA_74.source_version, '74-prearena-1.2-borrador');
 });
 
-test('anexo 1.1: 33 respuestas y diarios, solo dos ecos con frase escrita, el resto como nota', () => {
-  const a = parseAnexo(anexo);
-  assert.equal(Object.keys(a).length, 33);
-  const ecos = CAMPANA_74.scenes.flatMap(s => s.options).filter(o => o.echo);
-  assert.deepEqual(ecos.map(o => [o.option_id, o.echo.scene_id, o.echo.flag]), [['74_reaping_o1', '74_goodbyes', 'prim_saw_katniss_protect'], ['74_reaping_o3', '74_train', 'first_recognition_peeta']]);
-  for (const o of ecos) assert.ok(plano(anexo).includes(`«${o.echo.text}»`));
+test('anexo 1.1: 33 respuestas y diarios; el texto del botón no cambia', () => {
+  assert.equal(Object.keys(parseAnexo(anexo)).length, 33);
   for (const s of CAMPANA_74.scenes) for (const o of s.options) assert.ok(o.label.startsWith(o.label_anexo), `${o.option_id}: el anexo no cambia el texto del botón`);
+});
+
+test('revisión 27-11: 31 ecos con frase literal (2 del anexo y 29 de la revisión), ninguno queda como nota', () => {
+  const rev = parseRevision(revision);
+  assert.equal(rev.length, 29);
+  const ops = CAMPANA_74.scenes.flatMap(s => s.options);
+  const ecos = ops.filter(o => o.echo);
+  assert.equal(ecos.length, 31);
+  assert.ok(ops.every(o => !o.echo_note), 'no quedan ecos sin frase');
+  const ids = new Set();
+  for (const o of ecos) {
+    assert.ok(plano(anexo).includes(`«${o.echo.text}»`) || revision.includes(`«${o.echo.text}»`), `${o.option_id}: frase literal`);
+    assert.ok(!ids.has(o.echo.echo_id)); ids.add(o.echo.echo_id);
+    assert.ok(CAMPANA_74.scenes.some(s => s.scene_id === o.echo.scene_id), `${o.option_id}: escena existente`);
+    for (const f of o.echo.flags) assert.ok(ops.some(x => x.effects.some(e => e.op === 'SET_FLAG' && e.path === f)), `${f} lo activa una opción`);
+    // El eco se muestra después de la opción que lo provoca (o en su misma escena, tras la respuesta).
+    const desde = CAMPANA_74.scenes.findIndex(s => s.options.includes(o)), hasta = CAMPANA_74.scenes.findIndex(s => s.scene_id === o.echo.scene_id);
+    assert.ok(o.echo.moment === 'after_response' ? hasta === desde : hasta > desde, `${o.option_id}: orden`);
+  }
+  const gale = ops.find(o => o.option_id === '74_launch_o2').echo;
+  assert.deepEqual(gale.flags, ['launch_family_focus', 'gale_promise_explicit']);
+  assert.equal(gale.moment, 'after_response');
+  assert.equal(gale.group, 'gale_promise');
+});
+
+test('revisión 27-11, pregunta 2: 74_private_o3 pasa a exceptional; se conserva el efecto original', () => {
+  const o = CAMPANA_74.scenes[8].options[2];
+  assert.equal(o.source_effect_original, 'private_session_result = strong; flag private_controlled_display');
+  assert.equal(o.source_effect, 'private_session_result = exceptional; flag private_controlled_display');
+  assert.equal(o.amendment, ENMIENDAS['74_private_o3'].motivo);
+});
+
+test('revisión 27-11: diálogos, player_prompt y participantes quedan pendientes (null), sin extraerlos de la prosa', () => {
+  for (const s of CAMPANA_74.scenes) { assert.equal(s.dialogue, null); assert.equal(s.player_prompt, null); assert.equal(s.participant_ids, null); assert.equal(s.location_id, null); }
+});
+
+test('ecos: puros, deduplicados por grupo y sin efectos mecánicos', () => {
+  const c = CAMPANA_74, st = PC.createState(c);
+  const launch = c.scenes.find(s => s.scene_id === '74_launch');
+  st.flags = { gale_promise_explicit: true, launch_family_focus: true };
+  const antes = JSON.stringify(st);
+  const a = PC.echoesFor(c, st, launch), b = PC.echoesFor(c, st, launch);
+  assert.deepEqual(a, b, 'repetir la pantalla no duplica');
+  assert.equal(a.filter(t => /Gale/.test(t)).length, 1);
+  assert.deepEqual(PC.responseEchoes(c, st, '74_launch_o2'), [], 'la promesa a Gale ya salió al empezar la escena: no se repite');
+  assert.equal(JSON.stringify(st), antes, 'los ecos no cambian el estado');
+  st.flags = { launch_family_focus: true };
+  assert.deepEqual(PC.responseEchoes(c, st, '74_launch_o2'), [], 'sin la promesa explícita no hay eco');
+  assert.deepEqual(PC.echoesFor(c, st, launch), []);
 });
 
 test('74.º: cada efecto de la fuente se traduce al contrato maestro sin perder ninguno', () => {
@@ -168,4 +214,17 @@ test('transferencia: instantánea completa, idempotente y sin valores numéricos
   assert.equal(t.flags.launch_observation_focus, true);
   const campaigns = fs.readFileSync(new URL('../js/campaigns.js', import.meta.url), 'utf8');
   assert.doesNotMatch(campaigns, /continuity/, 'la Arena existente no lee la continuidad hasta aprobar la tabla');
+});
+
+test('revisión 27-11, pregunta 6: arco, supervivencia y observación no tocan la habilidad genérica de la Arena', () => {
+  for (const i of [0, 1, 2]) {
+    const st = PC.createState(CAMPANA_74);
+    const game = DEC.initDecisions({ mode: 'story', skill: 6, support: 12, sponsorTrust: 0 });
+    for (const s of CAMPANA_74.scenes) PC.choose(CAMPANA_74, st, s.options[i].option_id, { game });
+    PC.applyTransfer(game, CAMPANA_74, st);
+    assert.equal(game.skill, 6);
+    assert.equal(game.support, 12);
+    assert.equal(game.sponsorTrust, 0);
+    assert.ok(!Object.keys(game).some(k => /archery|survival|observation/.test(k)), 'sin atributos nuevos en la partida');
+  }
 });

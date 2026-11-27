@@ -40,3 +40,24 @@ test('el texto se copia tal cual de la fuente', () => {
     if (s.journal_base) assert.ok(md.includes(s.journal_base));
   }
 });
+
+test('correspondencia aprobada de la Arena del 75.º (27-11-2026), exacta', () => {
+  assert.deepEqual(ARENA_75.map(a => [a.turno, a.titulo, a.escenas]), [
+    [1, 'Las plataformas de agua', ['75-07']], [2, 'Una conversación cifrada', ['75-08']], [3, 'La alianza de los vencedores', ['75-08']],
+    [4, 'La niebla', ['75-09', '75-10']], [5, 'El mecanismo del reloj', ['75-11', '75-12']], [6, 'El relámpago y el árbol', ['75-13']],
+    [7, 'Los charlajos', []], [8, 'La ruptura del reloj', ['75-14', '75-15']],
+  ]);
+});
+
+test('los títulos de la tabla son los de los acontecimientos reales del código', () => {
+  const app = fs.readFileSync(new URL('../La_Cosecha_Juego_Android/js/app.js', import.meta.url), 'utf8');
+  const caps = fs.readFileSync(new URL('../La_Cosecha_Juego_Android/js/campaigns.js', import.meta.url), 'utf8');
+  for (const a of ARENA_75) {
+    const fuente = a.id.startsWith('campaigns.js') ? caps : app;
+    assert.ok(fuente.includes(`title:'${a.titulo}'`), a.titulo);
+    if (a.id.startsWith('app.js')) assert.ok(app.includes(`game.edition===75&&turn===${a.turno})event={title:'${a.titulo}'`), `${a.titulo}: turno ${a.turno}`);
+    else assert.ok(new RegExp(`\\b${a.turno}:\\{title:'${a.titulo}'`).test(caps), `${a.titulo}: día ${a.turno}`);
+  }
+  // Wiress muere en el capítulo 7, después del descubrimiento del reloj (turno 5).
+  assert.match(caps, /7:\{title:'Los charlajos'[^\n]*pre:\(g,a\)=>a\.kill\('Wiress'/);
+});
