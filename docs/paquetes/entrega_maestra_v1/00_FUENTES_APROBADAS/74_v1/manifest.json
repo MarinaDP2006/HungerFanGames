@@ -1,0 +1,36 @@
+{
+  "package": "La Cosecha Producción Creativa 74 v1",
+  "status": "creative delivery for review",
+  "campaign": "74th Games pre-arena",
+  "scenes": [
+    "74_reaping",
+    "74_goodbyes",
+    "74_departure",
+    "74_train",
+    "74_arrival",
+    "74_prep",
+    "74_parade",
+    "74_training",
+    "74_private_session",
+    "74_interview",
+    "74_launch"
+  ],
+  "art": [
+    {
+      "file": "arte/La_Cosecha_Poster_Concepto_01.png",
+      "status": "concept",
+      "use": "referencia de identidad general"
+    },
+    {
+      "file": "arte/La_Cosecha_Poster_Concepto_02.png",
+      "status": "concept",
+      "use": "referencia de identidad Historia/Libre/Presidente"
+    }
+  ],
+  "rules": [
+    "no new Arena events",
+    "preserve canonical beats",
+    "stable IDs",
+    "all choices persist effects"
+  ]
+}
