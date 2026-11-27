@@ -8,8 +8,71 @@ on:
       - 'La_Cosecha_Web_Render/**'
       - 'scripts/**'
       - '.github/workflows/android-apk.yml'
+
+# Tres trabajos encadenados. Si falla una prueba obligatoria, no se compila el APK;
+# si falla el APK, no se prueba en el emulador.
 jobs:
-  build:
+  pruebas:
+    name: Pruebas obligatorias (Android, Web y paridad)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: 'Android · smoke'
+        working-directory: La_Cosecha_Juego_Android
+        run: node tests/smoke.mjs
+      - name: 'Android · campañas 50.º, 74.º y 75.º'
+        working-directory: La_Cosecha_Juego_Android
+        run: node tests/campaigns.mjs
+      - name: 'Android · presidencia'
+        working-directory: La_Cosecha_Juego_Android
+        run: node tests/presidency.mjs
+      - name: 'Android · guardado y ¿Y si…?'
+        working-directory: La_Cosecha_Juego_Android
+        run: node tests/saves.mjs
+      - name: 'Android · 50.º precampaña (5.1)'
+        working-directory: La_Cosecha_Juego_Android
+        run: node tests/campaign-50th-prearena.mjs
+      - name: 'Android · 50.º Arena (módulo de referencia 5.2)'
+        working-directory: La_Cosecha_Juego_Android
+        run: node tests/campaign-50th-arena.mjs
+      - name: 'Android · 50.º pruebas dinámicas (5.5)'
+        working-directory: La_Cosecha_Juego_Android
+        run: node --test tests/campaign-50th-dynamic.test.mjs
+      - name: 'Android · 50.º adaptador dinámico'
+        working-directory: La_Cosecha_Juego_Android
+        run: node --test tests/campaign-50th-dynamic-adapter.test.mjs
+      - name: 'Android · 50.º integración'
+        working-directory: La_Cosecha_Juego_Android
+        run: node --test tests/campaign-50th-integration.test.mjs
+      - name: 'Android · empaquetado (www/)'
+        working-directory: La_Cosecha_Juego_Android
+        run: node --test tests/bundle-android.test.mjs
+      - name: 'Android · versión'
+        working-directory: La_Cosecha_Juego_Android
+        run: node --test tests/version.test.mjs
+      - name: 'Android · ajustes'
+        working-directory: La_Cosecha_Juego_Android
+        run: node --test tests/settings.test.mjs
+      - name: 'Android · ranuras de guardado'
+        working-directory: La_Cosecha_Juego_Android
+        run: node --test tests/saves-slots.test.mjs
+      - name: 'Web · smoke, campañas, presidencia y guardado'
+        working-directory: La_Cosecha_Web_Render
+        run: |
+          node tests/smoke.mjs
+          node tests/campaigns.mjs
+          node tests/presidency.mjs
+          node tests/saves.mjs
+      - name: 'Paridad Web / Android'
+        run: node scripts/paridad.mjs
+      - name: 'Paridad · detección de divergencias'
+        run: node --test scripts/paridad.test.mjs
+
+  apk:
+    name: Compilar y verificar el APK
+    needs: pruebas
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -26,33 +89,76 @@ jobs:
         with:
           packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
           log-accepted-android-sdk-licenses: false
-      - name: Pruebas del juego
-        run: |
-          node tests/smoke.mjs
-          node tests/campaigns.mjs
-          node tests/presidency.mjs
-          node tests/saves.mjs
-      - name: Paridad Web / Android
-        working-directory: .
-        run: node scripts/paridad.mjs
       - run: npm install --no-audit --no-fund
-      - run: npm run build:web
+      - name: Generar www/ (solo lo que usa la app)
+        run: node scripts/build-web.mjs --informe
       - run: '[ -f android/gradlew ] || (rm -rf android && npx cap add android)'
       - run: npx cap sync android
+      - name: Versión del APK desde package.json
+        run: node scripts/android-version.mjs
       - run: cd android && chmod +x gradlew && ./gradlew assembleDebug --no-daemon
       - name: Comprobar el APK
         run: |
           APK=android/app/build/outputs/apk/debug/app-debug.apk
+          VERSION=$(node -p "require('./package.json').version")
           test -s "$APK"
           ls -lh "$APK"
           unzip -l "$APK" > apk-contents.txt
           tail -n 1 apk-contents.txt
-          for f in assets/public/index.html assets/public/js/app.js assets/public/js/campaigns.js assets/public/js/whatif.js assets/public/js/presidency.js assets/public/js/data.js assets/public/css/style.css assets/capacitor.config.json classes.dex AndroidManifest.xml; do
+          # Lo que la app usa tiene que estar.
+          for f in assets/public/index.html assets/public/js/app.js assets/public/js/data.js assets/public/js/campaigns.js assets/public/js/whatif.js assets/public/js/presidency.js assets/public/js/campaign-50th-prearena.js assets/public/js/campaign-50th-dynamic-adapter.js assets/public/js/version.js assets/public/js/settings.js assets/public/js/saves.js assets/public/css/style.css assets/public/sw.js assets/public/assets/audio/ambiente-capitolio-original.ogg assets/capacitor.config.json classes.dex AndroidManifest.xml; do
             grep -q " $f$" apk-contents.txt || { echo "Falta $f en el APK"; exit 1; }
           done
-          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | head -n 3
+          # Lo rechazado o sin uso no puede estar.
+          for f in campaign-50th-arena.js campaign-50th-dynamic.js canon-50th.js music.js menu-panem.png arena-bosque.png ambiente-capitolio-master.wav; do
+            if grep -q "/$f$" apk-contents.txt; then echo "El APK contiene $f y no debería"; exit 1; fi
+          done
+          if grep -qi '\.wav$' apk-contents.txt; then echo "El APK contiene un WAV"; exit 1; fi
+          BADGING=$("$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging "$APK" | head -n 1)
+          echo "$BADGING"
+          echo "$BADGING" | grep -q "versionName='$VERSION'" || { echo "versionName no es $VERSION"; exit 1; }
+          echo "$BADGING" | grep -q "versionCode='$(node -e "const [a,b,c]=require('./package.json').version.split('.').map(Number);console.log(a*10000+b*100+c)")'" || { echo "versionCode incorrecto"; exit 1; }
       - uses: actions/upload-artifact@v4
         with:
           name: La-Cosecha-Android-debug
           path: La_Cosecha_Juego_Android/android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+
+  emulador:
+    name: Probar el APK en un emulador Android
+    needs: apk
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - uses: actions/download-artifact@v4
+        with:
+          name: La-Cosecha-Android-debug
+          path: apk
+      - name: Activar KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Herramienta de control del WebView (Playwright, sin navegadores)
+        run: npm install --no-save --no-audit --no-fund playwright-core@1.49.1
+      - name: Recorrido en el emulador (Android 14, API 34)
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          target: google_apis
+          force-avd-creation: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: |
+            adb install -r apk/app-debug.apk
+            node La_Cosecha_Juego_Android/tests/device/android-e2e.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: La-Cosecha-Android-emulador
+          path: device-report/
+          if-no-files-found: warn
