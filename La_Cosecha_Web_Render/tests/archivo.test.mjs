@@ -131,7 +131,7 @@ test('la página Acerca muestra el aviso de proyecto fan y la leyenda de estados
   assert.match(h, /proyecto fan no oficial/);
   assert.match(h, /No está afiliado/);
   for (const t of ['Hecho canónico', 'Compatible con el canon', 'Interpretación del proyecto', 'Ruta alternativa', 'Sin clasificar']) assert.ok(h.includes(t), t);
-  assert.match(read('index.html'), /proyecto fan no oficial/, 'el aviso sigue visible en el pie de todas las páginas');
+  assert.doesNotMatch(read('index.html'), /<footer/, 'sin pie de página: el aviso queda en Acerca');
 });
 
 test('todas las imágenes tienen texto alternativo', () => {

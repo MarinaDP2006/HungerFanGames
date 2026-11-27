@@ -83,3 +83,5 @@ body{zoom:var(--text-scale,1)}
 .chip.active{border-color:var(--gold);color:var(--gold2);background:#2a1d14}
 @media(max-width:420px){.action-grid{grid-template-columns:repeat(3,1fr)}.act{min-height:76px;font-size:11px}.hud-m b{font-size:13px}.seg{font-size:11px}}
 @media(min-width:1000px){.hud{top:8px}}
+
+.top-meta .version{font-size:9px;letter-spacing:.14em;color:#6f6253}
