@@ -17,12 +17,12 @@
 }
 html{background:var(--black)}
 body{background:radial-gradient(ellipse 120% 60% at 50% -10%,#1d2230 0,#0b0d12 45%,#06070a 80%);color:var(--cream)}
-/* Líneas de barrido muy suaves sobre toda la pantalla: aspecto de emisión, sin estorbar la lectura */
-body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;background:repeating-linear-gradient(0deg,#ffffff05 0 1px,transparent 1px 3px);mix-blend-mode:overlay}
-@media (prefers-reduced-motion:reduce){body::after{display:none}}
+/* Sin capas fijas a pantalla completa con mezcla ni desenfoque: en WebView con renderizado por software
+   (emuladores y móviles modestos) hacían caer el proceso de la página. Las líneas de barrido van solo en la cabecera. */
+.topbar{background-image:repeating-linear-gradient(0deg,#ffffff06 0 1px,transparent 1px 3px)}
 
 /* Barra superior: rótulo de cadena + EN DIRECTO */
-.topbar{border-bottom:1px solid #2a3142;background:linear-gradient(180deg,#0d1017,#0b0d12cc);backdrop-filter:blur(6px)}
+.topbar{border-bottom:1px solid #2a3142;background:linear-gradient(180deg,#0d1017,#0b0d12cc);}
 .wordmark{color:var(--gold2);font:700 18px Cinzel,serif;letter-spacing:.26em}
 .wordmark span{font:600 9px Inter,sans-serif;color:#7f8796;letter-spacing:.32em}
 .top-meta{color:#7f8796;font:600 10px Inter,sans-serif}
@@ -99,7 +99,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;bac
 .epilogue{border-left-color:var(--gold)}.epilogue p{color:#d8dbe1}
 
 /* Ajustes y modales */
-.modal-backdrop{background:#000000d9;backdrop-filter:blur(3px)}
+.modal-backdrop{background:#000000e0}
 .modal{background:#10131a;border-color:#2a3244}
 .setting-range input{accent-color:var(--gold2)}
 
