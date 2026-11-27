@@ -217,3 +217,29 @@ test('si Peeta muere en el 74.º, no se ofrece continuar (la Gira exige la conti
   e.click({ a: 'continuar-historia' });
   assert.equal(e.api.g(), g);
 });
+
+test('tras el 75.º: Rebelión (8) → Guerra (8) → final de la historia, sin más botón de continuar', () => {
+  const e = engine();
+  e.api.setMode('story', 75); e.api.begin();
+  const g = e.api.g();
+  for (const c of ['gira', 75]) for (const s of PCI.campana(c).scenes) { e.click({ pcOption: s.options[0].option_id }); e.click({ pcContinue: '1' }); }
+  assert.equal(g.phase, 'arena');
+  g.phase = 'ending'; g.health = 40;
+  e.click({ a: 'continuar-historia' });
+  assert.equal(e.api.g(), g, 'la Rebelión sigue en la misma partida');
+  assert.equal(g.precampana.campaign_id, 'campaign_rebelion');
+  for (const c of ['rebelion', 'guerra']) for (const s of PCI.campana(c).scenes) { e.click({ pcOption: s.options[1].option_id }); e.click({ pcContinue: '1' }); }
+  assert.equal(g.phase, 'ending');
+  assert.equal(g.storyFinished, true);
+  assert.equal(g.endingTitle, 'EL SINSAJO');
+  assert.ok(g.storyEpilogue.some(l => /prímulas/.test(l)));
+  assert.deepEqual(Object.keys(g.continuity).sort(), ['campaign_75', 'campaign_gira', 'campaign_guerra', 'campaign_rebelion']);
+  assert.match(html(e), /FIN DE LA HISTORIA/);
+  assert.doesNotMatch(html(e), /continuar-historia/);
+});
+
+test('Rebelión y Guerra: campañas válidas, hitos de las películas presentes', () => {
+  for (const k of ['rebelion', 'guerra']) assert.deepEqual(PC.validateCampaign(PCI.campana(k)), [], k);
+  const texto = ['rebelion', 'guerra'].flatMap(k => PCI.campana(k).scenes.map(s => s.text)).join(' ');
+  for (const hito of [/Distrito 12/, /Coin/, /Boggs/, /Prim/, /desvías la flecha hacia Coin/]) assert.match(texto, hito);
+});

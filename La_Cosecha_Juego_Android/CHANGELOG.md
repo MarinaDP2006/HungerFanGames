@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.19 — Rebelión y Guerra: la historia de Katniss hasta el final
+- **Rebelión (8 escenas):** despertar tras la Arena y el Distrito 12 arrasado (escenas 75-16 y 75-17 del documento), Coin, el hospital del Distrito 8, la presa, el bombardeo del 13, el rescate de Peeta y el Hueso.
+- **Guerra (8 escenas):** la unidad Estrella, las vainas, las alcantarillas, la tienda de Tigris, los paracaídas, el invernadero de Snow, la votación de los últimos Juegos y la flecha.
+- **Final de la historia «El Sinsajo»:** cambia según tus relaciones con Peeta, Haymitch y Gale y lo que descubriste sobre los paracaídas.
+- **Al salir vivo del 75.º,** el botón «Continuar: Rebelión» sigue en la misma partida.
+- **Hitos fijos de las películas:** la muerte de Boggs, Finnick y Prim, y la flecha contra Coin no cambian.
+
 ## 4.18 — Diseño «Retransmisión del Capitolio» y arreglos para móviles reales
 - **Diseño propio del juego, opuesto al de la web.**
   - Fondo negro azulado de pantalla, oro del Capitolio y rótulo rojo «EN DIRECTO».

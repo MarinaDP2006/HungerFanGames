@@ -1,4 +1,4 @@
-const CACHE='la-cosecha-android-4.18.0';
+const CACHE='la-cosecha-android-4.19.0';
 // Android (Capacitor): la app ya lleva todos sus archivos dentro del APK, así que no necesita caché.
 // Hasta 4.9 había un service worker con caché que, al actualizar el APK, seguía sirviendo la versión
 // anterior en el primer arranque. Este lo retira: se activa al momento, borra las cachés, se da de baja
