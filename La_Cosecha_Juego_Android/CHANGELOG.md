@@ -5,6 +5,9 @@
 - Al arrancar se comparan las dos copias: las partidas de versiones anteriores se copian a la nativa (migración sin borrar nada), lo perdido en el WebView se recupera de la nativa y, si las dos difieren, gana la copia íntegra y, entre íntegras, la más reciente.
 - Cada ranura lleva una huella (`checksum`) para detectar copias dañadas. Es un campo opcional: las partidas sin él se siguen cargando (`saveVersion` sigue en 4). Exportar e importar no cambian.
 - Ranuras, exportación e importación sin cambios. En la Web no cambia nada (no hay Capacitor).
+- Corregido: al actualizar el APK, el service worker de 4.9 seguía sirviendo la versión anterior desde su caché. Android ya no usa caché (los archivos van en el APK) y el nuevo `sw.js` retira el antiguo y recarga la app: en el emulador, de 4.9.0 a 4.10.0 en unos 2 segundos.
+- APK: si existe el secreto `ANDROID_DEBUG_KEYSTORE_B64`, todas las compilaciones se firman con la misma clave y se pueden instalar encima sin perder partidas (`docs/FIRMA_APK.md`).
+- CI: prueba de guardado duradero (12 casos) y, en el emulador, cierre forzado medio segundo después de guardar y actualización real desde el APK 4.9.0 con una partida a medias.
 
 ## 4.9 — Fase 1: base técnica (Android)
 - Versión única: `package.json` es la fuente; la app muestra la versión en el pie y en Ajustes, el service worker usa `la-cosecha-android-<versión>` y el APK recibe `versionName`/`versionCode` (criterio en `docs/VERSIONADO.md`).

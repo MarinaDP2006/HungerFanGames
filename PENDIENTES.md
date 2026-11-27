@@ -10,8 +10,10 @@ Leyenda: ✅ sí · ⏳ pendiente · — no aplica. «Emulador» = Android 14 en
 | Texto ampliado pulsado con el dedo | ✅ | — | ⚠️ solo con clic directo (WebView 113) | ⏳ |
 | Sonido audible | ✅ | — | ✅ motor de audio (el emulador no tiene altavoz) | ⏳ |
 | 3 ranuras, borrar con confirmación | ✅ | ✅ `saves-slots.test` | ✅ | ⏳ |
-| Guardado nativo + recuperación tras cierre forzado | ✅ | ✅ `durable-storage.test` | pendiente del CI de esta versión | ⏳ |
-| Migración de partidas de 4.9 | ✅ | ✅ `durable-storage.test` | pendiente del CI de esta versión | ⏳ |
+| Guardado nativo + recuperación tras cierre forzado | ✅ | ✅ `durable-storage.test` | ✅ cierre a los 0,5 s, sin segundo plano | ⏳ |
+| Migración de partidas de 4.9 | ✅ | ✅ `durable-storage.test` | ✅ APK 4.9.0 → 4.10.0 con partida a medias | ⏳ |
+| Actualizar el APK sin quedarse con la versión vieja | ✅ | ✅ `bundle-android.test`, paridad | ✅ la 4.9 se retira sola en ~2 s | ⏳ |
+| Instalar encima sin desinstalar (misma firma) | ⚠️ falta el secreto `ANDROID_DEBUG_KEYSTORE_B64` | — | ✅ con firma de prueba | ⏳ |
 | Exportar / importar | ✅ | ✅ `saves` | — | ⏳ |
 | 50.º completo (9 escenas, 8 de Arena, final) | ✅ | ✅ integración 50.º | ✅ | ⏳ |
 | 74.º y 75.º (fases genéricas y 4 capítulos de Arena) | ✅ | ✅ `campaigns` | ⏳ | ⏳ |
@@ -32,6 +34,7 @@ Leyenda: ✅ sí · ⏳ pendiente · — no aplica. «Emulador» = Android 14 en
 | Presidencia: órdenes, crisis y finales | ✅ `tests/presidency.mjs` y 1000 mandatos simulados con el motor real |
 | Web y Android con el mismo juego | ✅ `scripts/paridad.mjs` (53 archivos idénticos), también en GitHub Actions |
 | Despliegue automático en Render | ⚠️ No se lanza solo al subir a GitHub; se publica a mano desde la API. Hay que reconectar el repositorio en Render |
+| APK Android 4.10 (CI) | ✅ GitHub Actions, ejecución 45994235588: 17 suites en verde, APK 4.10.0 / 41000, prueba en emulador: 22 de 22 comprobaciones más 2 avisos informativos (incluida la actualización desde 4.9.0) |
 | APK Android 4.9 (CI) | ✅ GitHub Actions, ejecución 45982199817 sobre `integracion-cosecha-5x`: 16 suites en verde (13 Android, Web, paridad y detección de divergencias), APK de depuración de 7,2 MB con `versionName` 4.9.0 / `versionCode` 40900, 52 archivos de juego, sin WAV ni módulos rechazados |
 | APK Android 4.9 instalado (CI, emulador) | ✅ Emulador Android 14 (API 34, x86_64, imagen AOSP, WebView 113): arranque y versión, navegación por los cuatro modos, ajustes, sonido, guardado automático, cierre y reapertura de la app, carga de la ranura, 50.º completo (9 escenas, 8 acontecimientos de Arena y final) y borrar partida con confirmación. 18/18 comprobaciones; informe y capturas en el artefacto «La-Cosecha-Android-emulador». ⏳ Falta un móvil físico |
 | Pruebas locales (no CI) | Recorridos en Chrome de escritorio y móvil del bundle `www/` (50.º, ajustes y ranuras). Sirven de apoyo; la referencia es CI |
@@ -73,7 +76,9 @@ El código del juego ocupa ~77 KB (`js/app.js`) y `js/data.js` ~8,5 KB: la estru
 - [ ] Crear un Release cuando el APK se haya probado en un móvil. **No se publica todavía.**
 
 ### Deuda técnica detectada en la fase 1
-- [ ] Guardado en Android: el WebView escribe `localStorage` en disco con unos segundos de retraso. Si el sistema mata la app justo después de guardar, se pierde lo último (visto en el emulador). Propuesta: guardar también con el almacenamiento nativo de Capacitor (`@capacitor/preferences`). Necesita autorización.
+- [x] Guardado en Android: el WebView escribía `localStorage` con segundos de retraso y se perdía lo último si Android mataba la app. Resuelto en 4.10 con copia nativa (`docs/GUARDADO.md`). Queda una ventana de milisegundos (puente asíncrono de Capacitor).
+- [ ] Firma estable del APK: crear el secreto `ANDROID_DEBUG_KEYSTORE_B64` (lo tiene que hacer la dueña del repositorio, guía en `La_Cosecha_Juego_Android/docs/FIRMA_APK.md`). Sin él, cada APK del CI tiene otra firma y no se instala encima del anterior.
+- [ ] El OGG viaja en el APK, pero ningún módulo activo lo reproduce (`js/music.js` está fuera del bundle). Decidir si se activa la música o se quita.
 - [ ] Tamaño de texto: usa `zoom` de CSS. En WebView antiguos (113) Playwright no calcula bien dónde pulsar con el texto ampliado; en el emulador se hizo clic directo en esos botones (queda anotado en el informe). Hay que comprobarlo con el dedo en un móvil y, si falla, pasar los tamaños a `rem`.
 - [ ] `app.js` sigue siendo un único archivo de ~87 KB.
 
