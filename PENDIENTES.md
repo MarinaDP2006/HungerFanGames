@@ -1,3 +1,24 @@
+# Matriz de funcionalidades (Android 4.10.0)
+Leyenda: ✅ sí · ⏳ pendiente · — no aplica. «Emulador» = Android 14 en GitHub Actions. «Móvil físico» = teléfono real (guía en `La_Cosecha_Juego_Android/docs/PRUEBA_MOVIL_FISICO.md`).
+
+| Funcionalidad | Implementado | Pruebas automáticas (CI) | Probado en emulador | Validado en móvil físico |
+|---|---|---|---|---|
+| Arranque y versión visible | ✅ | ✅ `version.test` | ✅ | ⏳ |
+| Navegación Historia / Libre / Presidente / Códice | ✅ | ✅ `smoke` | ✅ | ⏳ |
+| Botones de cabecera (inicio, Ajustes) | ✅ | ✅ `bundle-android.test` | ✅ | ⏳ |
+| Ajustes: sonido, volumen, movimiento, texto, persistencia | ✅ | ✅ `settings.test` | ✅ | ⏳ |
+| Texto ampliado pulsado con el dedo | ✅ | — | ⚠️ solo con clic directo (WebView 113) | ⏳ |
+| Sonido audible | ✅ | — | ✅ motor de audio (el emulador no tiene altavoz) | ⏳ |
+| 3 ranuras, borrar con confirmación | ✅ | ✅ `saves-slots.test` | ✅ | ⏳ |
+| Guardado nativo + recuperación tras cierre forzado | ✅ | ✅ `durable-storage.test` | pendiente del CI de esta versión | ⏳ |
+| Migración de partidas de 4.9 | ✅ | ✅ `durable-storage.test` | pendiente del CI de esta versión | ⏳ |
+| Exportar / importar | ✅ | ✅ `saves` | — | ⏳ |
+| 50.º completo (9 escenas, 8 de Arena, final) | ✅ | ✅ integración 50.º | ✅ | ⏳ |
+| 74.º y 75.º (fases genéricas y 4 capítulos de Arena) | ✅ | ✅ `campaigns` | ⏳ | ⏳ |
+| Presidencia | ✅ | ✅ `presidency` | solo navegación | ⏳ |
+| «¿Y si…?» | ✅ | ✅ `saves` | ⏳ | ⏳ |
+| Narrativa del paquete v1 (74.º en 11 escenas, Gira, Rebelión) | ⏳ esperando textos y autorización de fase 2 | — | — | — |
+
 # Estado real (probado)
 | Área | Estado |
 |---|---|
