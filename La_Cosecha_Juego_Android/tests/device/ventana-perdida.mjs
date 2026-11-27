@@ -2,7 +2,7 @@
 // sin que se pierda la partida?
 //
 // Cada intento:
-//   1. Carga la ranura 1 y juega una escena del 50.º (guardado automático en las dos copias).
+//   1. Carga la ranura 1 (una partida del 74.º) y pulsa «Guardar» (se escribe en las dos copias).
 //   2. Espera D milisegundos y mata la app con `am force-stop`, que equivale a un cierre por el sistema.
 //   3. Lee del disco la copia nativa (run-as) para ver si ya estaba escrita.
 //   4. Abre la app y comprueba si la partida recuperada es la última guardada.
@@ -42,25 +42,25 @@ async function launch() {
 const click = (page, sel) => page.$eval(sel, el => el.click());
 const slots = page => page.evaluate(keys => Object.fromEntries(keys.map(k => [k, localStorage.getItem(k)])), SLOT_KEYS);
 
-// Deja una partida del 50.º en la ranura 1, en una escena con decisión pendiente.
+// Deja una partida del 74.º cargada desde la ranura 1, con el botón «Guardar» en pantalla.
+// (El 50.º está retirado del juego activo; antes esta medición usaba sus escenas con guardado automático.)
 async function ensurePlayable(page) {
   const s = await slots(page);
   if (s['laCosechaSave:1']) {
     await click(page, '[data-a="load"]');
     await page.waitForSelector('[data-slot-load="1"]');
     await click(page, '[data-slot-load="1"]');
-    if (await page.$('[data-pre50-choice]')) return page;
+    if (await page.$('[data-a="save"]')) return page;
   }
-  // Partida nueva: se vacían las ranuras desde Ajustes (borrado con confirmación) y se empieza el 50.º.
   await click(page, '.topbar [data-a="settings"]');
   for (const n of [1, 2, 3]) {
     if (await page.$(`[data-slot-delete="${n}"]`)) { await click(page, `[data-slot-delete="${n}"]`); await click(page, `[data-slot-delete-confirm="${n}"]`); }
   }
   await click(page, '.topbar [data-a="home"]');
   await click(page, '[data-a="story"]');
-  await click(page, '[data-ed="50"]');
+  await click(page, '[data-ed="74"]');
   await click(page, '[data-a="begin"]');
-  await click(page, '[data-pre50-choice]');
+  await click(page, '[data-a="save"]');
   await sleep(1500);
   return page;
 }
@@ -83,9 +83,9 @@ try {
   rtt = await roundTrip(page);
   // Confirmación nativa sin cierre: cuánto tarda Android en aceptar una escritura.
   for (let i = 0; i < 5; i++) {
-    if (!(await page.$('[data-pre50-choice]'))) { page = await launch(); await ensurePlayable(page); }
+    if (!(await page.$('[data-a="save"]'))) { page = await launch(); await ensurePlayable(page); }
     const before = Number(await page.evaluate(() => document.documentElement.dataset.nativeAcks || 0));
-    await click(page, '[data-pre50-choice]');
+    await click(page, '[data-a="save"]');
     await page.waitForFunction(n => Number(document.documentElement.dataset.nativeAcks || 0) > n, before, { timeout: 10000 });
     acks.push(Number(await page.evaluate(() => document.documentElement.dataset.nativeAckMs)));
   }
@@ -95,7 +95,7 @@ try {
       page = await launch();
       await ensurePlayable(page);
       const before = await slots(page);
-      await click(page, '[data-pre50-choice]');
+      await click(page, '[data-a="save"]');
       const tSaved = Date.now(); // el guardado ya ha ocurrido (más medio viaje de ida y vuelta)
       const after = await slots(page);
       const changed = SLOT_KEYS.filter(k => after[k] !== before[k]);

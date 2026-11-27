@@ -12,3 +12,12 @@ export function campanaJugable(edicion, registro = CAMPANAS) {
   const c = registro[edicion];
   return c && JUGABLE(c.status) ? c : null;
 }
+
+// Ediciones retiradas del juego activo (decisión de dirección del 27-11-2026). Retirada REVERSIBLE:
+// no aparecen en el selector ni se pueden empezar, pero su código, pruebas y documentación se conservan
+// y las partidas guardadas se siguen cargando y jugando. Para reactivar una, basta con quitarla de aquí.
+export const RETIRADAS = Object.freeze({
+  50: '50.º Vasallaje: retirado del juego activo; se conservan código, pruebas y partidas guardadas.',
+});
+// El 10.º Vasallaje no se desarrolla: no existe como campaña jugable.
+export const edicionActiva = e => !(e in RETIRADAS);

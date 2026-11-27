@@ -17,6 +17,8 @@ import * as AU from '../js/audio.js';
 import * as DEC from '../js/decisiones.js';
 import * as PC from '../js/precampana.js';
 import * as PCI from '../js/campanas/indice.js';
+// El 50.º está retirado del juego activo, pero su código se conserva y se sigue probando:
+// estas pruebas lo reactivan solo dentro de su entorno aislado.
 import { GAME_VERSION } from '../js/version.js';
 
 const memoryStorage = () => { const m = new Map(); return { getItem: k => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: k => m.delete(k), keys: () => [...m.keys()] }; };
@@ -26,7 +28,7 @@ function boot(storage) {
   const nodes = { '#screen': el(), '#save-indicator': el() };
   const document = { documentElement: { classList: { toggle() {} }, style: { setProperty() {} }, dataset: {} }, querySelector: s => nodes[s] || null, createElement: () => ({ click() {} }), addEventListener: (t, fn) => { if (t === 'click') click = fn; } };
   class Blob { constructor(p) { lastBlob = p.join(''); } }
-  const ctx = { ...data, ...campaigns, ...PRE, ...AD, ST, SV, DS, AU, DEC, PC, PCI, GAME_VERSION, WI, PR, Proxy, document, console, Math, Date, JSON, Number, String, Array, Object, Map, Set, Blob,
+  const ctx = { ...data, ...campaigns, ...PRE, ...AD, ST, SV, DS, AU, DEC, PC, PCI:{...PCI,edicionActiva:()=>true}, GAME_VERSION, WI, PR, Proxy, document, console, Math, Date, JSON, Number, String, Array, Object, Map, Set, Blob,
     URL: { createObjectURL: () => 'blob:x', revokeObjectURL() {} }, localStorage: storage, alert: m => alerts.push(m), navigator: {}, window: { addEventListener() {} }, setTimeout, clearTimeout };
   let src = fs.readFileSync(new URL('../js/app.js', import.meta.url), 'utf8').replace(/^import .*\n/gm, '');
   src += `\nglobalThis.api={g:()=>game,set:v=>{game=v},setMode:(m,e)=>{mode=m;edition=e},begin,save,load,exportSave,importSaveFile,triggerCampaignEvent};`;

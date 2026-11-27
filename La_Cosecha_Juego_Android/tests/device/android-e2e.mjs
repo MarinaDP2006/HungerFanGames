@@ -1,7 +1,8 @@
 // Recorrido real del APK en un emulador o dispositivo Android (se ejecuta en GitHub Actions).
 // Controla el WebView de la app con Playwright (protocolo de depuración de Chrome, APK de depuración).
 // Comprueba: arranque y versión, navegación, Ajustes (persisten tras reiniciar la app), sonido,
-// guardado automático, reinicio, carga desde la ranura y la campaña del 50.º completa hasta el final.
+// guardado, reinicio, carga desde la ranura y el 74.º completo hasta el final (el 50.º está retirado; sus
+// partidas antiguas se siguen cargando en la prueba de actualización).
 // Deja capturas e informe en device-report/. Sale con código 1 si falla cualquier comprobación.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -128,20 +129,26 @@ try {
   check('Música: sin pistas todavía (no suena nada)', await page.evaluate(() => !!document.querySelector('#music-status') && document.documentElement.dataset.music === 'on'));
   await tap(page, '[data-a="settings-back"]');
 
-  // 4. 50.º Vasallaje: cuatro escenas (guardado automático en la ranura 1)
+  // 4. 74.º (el 50.º está retirado del juego activo): no aparece en el selector; cosecha, entrenamiento y
+  // entrevista con guardado en la ranura 1.
   await tap(page, '[data-a="story"]');
-  await tap(page, '[data-ed="50"]');
+  check('El 50.º no aparece en el selector y el 74.º y el 75.º sí', !(await page.$('[data-ed="50"]')) && !!(await page.$('[data-ed="74"]')) && !!(await page.$('[data-ed="75"]')));
+  await tap(page, '[data-ed="74"]');
   await tap(page, '[data-a="begin"]');
-  const scenes = [];
-  for (let i = 0; i < 4; i++) { scenes.push(await page.textContent('.story-box h2')); await tap(page, '[data-pre50-choice]'); }
-  const nextTitle = await page.textContent('.story-box h2');
-  check('Audio: el contexto sigue al juego (menú → historia:50)', await page.evaluate(() => document.documentElement.dataset.audioContext) === 'historia:50', await page.evaluate(() => document.documentElement.dataset.audioContext));
-  const slot1 = await page.evaluate(() => !!localStorage.getItem('laCosechaSave:1'));
-  check('50.º: cuatro escenas jugadas y guardado automático en la ranura 1', scenes.length === 4 && slot1, scenes.join(' → '));
-  await snap('50-precampana');
+  check('Audio: el contexto sigue al juego (menú → historia:74)', await page.evaluate(() => document.documentElement.dataset.audioContext) === 'historia:74', await page.evaluate(() => document.documentElement.dataset.audioContext));
+  await tap(page, '[data-decision="0"]');
+  await tap(page, '[data-a="training"]');
+  await tap(page, '[data-train="survival"]');
+  await tap(page, '[data-a="interview"]');
+  await tap(page, '[data-interview="human"]');
+  await tap(page, '[data-a="save"]');
+  const fase = await page.textContent('h1.display');
+  const slot1 = await page.evaluate(() => JSON.parse(localStorage.getItem('laCosechaSave:1') || 'null'));
+  check('74.º: cosecha, entrenamiento y entrevista; guardado en la ranura 1 (formato 5)', slot1?.saveVersion === 5 && slot1.game.edition === 74 && slot1.game.phase === 'interview', `${fase} · saveVersion ${slot1?.saveVersion}`);
+  await snap('74-entrevista');
 
   // 5. Cierre forzado medio segundo después de guardar, sin pasar a segundo plano: es el caso en que
-  // la versión 4.9 perdía las últimas escenas. La copia nativa debe tenerlas.
+  // la versión 4.9 perdía lo último. La copia nativa debe tenerlo.
   await page.waitForTimeout(500);
   const xmlAntes = await nativePrefs();
   check('La copia nativa tiene la partida antes del cierre', xmlAntes.includes('laCosechaSave:1'), `${xmlAntes.length} bytes`);
@@ -152,24 +159,23 @@ try {
   await page.waitForSelector('[data-slot-load="1"]');
   await snap('partidas');
   await tap(page, '[data-slot-load="1"]');
-  const resumed = await page.textContent('.story-box h2');
-  check('Tras reiniciar: se carga la ranura 1 en la misma escena', resumed === nextTitle, `${resumed}`);
+  const resumed = await page.evaluate(() => ({ h1: document.querySelector('h1.display')?.textContent, arena: !!document.querySelector('[data-a="arena"]') }));
+  check('Tras reiniciar: se carga la ranura 1 en el mismo punto', resumed.h1 === fase && resumed.arena, JSON.stringify(resumed));
 
-  // 6. Resto del 50.º hasta el final
-  for (let i = 0; i < 5; i++) { scenes.push(await page.textContent('.story-box h2')); await tap(page, '[data-pre50-choice]'); }
-  check('50.º: las nueve escenas de la precampaña', scenes.length === 9, `${scenes.length}`);
+  // 6. Arena del 74.º hasta el final
+  await tap(page, '[data-a="arena"]');
   let arenaEvents = 0;
-  for (let i = 0; i < 60; i++) {
+  for (let i = 0; i < 80; i++) {
     if (await page.$('.epilogue')) break;
     const choice = await page.$('[data-story-choice]');
-    if (choice) { arenaEvents++; if (arenaEvents === 1) await snap('50-arena'); await choice.evaluate(el => el.scrollIntoView({ block: 'center' })); await choice.click({ timeout: 5000 }).catch(() => choice.evaluate(el => el.click())); continue; }
+    if (choice) { arenaEvents++; if (arenaEvents === 1) await snap('74-arena'); await choice.evaluate(el => el.scrollIntoView({ block: 'center' })); await choice.click({ timeout: 5000 }).catch(() => choice.evaluate(el => el.click())); continue; }
     const act = (await page.$('[data-act="rest"]')) || (await page.$('[data-act]'));
     if (!act) break;
     await act.click({ timeout: 5000 }).catch(() => act.evaluate(el => el.click()));
   }
   const ending = (await page.$('.epilogue')) ? await page.textContent('h1.display') : null;
-  check('50.º: ocho acontecimientos de Arena y final', arenaEvents === 8 && !!ending, `${arenaEvents} acontecimientos · final «${ending}»`);
-  await snap('50-final');
+  check('74.º: acontecimientos de Arena y final', arenaEvents >= 1 && !!ending, `${arenaEvents} acontecimientos · final «${ending}»`);
+  await snap('74-final');
 
   // 7. Borrar partida con confirmación
   await tap(page, '.topbar [data-a="settings"]');

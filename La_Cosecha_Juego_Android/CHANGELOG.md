@@ -1,5 +1,14 @@
 # Changelog
 
+## 4.13 — 50.º retirado, Gira y 75.º en borrador
+- **50.º Vasallaje retirado del juego activo** (decisión de dirección). Ya no aparece en el selector y el juego no deja empezarlo. Es reversible: se conservan su código, sus pruebas y la carga de partidas antiguas (`RETIRADAS` en `js/campanas/indice.js`). Edición por defecto: 74.º.
+- **Canon:** continuidad de las películas; los libros son complementarios. El 10.º queda fuera.
+- **Gira y 75.º:** las 25 escenas del documento narrativo v1.0 se importan con `scripts/importar-gira-75.mjs` a `js/campanas/campana-gira-75.js`, **en borrador y sin activar** (el juego no carga ese archivo).
+  - Las escenas 75-07 a 75-15 no son escenas nuevas: se asignan a los 8 acontecimientos de Arena del 75.º que ya existen, con sus IDs técnicos.
+  - Los efectos sin cifra quedan en `null`; no se inventa ningún valor.
+  - Correspondencias y lista exacta de pendientes: `docs/GIRA_75_CORRESPONDENCIAS_Y_PENDIENTES.md`.
+- **Pruebas en dispositivo:** el recorrido del emulador y la medición de la ventana de pérdida usan ahora una partida del 74.º. La actualización desde 4.9 sigue cargando una partida antigua del 50.º.
+
 ## 4.12 — Motor común de precampañas, registro de decisiones y guardado 5
 - **Motor común de precampañas (fase 2, `js/precampana.js`)**, para el 74.º, la Gira y el 75.º (el 50.º sigue con su módulo aprobado). Funciona con datos y no tiene texto propio:
   - escenas, opciones, condiciones y efectos (`ADD`, `SET`, `SET_FLAG`…);

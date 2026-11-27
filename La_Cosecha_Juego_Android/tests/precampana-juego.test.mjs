@@ -49,7 +49,7 @@ function engine(opts={}){
   return {api:ctx.api,store,alerts,nodes,click,lastBlob:()=>lastBlob};
 }
 const aprobada = { ...CAMPANA_74, status: 'APPROVED' };
-const PCI_PRUEBA = { campana: id => (['74', 'campaign_74'].includes(String(id)) ? aprobada : null), campanaJugable: e => (Number(e) === 74 ? aprobada : null) };
+const PCI_PRUEBA = { edicionActiva: PCI.edicionActiva, campana: id => (['74', 'campaign_74'].includes(String(id)) ? aprobada : null), campanaJugable: e => (Number(e) === 74 ? aprobada : null) };
 const start74 = (approved = true) => { const e = engine({ overrides: approved ? { PCI: PCI_PRUEBA } : {} }); e.api.setMode('story', 74); e.api.begin(); return e; };
 const html = e => e.nodes['#screen'].innerHTML;
 
@@ -163,4 +163,25 @@ test('si no se puede guardar antes de la Arena, no se entra en ella', () => {
   e.api.renderGame();
   assert.equal(g.phase, 'arena', 'al reintentar con ranura entra, sin repetir la transferencia');
   assert.equal(g.continuity.campaign_74.decision_ids.length, 11);
+});
+
+test('50.º retirado del juego activo: no sale en el selector ni se puede empezar, pero sus partidas siguen cargando', () => {
+  assert.equal(PCI.edicionActiva(50), false);
+  assert.equal(PCI.edicionActiva(74), true);
+  assert.equal(PCI.edicionActiva(75), true);
+  const e = engine();
+  e.api.modeSetup('story');
+  assert.ok(!html(e).includes('data-ed="50"'), 'no aparece en el selector');
+  assert.ok(html(e).includes('data-ed="74"') && html(e).includes('data-ed="75"'));
+  assert.ok(!/data-ed="10"/.test(html(e)), 'el 10.º no existe como campaña');
+  e.api.setMode('story', 50); e.api.begin();
+  assert.equal(e.api.g(), null, 'no se puede empezar');
+  assert.ok(e.alerts.some(a => /no está disponible/.test(a)));
+  // Una partida del 50.º guardada antes se carga y se juega.
+  // Partida del 50.º anterior a 5.1 (fase genérica de cosecha): al cargar se migra a su precampaña.
+  const viejo = { mode: 'story', edition: 50, phase: 'harvest', day: 0, health: 100, skill: 6, support: 12, rebellion: 0, tributes: [{ name: 'Haymitch Abernathy', district: 12, player: true, alive: true }], log: [], decisions: [], inventory: [], wounds: [], injuries: [], flags: {}, name: 'Haymitch Abernathy', district: 12 };
+  e.store['laCosechaSave:1'] = JSON.stringify({ format: 'la-cosecha-save', saveVersion: 4, slot: 1, savedAt: new Date().toISOString(), game: viejo });
+  assert.equal(e.api.load(1), true);
+  assert.equal(e.api.g().edition, 50);
+  assert.equal(e.api.g().phase, 'prearena50');
 });

@@ -16,7 +16,7 @@ Arquitectura en `docs/SEPARACION_ANDROID_WEB.md`. Entrega creativa en `docs/ENTR
 | Acerca (aviso fan y leyenda de canon) | ✅ | ✅ | ✅ | ✅ |
 | Despliegue en Render | ❌ no autorizado | — | — | — |
 
-# Matriz del motor de campañas (Android 4.12)
+# Matriz del motor de campañas (Android 4.13)
 | Pieza | Implementado | Probado | Activo en el juego |
 |---|---|---|---|
 | Motor común de precampañas (fase 2) | ✅ | ✅ 11 pruebas del motor y 7 dentro del juego con el 74.º aprobado solo en la prueba | Solo para campañas `APPROVED`: hoy ninguna |
@@ -24,7 +24,8 @@ Arquitectura en `docs/SEPARACION_ANDROID_WEB.md`. Entrega creativa en `docs/ENTR
 | 74.º: 28 ecos descritos sin frase y la frase de la promesa a Gale | ❌ | — | ❌ `BLOCKED_CREATIVE` |
 | Transferencia a la Arena idempotente y guardada antes | ✅ | ✅ | Solo con el 74.º aprobado |
 | Valores de patrocinio e imagen pública en la Arena | Preparado, desactivado | ✅ desactivado | ❌ faltan los límites |
-| Gira y 75.º | Solo IDs de escena | ✅ no se pueden jugar | ❌ `STRUCTURE_ONLY` |
+| 50.º | Retirado del selector (reversible) | ✅ código, pruebas y partidas antiguas conservados | — |
+| Gira y 75.º | 25 escenas importadas en borrador (`campana-gira-75.js`); Arena 75-07..15 repartida en los 8 acontecimientos existentes | ✅ no se pueden jugar | ❌ `DRAFT_FOR_REVIEW`: cifras, respuestas, diarios y 6 variables pendientes de ChatGPT (`docs/GIRA_75_CORRESPONDENCIAS_Y_PENDIENTES.md`) |
 | Guardado formato 5 (registro de decisiones, migración, copia de seguridad) | ✅ | ✅ 8 pruebas, más emulador | ✅ |
 | Sin enlaces externos en el juego | ✅ | ✅ | ✅ |
 

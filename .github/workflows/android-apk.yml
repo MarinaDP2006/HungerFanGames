@@ -75,6 +75,10 @@ jobs:
           node --test tests/precampana-juego.test.mjs
       - name: 'Datos del 74.º idénticos a la fuente creativa'
         run: node scripts/importar-campana-74.mjs --comprobar
+      - name: 'Gira y 75.º en borrador, idénticos a la fuente y sin activar'
+        run: |
+          node scripts/importar-gira-75.mjs --comprobar
+          node --test scripts/importar-gira-75.test.mjs
       - name: 'Datos compartidos sincronizados'
         run: node scripts/sincronizar-compartido.mjs --comprobar
       - name: 'Contratos Android / Web'
