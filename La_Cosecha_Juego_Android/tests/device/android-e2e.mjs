@@ -33,6 +33,8 @@ async function launch() {
   const webview = await device.webView({ pkg: PKG }, { timeout: 120000 });
   const page = await webview.page();
   page.setDefaultTimeout(60000);
+  page.on('crash', () => errors.push('crash: el proceso de renderizado del WebView se cayó'));
+  page.on('close', () => console.log('· la página se cerró'));
   page.on('pageerror', e => errors.push(`pageerror: ${e.message}`));
   page.on('console', m => { if (m.type() === 'error') errors.push(`console: ${m.text()}`); });
   page.on('dialog', d => d.accept().catch(() => {}));
@@ -135,7 +137,10 @@ try {
   await snap('error').catch(() => {});
 }
 
+fs.writeFileSync(path.join(OUT, 'logcat.txt'), (await device.shell('logcat -d -v time')).toString());
 const crash = (await device.shell('logcat -d -b crash')).toString();
+const gone = (await device.shell('logcat -d -s chromium:E cr_AwContents:* ActivityManager:I')).toString().split('\n').filter(l => /render process|Renderer process|crashed|Killing \d+:com\.lacosecha|has died|lowmemory/i.test(l));
+check('El proceso del WebView no se cae', gone.length === 0, gone.slice(0, 3).join(' | '));
 check('Sin cierres inesperados (logcat crash)', !/FATAL EXCEPTION/.test(crash), crash.trim().split('\n').slice(0, 3).join(' | '));
 check('Sin errores de JavaScript en el WebView', errors.length === 0, errors.slice(0, 5).join(' | '));
 
