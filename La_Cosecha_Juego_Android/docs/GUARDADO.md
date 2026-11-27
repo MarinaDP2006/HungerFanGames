@@ -73,7 +73,7 @@ Si el proceso muere (cierre forzado, falta de memoria, un fallo, el ahorro de ba
 | 250 ms | 6/6 | 6/6 |
 | 1000 ms | 6/6 | 6/6 |
 
-`am force-stop` tarda además entre 56 y 119 ms en matar el proceso. Así que el límite real en este emulador está entre **unos 50 y unos 200 ms** después de guardar. En la 4.9, sin copia nativa, se perdían escenas guardadas varios segundos antes.
+`am force-stop` tarda además entre 56 y 158 ms en matar el proceso. Así que el límite real en este emulador está entre **unos 50 y unos 250 ms** después de guardar. En la 4.9, sin copia nativa, se perdían escenas guardadas varios segundos antes.
 
 ### Qué no está medido
 - **Un móvil físico.** El almacenamiento, la carga y el fabricante cambian el margen. La medición está preparada para lanzarla por USB (`docs/PRUEBA_MOVIL_FISICO.md`).
