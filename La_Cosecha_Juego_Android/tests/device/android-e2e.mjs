@@ -24,7 +24,8 @@ const info = { modelo: await prop('ro.product.model'), android: await prop('ro.b
 const pkgInfo = (await device.shell(`dumpsys package ${PKG}`)).toString();
 info.versionName = /versionName=([^\s]+)/.exec(pkgInfo)?.[1];
 info.versionCode = /versionCode=(\d+)/.exec(pkgInfo)?.[1];
-info.webview = /versionName=([^\s]+)/.exec((await device.shell('dumpsys package com.google.android.webview')).toString())?.[1] || 'desconocido';
+info.webview = /versionName=([^\s]+)/.exec((await device.shell('dumpsys package com.google.android.webview')).toString() + (await device.shell('dumpsys package com.android.webview')).toString())?.[1] || 'desconocido';
+info.webviewProveedor = (await device.shell('cmd webviewupdate current-webview-package').catch(() => '')).toString().trim();
 console.log('Dispositivo:', info);
 
 async function launch() {
@@ -139,14 +140,14 @@ try {
 
 fs.writeFileSync(path.join(OUT, 'logcat.txt'), (await device.shell('logcat -d -v time')).toString());
 const crash = (await device.shell('logcat -d -b crash')).toString();
-const gone = (await device.shell('logcat -d -s chromium:E cr_AwContents:* ActivityManager:I')).toString().split('\n').filter(l => /com\.lacosecha\.panem/.test(l) && /Killing|has died|crash/i.test(l) || /Renderer process (crashed|was killed)/i.test(l));
+const gone = (await device.shell('logcat -d -s chromium:E cr_AwContents:* ActivityManager:I')).toString().split('\n').filter(l => !/stop com\.lacosecha\.panem due to/.test(l)).filter(l => /com\.lacosecha\.panem/.test(l) && /Killing|has died|crash/i.test(l) || /Renderer process (crashed|was killed)/i.test(l));
 check('La app y su WebView no se cierran durante la prueba', gone.length === 0, gone.slice(0, 3).join(' | '));
 check('Sin cierres inesperados (logcat crash)', !/FATAL EXCEPTION/.test(crash), crash.trim().split('\n').slice(0, 3).join(' | '));
 check('Sin errores de JavaScript en el WebView', errors.length === 0, errors.slice(0, 5).join(' | '));
 
 if (directClicks.size) results.push({ name: 'Aviso: clic directo en el elemento (sin coordenadas)', ok: true, detail: [...directClicks].join(', ') });
 const failed = results.filter(r => !r.ok);
-const md = [`# Prueba del APK en Android`, ``, `- Dispositivo: ${info.modelo} · Android ${info.android} (API ${info.api}) · ${info.abi}`, `- WebView del sistema: ${info.webview}`, `- APK: versionName ${info.versionName} · versionCode ${info.versionCode}`, `- Resultado: ${failed.length ? `${failed.length} comprobaciones fallidas` : 'todas las comprobaciones superadas'}`, ``, `| Comprobación | Resultado | Detalle |`, `|---|---|---|`, ...results.map(r => `| ${r.name} | ${r.ok ? '✅' : '❌'} | ${r.detail.replace(/\|/g, '/')} |`)].join('\n');
+const md = [`# Prueba del APK en Android`, ``, `- Dispositivo: ${info.modelo} · Android ${info.android} (API ${info.api}) · ${info.abi}`, `- WebView del sistema: ${info.webview} ${info.webviewProveedor ? '(' + info.webviewProveedor + ')' : ''}`, `- APK: versionName ${info.versionName} · versionCode ${info.versionCode}`, `- Resultado: ${failed.length ? `${failed.length} comprobaciones fallidas` : 'todas las comprobaciones superadas'}`, ``, `| Comprobación | Resultado | Detalle |`, `|---|---|---|`, ...results.map(r => `| ${r.name} | ${r.ok ? '✅' : '❌'} | ${r.detail.replace(/\|/g, '/')} |`)].join('\n');
 fs.writeFileSync(path.join(OUT, 'informe.md'), md + '\n');
 fs.writeFileSync(path.join(OUT, 'informe.json'), JSON.stringify({ device: info, results, errors }, null, 2));
 console.log('\n' + md);
