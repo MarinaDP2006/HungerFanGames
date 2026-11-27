@@ -42,6 +42,8 @@ async function launch() {
   await page.waitForSelector('#game-version:not(:empty)', { timeout: 120000 });
   return page;
 }
+// Copia nativa (SharedPreferences de Capacitor). El APK de depuración permite leerla con run-as.
+const nativePrefs = async () => (await device.shell(`run-as ${PKG} cat shared_prefs/CapacitorStorage.xml`).catch(() => '')).toString();
 const snap = async name => { const f = path.join(OUT, `${String(++shot).padStart(2, '0')}-${name}.png`); await device.screenshot({ path: f }); return f; };
 // Pulsación normal; si Playwright no puede calcular el punto (zoom CSS heredado en WebViews antiguos), se hace clic en el elemento y se anota.
 const directClicks = new Set();
@@ -58,6 +60,33 @@ try {
   let page = await launch();
   check('La app arranca y muestra la versión', (await page.textContent('#game-version')).includes(version), await page.textContent('#game-version'));
   await snap('inicio');
+  await page.waitForFunction(() => document.documentElement.dataset.storage === 'nativo', null, { timeout: 15000 }).catch(() => {});
+  check('Guardado nativo activo (Capacitor Preferences)', await page.evaluate(() => document.documentElement.dataset.storage) === 'nativo');
+
+  // 1b. Actualización desde la versión anterior: la partida sigue, carga y pasa a la copia nativa
+  const prevFile = path.join(OUT, 'anterior.json');
+  if (fs.existsSync(prevFile)) {
+    const prev = JSON.parse(fs.readFileSync(prevFile, 'utf8'));
+    await page.waitForTimeout(1000);
+    const xml = await nativePrefs();
+    check(`Actualización ${prev.version} → ${version}: la partida antigua pasa a la copia nativa`, xml.includes('laCosechaSave:1'), xml ? `${xml.length} bytes en CapacitorStorage.xml` : 'sin archivo');
+    await tap(page, '[data-a="load"]');
+    await page.waitForSelector('[data-slot-load="1"]');
+    await tap(page, '[data-slot-load="1"]');
+    const t = await page.textContent('.story-box h2');
+    check(`Actualización ${prev.version} → ${version}: la partida antigua carga en la misma escena`, t === prev.title, t);
+    // Se borra con confirmación para seguir con la prueba desde cero; debe desaparecer de las dos copias.
+    await tap(page, '.topbar [data-a="settings"]');
+    await tap(page, '[data-slot-delete="1"]');
+    await tap(page, '[data-slot-delete-confirm="1"]');
+    await page.waitForTimeout(1000);
+    const borrada = await page.evaluate(() => localStorage.getItem('laCosechaSave:1') === null) && !(await nativePrefs()).includes('laCosechaSave:1"');
+    check('Borrar partida la quita de la copia local y de la nativa', borrada);
+    await tap(page, '[data-a="settings-back"]');
+    await home(page);
+  } else {
+    results.push({ name: 'Actualización desde la versión anterior', ok: true, detail: 'no se ejecutó (no hay APK anterior en esta ejecución)' });
+  }
 
   // 2. Navegación por los modos y vuelta al inicio
   for (const [a, expect] of [['story', 'ELIGE TU CAMPAÑA'], ['free', 'CONFIGURA LOS JUEGOS'], ['president', 'PRESIDENTE'], ['codex', 'CÓDICE']]) {
@@ -96,10 +125,11 @@ try {
   check('50.º: cuatro escenas jugadas y guardado automático en la ranura 1', scenes.length === 4 && slot1, scenes.join(' → '));
   await snap('50-precampana');
 
-  // 5. Reinicio completo de la app. Se manda la app a segundo plano y se espera a que el WebView
-  // escriba localStorage en disco antes de matarla (Chromium lo guarda con unos segundos de retraso).
-  await device.shell('input keyevent KEYCODE_HOME');
-  await new Promise(r => setTimeout(r, 6000));
+  // 5. Cierre forzado medio segundo después de guardar, sin pasar a segundo plano: es el caso en que
+  // la versión 4.9 perdía las últimas escenas. La copia nativa debe tenerlas.
+  await page.waitForTimeout(500);
+  const xmlAntes = await nativePrefs();
+  check('La copia nativa tiene la partida antes del cierre', xmlAntes.includes('laCosechaSave:1'), `${xmlAntes.length} bytes`);
   page = await launch();
   const after = await page.evaluate(() => ({ prefs: JSON.parse(localStorage.getItem('laCosechaSettings')), reduce: document.documentElement.classList.contains('reduce-motion'), scale: getComputedStyle(document.documentElement).getPropertyValue('--text-scale').trim() }));
   check('Tras reiniciar: los ajustes persisten y se aplican', after.reduce && after.scale === '1.15' && after.prefs?.volume === 0.4, JSON.stringify(after));

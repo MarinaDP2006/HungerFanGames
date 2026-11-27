@@ -58,6 +58,9 @@ jobs:
       - name: 'Android · ranuras de guardado'
         working-directory: La_Cosecha_Juego_Android
         run: node --test tests/saves-slots.test.mjs
+      - name: 'Android · guardado duradero (copia nativa, cierre forzado, migración)'
+        working-directory: La_Cosecha_Juego_Android
+        run: node --test tests/durable-storage.test.mjs
       - name: 'Web · smoke, campañas, presidencia y guardado'
         working-directory: La_Cosecha_Web_Render
         run: |
@@ -128,6 +131,9 @@ jobs:
     name: Probar el APK en un emulador Android
     needs: apk
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
@@ -137,6 +143,16 @@ jobs:
         with:
           name: La-Cosecha-Android-debug
           path: apk
+      - name: APK anterior para probar la actualización (4.9.0)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ANTERIOR_RUN: '45982199817'
+        run: |
+          if gh run download "$ANTERIOR_RUN" -R "${{ github.repository }}" -n La-Cosecha-Android-debug -D apk-anterior; then
+            ls -la apk-anterior
+          else
+            echo "::warning::No se pudo descargar el APK anterior; la prueba de actualización no se ejecutará"
+          fi
       - name: Activar KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -154,6 +170,8 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           script: |
+            mkdir -p device-report
+            if [ -f apk-anterior/app-debug.apk ]; then adb install apk-anterior/app-debug.apk && node La_Cosecha_Juego_Android/tests/device/upgrade-prepare.mjs; fi
             adb install -r apk/app-debug.apk
             node La_Cosecha_Juego_Android/tests/device/android-e2e.mjs
       - uses: actions/upload-artifact@v4
